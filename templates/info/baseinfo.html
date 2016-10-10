@@ -1,0 +1,325 @@
+{% extends "V.html" %}
+
+{% block head %}
+
+<script type="text/javascript" src="/static/matrix/js/layer/layer.js"></script>
+<script type="text/javascript" src="/static/matrix/js/dataBase.js"></script>
+<script type="text/javascript" src="/static/matrix/js/preview/WdatePicker.js"></script>
+<script type="text/javascript" src="/static/matrix/js/jquery.gritter.min.js"></script>
+<script type="text/javascript" src="/static/matrix/js/download.js"></script>
+<!-- <script type="text/javascript" src="/static/matrix/js/matrix.interface.js"></script> -->
+<script type="text/javascript">
+	$(document).ready(function(){
+		{% if perms.Matrix.baseinfo_pagedataList %}
+			loadTable(1);
+		{% else %}
+		$('#dataFrom').html('对不起,您没有查看权限,请联系系统管理员').css('text-align','center');
+		{% endif%}
+	});
+
+	
+	function addDialog(){
+		var addTableHtml=$("#addTable").clone();
+		var parameters=['id','sid','hostname','isp_id','status','create_date','expire_date','admin','business_unit','tags','memo'];
+		var inputStatus=addTableHtml.find("select[name='status']");
+      		inputStatus.attr("id","status");
+      		if(arguments[4]){
+      			inputStatus.find("option[name='"+arguments[2]+"']").attr("selected",true);
+      		}
+
+
+		var inputPlatfromList=addTableHtml.find("select[name='isp_id']");
+		var inputBusinessList=addTableHtml.find("select[name='business_unit']");
+		var platform_id_selected=arguments[3];
+		var business_id_selected=arguments[8];
+			inputPlatfromList.attr("id","isp_id");
+			inputBusinessList.attr("id","business_unit");
+            $.ajax({
+              type:'POST',
+              url:'/base_data/baseinfo_pagedataList',
+              data:"hostop={{ true_name }}",
+              cache:false,
+              dataType:'json',
+              success:function(ret){
+                if(!ret){
+                  layer.alert("数据异常01！");
+                }else{
+                  var platformlist=ret.platformlist;
+                  var businessunitlist=ret.businessunitlist;
+
+                  for(var i=0;i<platformlist.length;i++){
+                    if("undefined" == typeof platform_id_selected||platformlist[i].name!=platform_id_selected){
+                      $("#isp_id").append($('<option value="'+platformlist[i].id+'" name="'+platformlist[i].id+'"></option>').html(platformlist[i].name));
+                    }else{
+                      $("#isp_id").append($('<option selected="selected" value="'+platformlist[i].id+'" name="'+platformlist[i].id+'"></option>').html(platformlist[i].name));
+                    }
+                  }
+
+                  for(var i=0;i<businessunitlist.length;i++){
+                    if("undefined" == typeof business_id_selected||business_id_selected.indexOf(businessunitlist[i].name)<0){
+                      $("#business_unit").append($('<option value="'+businessunitlist[i].id+'" name="'+businessunitlist[i].id+'"></option>').html(businessunitlist[i].name));
+                    }else{
+                      $("#business_unit").append($('<option selected="selected" value="'+businessunitlist[i].id+'" name="'+businessunitlist[i].id+'"></option>').html(businessunitlist[i].name));
+                    }
+                  }
+
+                }
+              },error:function(){
+                layer.alert("未知异常02！");
+              }
+            });
+
+    if(arguments[0]){
+      var buttonValue="更新";
+      $.each(arguments,function(num,val){
+        var inputName=addTableHtml.find("input[name='"+parameters[num]+"']");
+        if(parameters[num]=='sid'){
+          inputName.attr("readonly","readonly");
+        }
+          inputName.attr("id",parameters[num]);
+          inputName.attr("value",val);
+      });
+    }else{
+      var buttonValue="添加";
+      $.each(parameters,function(){
+        var inputName=addTableHtml.find("input[name='"+this+"']");
+          inputName.attr("id",this);
+      });
+    }
+
+		layer.open({
+					title:'编辑信息',
+				 	type: 1,
+					shift:2,
+					skin: 'layui-layer-rim', //加上边框
+					area: ['30%', '65%'], //宽高
+					content:addTableHtml.html(),
+					btn:[buttonValue,'取消'],
+					yes:function(index){
+
+						var ret='';
+						$.each(parameters,function(){
+							ret+=this+'='+$("#"+this).val()+'&';
+						});
+						ret+="hostop={{ true_name }}"
+						// 测试输出
+						console.log(ret)
+						$.ajax({
+							type:'POST',
+							url:'/base_data/baseinfo_editFun',
+							data:ret,
+							dataType:'text',
+							success:function(val){
+								layer.close(index);
+								layer.alert("修改成功");
+								// layer.alert(val);
+								// if(val=='1'){
+									
+								// 	layer.alert("修改成功");
+								// 	loadTable(1);
+								window.location.reload();
+								// }
+								// else{
+								// 	layer.alert("操作失败，请补全红色必填字体");
+								// }
+							},error:function(){
+								layer.close(index);
+								layer.alert("操作失败");
+							}
+						});
+
+					}
+			});
+	}
+
+	function keyEnter(event){
+		 var e = event || window.event || arguments.callee.caller.arguments[0];
+		 if(e && e.keyCode==13){ // enter 键
+             loadTable(1);
+			return false;
+          }
+
+	}
+
+	function loadTable(val){
+		 $("#dataFrom").find("input[name='page']").val(val);
+		 $("#dataTab").dataTable({
+				title:'云资源信息详情',
+				columns:[
+				{key:'id',check:true,checkAll:true,width:'1%',align:'center'},
+				{key:'sid',name:'资源ID',width:'10%',align:'center'},
+				{key:'hostname',name:'主机名称',width:'10%',align:'center'},
+				{key:'isp',name:'服务提供商',width:'10%',align:'center'},
+				{key:'status',name:'资产状态',width:'5%',align:'center'},
+				{key:'create_date',name:'创建日期',width:'10%',align:'center'},
+				{key:'expire_date',name:'到期日期',width:'10%',align:'center'},
+				{key:'admin',name:'资产管理员',width:'5%',align:'center'},
+				{key:'business_unit',name:'所属业务线',width:'10%',align:'center'},
+				{key:'tags',name:'标签',width:'10%',align:'center'},
+				{key:'memo',name:'备注信息',width:'10%',align:'center'}],
+				formid:'dataFrom',
+				loadAfter:tab_trOnclick,
+		});
+	}
+
+	/**
+	行添加双击事件
+	**/
+	{% if perms.Matrix.baseinfo_editFun %}
+	function tab_trOnclick(){
+		var trs=$("#dataFrom_table tbody tr");
+		for(var i=0;i<trs.length;i++){
+			$(trs[i]).on("dblclick",function(){
+				var tr=$(this);
+				var tds=tr.find("td");
+				var cloudurl=tr.find("a");
+				var id=$(tds[0]).find("input").val();
+				addDialog(id,$(tds[1]).text(),$(tds[2]).text(),$(tds[3]).text(),$(tds[4]).text(),$(tds[5]).text(),$(tds[6]).text(),$(tds[7]).text(),$(tds[8]).text(),$(tds[9]).text(),$(tds[10]).text());
+			});
+		}
+	}
+	{% else %}
+	function tab_trOnclick(){
+		
+	}
+
+	{% endif%}
+
+	/**
+	删除功能
+	**/
+	function delData(){
+		var inputChecks=$("input:checkbox[name='dataFrom_check']:checked");
+		if(inputChecks.length==0){
+			layer.alert('请选中删除项！');
+			return;
+		}
+		layer.confirm('该资源下全部主机配置会被删除，确认删除?', {icon: 2, title:'提示'},function(index){
+			var orders='';
+			for(var i=0;i<inputChecks.length;i++){
+				orders+=inputChecks[i].value;
+				if(i!=inputChecks.length-1){
+					orders+=',';
+				}
+			}
+			$.ajax({
+				type:'POST',
+				url:'/base_data/baseinfo_deleteFun',
+				dataType:'text',
+				data:'id='+orders,
+				success:function(text){
+				       layer.close(index);
+				       if(text=='1'){
+				       	loadTable(1);
+				       }else{
+				       	layer.alert('操作失败');
+				       }
+				},error:function(){
+					layer.close(index);
+					layer.alert('操作失败');
+				}
+			});
+		});
+
+	}
+</script>
+{% endblock %}
+
+{% block content %}
+<!-- 承上连接V.html：content+content-header -->
+
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="span12">
+   <!--aaa-->
+    <form action="/base_data/baseinfo_pagedataList" id="dataFrom" onSubmit="return false">
+    	<input type="hidden" id="page" name="page" value="1"/>
+        <input type="hidden" id="num" name="num" value="15"/>
+        <div>
+	        {% if perms.Matrix.baseinfo_pagedataList %}
+	        	<input type="text" name="tj" placeholder="请输入关键字,回车查询" id="tj" style="background-color: white; float:right" onKeydown="keyEnter();"/>
+	        {% endif %}
+	        {% if perms.Matrix.baseinfo_editFun %}
+				<input class="btn btn-primary" type="button" name="addButton" value="添加" onclick="addDialog();" style="float:left;"/>
+			{% endif %}
+			{% if perms.Matrix.baseinfo_deleteFun %}
+				<input class="btn btn-danger" type="button" name="deleteButton" value="删除" onclick="delData();" style="float:left;"/>
+			{% endif %}
+    		
+		</div>
+    </form>
+    <input id="downData" class="btn btn-info" type="button" value="导出" name="BaseInfo" onclick="downData();">
+	<div id="dataTab"></div>
+    <!-- end aa-->
+
+  <div id="addTable" style="display:none;">
+  		<center>
+        	 <table border="0" style="color:#000;">
+        	    <tr style="display:none;">
+                	<td style="text-align:right;"><span style="position:relative; top:-5px;"></span></td>
+                    <td><input type="text" name="id"/></td>
+                </tr>
+                <tr>
+                	<td style="text-align:right;color:red"><span style="position:relative; top:-5px;">资源ID：</span></td>
+                    <td><input type="text" name="sid"/></td>
+                </tr>
+                <tr>
+                	<td style="text-align:right;color:red"><span style="position:relative; top:-5px;">主机名称：</span></td>
+                    <td><input type="text" name="hostname"/></td>
+                </tr>
+                <tr>
+                	<td style="text-align:right;color:red"><span style="position:relative; top:-5px;">服务提供商：</span></td>
+                	<!-- <td><input type="text" name="isp"/></td> -->
+                    <td>
+                    	<select name="isp_id"/></select>
+                    </td>
+                </tr>
+                <tr>
+                	<td style="text-align:right;color:red"><span style="position:relative; top:-5px;">资产状态：</span></td>
+                    <!-- <td><input type="text" name="status"/></td> -->
+                    <td>
+                    <select name="status"/>
+                      <option value="在线" name="outline">在线</option>
+                      <option value="停用" name="outline">停用</option>
+                      <option value="测试" name="testline">测试</option>
+                      <option value="备用" name="backup">备用</option>
+                      <option value="其他" name="others">其他</option>
+                    </select>
+                  </td>
+                </tr>
+                <tr>
+                	<td style="text-align:right;color:red"><span style="position:relative; top:-5px;">创建时间：</span></td>
+                    <td><input type="text" name="create_date" onClick="WdatePicker({skin:'blueFresh',orderdate_end:'%Y-%m-%d %H:%M:%S',dateFmt:'yyyy-MM-dd HH:mm:ss',alwaysUseStartDate:true})" readonly="readonly"/></td>
+                </tr>
+                <tr>
+                	<td style="text-align:right;color:red"><span style="position:relative; top:-5px;">到期时间：</span></td>
+                    <td><input type="text" name="expire_date" onClick="WdatePicker({skin:'blueFresh',orderdate_end:'%Y-%m-%d %H:%M:%S',dateFmt:'yyyy-MM-dd HH:mm:ss',alwaysUseStartDate:true})" readonly="readonly"/></td>
+                </tr>
+                <tr>
+                	<td style="text-align:right;"><span style="position:relative; top:-5px;">资产管理员：</span></td>
+                    <td><input type="text" name="admin"/></td>
+                </tr>
+                <tr>
+                	<td style="text-align:right;color:red"><span style="position:relative; top:-5px;">所属业务线：</span></td>
+                    <!-- <td><input type="text" name="business_unit"/></td> -->
+                    <td>
+                    	<select name="business_unit" multiple="multiple" size="6"/></select>
+                    </td>
+                </tr>
+                <tr>
+                	<td style="text-align:right;"><span style="position:relative; top:-5px;">资产标签：</span></td>
+                    <td><input type="text" name="tags"/></td>
+                </tr>
+                <tr>
+                	<td style="text-align:right;"><span style="position:relative; top:-5px;">资产备注：</span></td>
+                    <td><input type="text" name="memo"/></td>
+                </tr>
+            </table>
+         </center>
+   </div>
+
+   </div>
+   </div>
+   </div>
+
+{% endblock %}

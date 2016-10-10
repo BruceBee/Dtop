@@ -1,0 +1,183 @@
+{% extends "V.html" %}
+
+{% block head %}
+
+<!-- <script type="text/javascript" src="/static/matrix/js/layer/layer.js"></script> -->
+<!-- <script type="text/javascript" src="/static/matrix/js/dataBase.js"></script> -->
+<!-- <script type="text/javascript" src="/static/matrix/js/preview/WdatePicker.js"></script> -->
+<!-- <script type="text/javascript" src="/static/matrix/js/jquery.gritter.min.js"></script> -->
+<!-- <script type="text/javascript" src="/static/matrix/js/pnotify.custom.min.js"></script> -->
+<script type="text/javascript" src="/static/matrix/js/toastr.js"></script>
+<script type="text/javascript" src="/static/matrix/js/echarts.min.js"></script>
+
+<!-- <script type="text/javascript" src="/static/matrix/js/matrix.interface.js"></script> -->
+<script type="text/javascript">
+	$(document).ready(function(){
+		$.ajax({
+			type:'POST',
+			url:'/alarm_data/alarminfo_charts',
+			data:{'text':24},
+			dataType:'json',
+			beforeSend:function(){
+			$("#main").css({"text-align":"center","line-height":"800px"}).html('数据正在加载中...');
+			},
+			success:function(val){
+				if(val){
+					$("#main").html('');
+					var timearray = []
+					var statusarray = ['PROBLEM','OK','COUNT']
+					var COUNT_DATA = []
+					var OK_DATA = []
+					var PROBLEM_DATA = []			
+					for ( var i=0;i<val.day_count.length;i++){
+						timearray[i]=val.day_count[i].DATE
+						COUNT_DATA[i] = val.day_count[i].COUNT
+						OK_DATA[i] = val.day_count[i].OK
+						PROBLEM_DATA[i] = val.day_count[i].PROBLEM
+					}
+					Charts(statusarray,timearray,COUNT_DATA,OK_DATA,PROBLEM_DATA)
+				}
+				// else{
+				// 	layer.alert("告警加载失败01");
+				// }
+			}
+			// ,error:function(){
+			// 	layer.alert("告警加载失败02");
+			// }
+		});
+			addCharts();
+	});
+	
+
+
+	function addCharts(){
+		$("button").click(function(){
+			var text = $(this).attr("value")
+			$.ajax({
+				type:'POST',
+				url:'/alarm_data/alarminfo_charts',
+				data:{'text':text},
+				dataType:'json',
+				success:function(val){
+					if(val){
+						var timearray = []
+						var statusarray = ['PROBLEM','OK','COUNT']
+						var COUNT_DATA = []
+						var OK_DATA = []
+						var PROBLEM_DATA = []			
+						for ( var i=0;i<val.day_count.length;i++){
+							timearray[i]=val.day_count[i].DATE
+							COUNT_DATA[i] = val.day_count[i].COUNT
+							OK_DATA[i] = val.day_count[i].OK
+							PROBLEM_DATA[i] = val.day_count[i].PROBLEM
+						}
+						Charts(statusarray,timearray,COUNT_DATA,OK_DATA,PROBLEM_DATA)
+					}else{
+						layer.alert("折线图加载失败01");
+					}
+				},error:function(){
+					layer.alert("折线图加载失败02");
+				}
+			});	
+		});
+			
+	}
+
+	function Charts(legend,xdata,COUNT_DATA,OK_DATA,PROBLEM_DATA){
+		var myChart = echarts.init(document.getElementById('main'));
+
+        // 指定图表的配置项和数据
+        var option = {
+				    title: {
+				        text: '告警统计折线图',
+				        left:'42%'
+				    },
+				    tooltip : {
+				        trigger: 'axis'
+				    },
+				    legend: {
+				        data:legend,
+				        right:30
+				    },
+				    toolbox: {
+				        feature: {
+				            saveAsImage: {}
+				        }
+				    },
+				    grid: {
+				        left: '3%',
+				        right: '4%',
+				        bottom: '3%',
+				        containLabel: true
+				    },
+				    xAxis : [
+				        {
+				            type : 'category',
+				            boundaryGap : false,
+				            data : xdata,
+				            name : '告警时间',
+				            nameLocation : 'middle',
+				            nameGap : 30
+				        }
+				    ],
+				    yAxis : [
+				        {
+				            type : 'value',
+				            name : '告警数量统计(次)',
+				            nameLocation : 'middle',
+				            nameGap : 50
+				        }
+				    ],
+				    series : [
+				        {
+				            name:'PROBLEM',
+				            type:'line',
+				            stack: '总量',
+				            areaStyle: {normal: {}},
+				            data:PROBLEM_DATA
+				        },
+				        {
+				            name:'OK',
+				            type:'line',
+				            stack: '总量',
+				            areaStyle: {normal: {}},
+				            data:OK_DATA
+				        },
+				        {
+				            name:'COUNT',
+				            type:'line',
+				            stack: '总量',
+				            areaStyle: {normal: {}},
+				            data:COUNT_DATA
+				        },
+				    ]
+				};
+
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
+        window.onresize = myChart.resize;
+	}
+
+
+</script>
+{% endblock %}
+
+{% block content %}
+<!-- 承上连接V.html：content+content-header -->
+  <div class="container-fluid">
+  	<div class="row-fluid">
+  		<div class="span12">
+			<button id= "abc" class="btn btn-info" value="24">告警预览(最近1天)</button>	
+			<button id= "abc" class="btn btn-info" value="1">最近1小时</button>
+			<button id= "abc" class="btn btn-info" value="2">最近2小时</button>
+			<button id= "abc" class="btn btn-info" value="5">最近5小时</button>
+			<!-- <button id= "abc" class="btn btn-info" value="24">最近1天</button> -->
+			<button id= "abc" class="btn btn-info" value="48">最近2天</button>
+			<button id= "abc" class="btn btn-info" value="148">最近1周</button>
+			<button id= "abc" class="btn btn-info" value="336">最近2周</button>
+			<div id="main" style="width: 100%;height:800px;"></div>
+   		</div>
+
+   </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<head>
+<title>Matrix Admin</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0" />
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache">
+<META HTTP-EQUIV="Expires" CONTENT="0">
+<link rel="SHORTCUT ICON" href="/static/matrix/images/favicon.ico">
+<link rel="stylesheet" href="/static/matrix/css/bootstrap.min.css" />
+<link rel="stylesheet" href="/static/matrix/css/bootstrap-responsive.min.css" />
+<link rel="stylesheet" href="/static/matrix/css/matrix-login.css" />
+<script src="/static/matrix/js/jquery.min.js"></script>
+<script src="/static/matrix/js/matrix.login.js"></script>
+
+</head>
+    <body>
+        <div id="loginbox" style="text-align:center">
+            <form id="loginform" class="form-vertical" action="/auth" method="post">{% csrf_token %}
+				 <div class="control-group normal_text"><a href="/"><h3><img src="/static/matrix/img/logo.png" alt="Logo" /></h3></a></div>
+
+                            <input id="ttip" style="margin-bottom:30px;width:100%;text-align:center" type="text" name="username" placeholder="" required="required" oninvalid="setCustomValidity('统一通行证')" oninput="setCustomValidity('')"/>
+                            <br>
+                            <input style="width:100%;text-align:center" type="password" id="password" name="password" placeholder="{% if error_message %}{{ "请查证后再试" }}{% else %}{{ "PassWord" }}{% endif %}" required="required" oninvalid="setCustomValidity('请输入密码')" oninput="setCustomValidity('')" />
+
+                <div class="form-actions">
+                    <span class="pull-left" style="float:none"><a href="#" class="flip-link btn btn-info" id="to-recover">忘记密码？</a></span>
+                    <span class="pull-right" style="float:none"><button type="submit" id="valid" class="btn btn-success">登录</button></span>
+                </div>
+            </form>
+            <form id="recoverform" action="/auth" class="form-vertical" method="post">{% csrf_token %}
+
+                    <div class="controls">
+                        <div class="main_input_box">
+                            <br />
+                            <input name="uname" style="margin-bottom:30px;width:97%;text-align:center" type="text" placeholder="请输入用户名" required="required" oninvalid="setCustomValidity('请输入用户名')" oninput="setCustomValidity('')"/>
+                            <br>
+                            <input name="tname" style="width:97%;text-align:center" type="text" placeholder="请输入您的姓名" required="required" oninvalid="setCustomValidity('请输入您的姓名')" oninput="setCustomValidity('')" />
+                        </div>
+                    </div>
+
+                <div class="form-actions">
+                    <span class="pull-left"><a href="#" class="flip-link btn btn-success" id="to-login">&laquo; 返回登录</a></span>
+                    <span class="pull-right"><button type="submit" class="btn btn-info">找回密码</button></span>
+                </div>
+            </form>
+        </div>
+
+    </body>
+<script type="text/javascript">
+function GetQueryString(name)
+{
+     var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+     var r = window.location.search.substr(1).match(reg);
+     if(r!=null)return  unescape(r[2]); return null;
+
+}
+if (GetQueryString('error')==null||GetQueryString('error')==''){
+    $("#ttip").attr('placeholder','UserName');
+}else if (GetQueryString('error')=='V'){
+    $("#ttip").attr('placeholder','用户名或密码有误');
+}else if (GetQueryString('error')=='Y'){
+    $("#ttip").attr('placeholder','该用户已被禁用');
+}else if(GetQueryString('error')=='N'){
+    $("#ttip").attr('placeholder','密码重置成功，请及时查看钉钉消息！');
+}else{
+    $("#ttip").attr('placeholder','神秘错误');
+}
+
+    $("#valid").click(function(){ 
+        var value = $("#password").val();
+        if(value == null || (value.length <= 6 && value.match(/^\d+$/))){
+            alert("为了系统安全起见，请及时修改您的弱密码！");
+        }
+    })
+
+</script>
+</html>

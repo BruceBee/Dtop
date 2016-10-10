@@ -1,0 +1,249 @@
+
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<head>
+<title>MaTriX-110-responseRecords</title>
+
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0" />
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache">
+<META HTTP-EQUIV="Expires" CONTENT="0">
+<link rel="stylesheet" href="/css/bootstrap.min.css" />
+<link rel="stylesheet" href="/css/bootstrap-responsive.min.css" />
+
+<link rel="stylesheet" href="/css/matrix-style.css" />
+<link rel="stylesheet" href="/css/matrix-media.css" />
+<link href="/font-awesome/css/font-awesome.css" rel="stylesheet" />
+
+<script src="/js/jquery.min.js"></script> 
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/matrix.js"></script>
+<script src="/js/js.cookie.js"></script>
+<script src="/js/csrf.token.js"></script>
+<script type="text/javascript" src="/js/layer/layer.js"></script>
+<script type="text/javascript" src="/js/dataBase.js"></script>
+<script language="javascript" type="text/javascript" src="/js/preview/WdatePicker.js"></script>
+<script type="text/javascript">
+	$(document).ready(function(){
+		loadTable(1);
+
+		$('#chaxun').click(function(){
+			loadTable(1);
+		});
+	});
+	
+  function addDialog(idValue,nameValue,stateValue,indateValue){
+    var addTableHtml=$("#addTable").clone();
+    var input_id=addTableHtml.find("input[name='id']");
+      input_id.attr("id","id");
+      if(idValue){
+        input_id.attr("value",idValue);
+      }
+    var input_name=addTableHtml.find("input[name='name']");
+      input_name.attr("id","name");
+      if(nameValue){
+        input_name.attr("value",nameValue);
+      }
+
+	  var select_state=addTableHtml.find("select[name='state']");
+      select_state.attr("id","state");
+      if(stateValue){
+		   select_state.find("option[value='"+stateValue+"']").attr("selected",true);
+      }
+
+	  var input_indate=addTableHtml.find("input[name='indate']");
+      input_indate.attr("id","indate");
+      if(indateValue){
+        input_indate.attr("value",indateValue);
+      }
+  
+    var buttonValue="添加";
+    if(idValue){
+      buttonValue="更新";
+    }
+    
+    layer.open({
+          title:'人员编辑',
+          type: 1,
+          shift:2,
+          skin: 'layui-layer-rim', //加上边框
+          area: ['33%', '33%'], //宽高
+          content:addTableHtml.html(),
+          btn:[buttonValue,'取消'],
+          yes:function(index){
+            var id=$("#id").val();
+            var name=$("#name").val();
+			var state=$("#state").val();
+            var indate=$("#indate").val();
+
+           
+            $.ajax({
+              type:'POST',
+              url:'/preview_data/jober_editFun',
+              data:{id:id,name:name,state:state,indate:indate},
+              dataType:'text',
+              success:function(val){
+                layer.close(index);
+                if(val=='1'){
+                  loadTable(1);
+                }else{
+                  layer.alert("操作失败");
+                }
+              },error:function(){
+                layer.close(index);
+                laery.alert("操作失败");
+              }
+            });
+            
+          }
+      });
+  }
+
+	function loadTable(val){
+			$("#dataFrom").find("input[name='page']").val(val);
+			$("#dataTab").dataTable({
+				title:'职员表(双击修改)',
+				columns:[
+                {key:'id',check:true,checkAll:true,width:'10%',align:'center'},
+				{key:'name',name:'姓名',width:'30%',align:'center'},
+				{key:'state',name:'启用',width:'30%',align:'center'},
+				{key:'indate',name:'入职时间',width:'30%',align:'center'},
+				],
+				formid:'dataFrom',
+                loadAfter:tab_trOnclick,
+			});
+	}
+  
+  /**
+  行添加双击事件
+  **/
+  function tab_trOnclick(){
+    var trs=$("#dataFrom_table tbody tr");
+    for(var i=0;i<trs.length;i++){
+      $(trs[i]).on("dblclick",function(){
+        var tr=$(this);
+        var tds=tr.find("td");
+        var id=$(tds[0]).find("input").val();
+        addDialog(id,$(tds[1]).text(),$(tds[2]).text(),$(tds[3]).text());
+      });
+    }
+  }
+  
+  /**
+  删除功能
+  **/
+  function delData(){
+    layer.confirm('确认删除?', {icon: 2, title:'提示'},function(index){
+      var inputChecks=$("input:checkbox[name='dataFrom_check']:checked");
+      var orders='';
+      for(var i=0;i<inputChecks.length;i++){
+        orders+=inputChecks[i].value;
+        if(i!=inputChecks.length-1){
+          orders+=',';
+        }
+      }
+      $.ajax({
+        type:'POST',
+        url:'/preview_data/jober_deleteFun',
+        dataType:'text',
+        data:'id='+orders,
+        success:function(text){
+               layer.close(index);
+               if(text=='1'){
+                loadTable(1);
+               }else{
+                layer.alert('操作失败');
+               }
+        },error:function(){
+          layer.close(index);
+          layer.alert('操作失败');
+        }
+      });
+    });
+      
+  }
+</script>
+<style type="text/css">
+	input{
+		margin-bottom: 0 !important;
+	}
+</style>
+
+
+</head>
+<body>
+
+
+
+  <div class="" style="background:#eeeeee;height:100%">
+		<div class="">
+			<div class="span12">
+
+				<!--aaa-->
+				<form action=" /preview_data/jober_pagedataList" id="dataFrom"
+					onsubmit="return false">
+					<input type="hidden" id="page" name="page" value="1" /> <input
+						type="hidden" id="num" name="num" value="10" />
+					<div style="text-align:right;">
+
+						<input class="btn btn-primary" type="button" name="addButton"
+							value="添加" onclick="addDialog();" style="float:left;" />
+                                {% if perms.Matrix.delete_report %}<input
+							class="btn btn-danger" type="button" name="deleteButton"
+							value="删除" onclick="delData();" style="float:left;" />{% endif %}
+						<input name="selectname" type='text'  placeholder="姓名" />
+						<button class="btn btn-success" type="button" id="chaxun">查询</button>
+						
+
+					</div>
+				</form>
+				<div id="dataTab"></div>
+				<!-- end aa-->
+
+				<div id="addTable" style="display:none;">
+					<center>
+						<table border="0" style="color:#000;">
+							<tr style="display:none;">
+								<td style="text-align:right;"><span
+									style="position:relative; top:-5px;"></span>
+								</td>
+								<td><input type="text" name="id" />
+								</td>
+							</tr>
+							
+							<tr>
+								<td style="text-align:right;"><span
+									style="position:relative; top:-5px;">姓名：</span>
+								</td>
+								<td><input type="text" name="name" />
+								</td>
+							</tr>
+							<tr>
+								<td style="text-align:right;"><span
+									style="position:relative; top:-5px;">启用：</span>
+								</td>
+								<td>
+									<select name="state" >
+										<option value="是">是</option>
+										<option value="否">否</option>
+									</select>
+								</td>
+							</tr>
+							<tr>
+								<td style="text-align:right;"><span
+									style="position:relative; top:-5px;">入职时间：</span>
+								</td>
+								<td>
+									<input style="float:right;" name="indate" type="datetime" onClick="WdatePicker({skin:'blueFresh',orderdate_end:'%Y-%m-%d',dateFmt:'yyyy-MM-dd',alwaysUseStartDate:true})" placeholder="选择日期"/>
+								</td>
+							</tr>
+							
+						</table>
+					</center>
+				</div>
+
+			</div>
+		</div>
+	</div>
+</body>
+</html>

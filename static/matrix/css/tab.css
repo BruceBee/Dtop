@@ -1,0 +1,28 @@
+table[name="tab"] {
+	BORDER-BOTTOM: #99bbe8 1px solid;
+	BORDER-LEFT: #99bbe8 1px solid;
+	MARGIN: 0px;
+	WIDTH: 100%;
+	BORDER-COLLAPSE: collapse;
+	BORDER-TOP: 1px solid;
+	FONT-WEIGHT: normal;
+	BORDER-RIGHT: #99bbe8 1px solid
+}
+
+table[name="tab"] td {
+	BORDER-BOTTOM: #b5b8c8 1px solid;
+	BORDER-LEFT: #b5b8c8 1px solid;
+	PADDING-BOTTOM: 4px;
+	PADDING-LEFT: 4px;
+	PADDING-RIGHT: 4px;
+	HEIGHT: 18px;
+	BORDER-TOP: #b5b8c8 1px solid;
+	BORDER-RIGHT: #b5b8c8 1px solid;
+	PADDING-TOP: 4px;
+	FONT-SIZE:13px;
+	text-align: left;
+}
+table[name="tab"] tr td input,select {
+	width: 180px;
+	height:20px;
+}

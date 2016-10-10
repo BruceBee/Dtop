@@ -1,0 +1,98 @@
+
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>运维SLA管理</title>
+    <link href="/js/kt/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/js/kt/css/bootstrap-responsive.min.css" rel="stylesheet">
+    <link href="/js/kt/css/dataTableStyle.css" rel="stylesheet" type="text/css">
+	<script src="/js/kt/js/jquery-1.8.2.js"></script>
+	<script src="/js/kt/js/bootstrap.min.js"></script>
+	<script type="text/javascript" charset="utf8" src="/js/kt/js/jquery.dataTables-1.9.4.min.js"></script>
+	<script type="text/javascript" src="/js/kt/js/datatable.js"></script>
+	<script type="text/javascript" src="/js/kt/js/index.js"></script>
+</head>
+<style>
+    .hot {
+        height: 18px;
+        width: 21px;
+        position: absolute;
+    }
+</style>
+<header class="jumbotron subhead" id="overview">
+    <div class="container">
+        <h3>运维SLA实施细则划分</h3>
+    </div>
+</header>
+<body style="background-color: #eee">
+<!-- 表格开始 -->
+<div class="container" style="margin-top:20px">
+<div id="example_wrapper" class="dataTables_wrapper" role="grid">
+	</div>
+	<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover dataTable" id="example" aria-describedby="example_info">
+    <thead>
+    <tr role="row">
+	<th style="width: 15px;" class="sorting_disabled" role="columnheader" rowspan="1" colspan="1"><input type="checkbox" id="checkAll"></th>
+	<th class="sorting_disabled" role="columnheader" rowspan="1" colspan="1" style="width: 184px;">项目名称</th>
+	<th class="sorting_disabled" role="columnheader" rowspan="1" colspan="1" style="width: 184px;">响应级别</th>
+	<th class="sorting_disabled" role="columnheader" rowspan="1" colspan="1" style="width: 313px;">实施角色</th>
+	<th class="sorting_disabled" role="columnheader" rowspan="1" colspan="1" style="width: 185px;">处理时限</th>
+	<th class="sorting_disabled" role="columnheader" rowspan="1" colspan="1" style="width: 186px;">备注</th>
+	</tr>
+    </thead>
+	<tbody>
+	</tbody>
+	</table>
+<div class="row-fluid">
+	<div class="span6">
+		<div class="dataTables_info" id="example_info"></div>
+		<div class="dataTables_paginate paging_bootstrap pagination" id="example_paginate"></div>
+</div>
+<!-- 表格结束 -->
+<!-- Modal -->
+<div id="myModal" class="modal hide fade" data-backdrop="false">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"
+                aria-hidden="true">
+        </button>
+        <h3 id="myModalLabel">SLA规则信息</h3>
+    </div>
+    <div class="modal-body">
+        <form class="form-horizontal" id="resForm">
+            <input type="hidden" id="objectId"/>
+
+            <div class="control-group">
+                <label class="control-label" for="inputName">项目名称：</label> <input
+                    type="text" id="inputName" name="name"/>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="inputRank">响应级别：</label> <input
+                    type="text" id="inputRank" name="rank"/>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="inputRole">实施角色：</label>
+                <input type="text" name="role" id="inputRole"></input>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="inputTime">处理时限：</label>
+                <input type="text" name="handle_time" id="inputTime"></input>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="inputNote">备注：</label>
+                <input type="text" name="note" id="inputNote"></input>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" id="btnSave">确定</button>
+        <button class="btn btn-primary" id="btnEdit">保存</button>
+        <button class="btn btn-danger" data-dismiss="modal"
+                aria-hidden="true">取消
+        </button>
+    </div>
+</div>
+</div>
+</body>
+</html>
+

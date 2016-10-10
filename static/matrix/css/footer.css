@@ -1,0 +1,23 @@
+a:link { text-decoration: none}
+a:active { text-decoration:blink}
+a:hover { text-decoration:underline;color: red} 
+a:visited { text-decoration: none;color: #6633FF}
+
+.v-footer-dark
+{
+/*如果浏览器支持文本阴影，这段会显示阴影字体样式*/
+	color:#000000;
+	margin:3% 0% 0% 0%;/*上右下左*/
+	text-shadow:1px 2px 3px #FFFFFF;
+	text-align:center;
+	font-size:large;
+}
+
+.v-footer-bright
+{
+	color:#666666;
+	margin:0% 0% 0% 0%;/*上右下左*/
+	text-shadow:1px 2px 3px #000000;
+	text-align:center;
+	font-size:large;
+}

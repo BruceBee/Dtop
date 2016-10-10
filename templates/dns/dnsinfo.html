@@ -1,0 +1,469 @@
+{% extends "V.html" %}
+
+{% block head %}
+
+
+<script type="text/javascript" src="/static/matrix/js/layer/layer.js"></script>
+<script type="text/javascript" src="/static/matrix/js/dataBase.js"></script>
+<script type="text/javascript" src="/static/matrix/js/preview/WdatePicker.js"></script>
+<script type="text/javascript" src="/static/matrix/js/download.js"></script>
+
+<script type="text/javascript">
+  $(document).ready(function(){
+    {% if perms.Matrix.dnsinfo_pagedataList %}
+      loadTable(1);
+    {% else %}
+      $('#dataFrom').html('对不起,您没有查看权限,请联系系统管理员').css('text-align','center');
+    {% endif%}
+  });
+
+
+
+  function changeSelect(ths){
+    console.log(ths.value);
+    // $("#Domain_name_id").empty;
+    // $("#dns_type").empty;
+    // $("#dns_line").empty;
+    //根据id取出对应的domain_name
+    var domain_id = ths.value
+    $.ajax({
+      type:'POST',
+      url:'/dns_data/domaininfo_pagedataList',
+      // data:"hostop={{ true_name }}",
+      cache:false,
+      dataType:'json',
+      success:function(ret){
+        if(!ret){
+          layer.alert("数据异常！");
+        }else{
+          console.log(ret)
+          var rows=ret.rows;
+          var record_line = ret.record_line;
+          var record_type = ret.record_type;
+          // $("#Domain_name_id").empty;
+          // $("#dns_type").empty;
+          // $("#dns_line").empty;
+          // console.log(rows)
+          for(var i=0;i<rows.length;i++){
+            // $("#Domain_name_id").append($('<option value="'+rows[i].id+'" name="'+rows[i].id+'"></option>').html(rows[i].domain_name));
+            if(rows[i].id==domain_id){
+              // $("#Domain_name_id").empty;
+              // $("#dns_type").empty;
+              // $("#dns_line").empty;
+              $("#Domain_name_id").append($('<option value="'+rows[i].id+'" name="'+rows[i].id+'"></option>').html(rows[i].domain_name));
+              for(var j=0;j<record_type.length;j++){
+                if(record_type[j].domain_name==rows[i].domain_name){
+                  $("#dns_type").append($('<option value="'+record_type[j].id+'" name="'+record_type[j].id+'"></option>').html(record_type[j].record_type));
+                }
+              }
+
+              for(var k=0;k<record_line.length;k++){
+                var record_zone = record_line[k].record_zone.replace(/\,/g,"&nbsp;")
+                if(record_line[k].Domain_id==rows[i].domain_name){   
+                  $("#dns_line").append($('<option value="'+record_line[k].id+'" name="'+record_line[k].id+'"></option>').html(record_line[k].record_lines_ids));
+                }
+              }
+
+            }else{
+              // $("#Domain_name_id").append($('<option value="'+rows[i].id+'" name="'+rows[i].id+'"></option>').html(rows[i].domain_name));
+
+              // var selected_val = document.getElementsByName(Domain_name_id).value;
+              // console.log(selected_val)
+              // $("#dns_type").append($('<option value="'+record_type[i].id+'" name="'+record_type[i].id+'"></option>').html(record_type[i].record_type));
+              // $("#dns_line").append($('<option value="'+record_line[i].id+'" name="'+record_line[i].id+'"></option>').html(record_line[i].record_lines_ids));
+
+            }
+          }
+          // $("#Domain_name_id").append($('<option></option>').html("1"));
+        }
+      },error:function(){
+        layer.alert("未知异常！");
+      }
+    });
+  };
+
+  // var currentShowCity=0;
+  // $(document).ready(function(){
+  //    $("#Domain_name_id").change(function(){
+
+  //     $("#Domain_name_id option").each(function(i,o){
+  //       if($(this).attr("selected")){
+  //         $(".dns_type").hide();
+  //         $(".dns_line").hide();
+  //         $(".dns_type").eq(i).show();
+  //         $(".dns_line").eq(i).show();
+  //         currentShowCity=i;
+  //       }
+  //     });
+  //   });
+  //    $("#Domain_name_id").change();
+  // });
+
+
+  function getNowFormatDate() {
+    var date = new Date();
+    var seperator1 = "-";
+    var seperator2 = ":";
+    var month = date.getMonth() + 1;
+    var strDate = date.getDate();
+    if (month >= 1 && month <= 9) {
+        month = "0" + month;
+    }
+    if (strDate >= 0 && strDate <= 9) {
+        strDate = "0" + strDate;
+    }
+    var currentdate = date.getFullYear() + seperator1 + month + seperator1 + strDate
+            + " " + date.getHours() + seperator2 + date.getMinutes()
+            + seperator2 + date.getSeconds();
+    return currentdate;
+    };
+
+  function addDialog(){
+    var addTableHtml=$("#addTable").clone();
+    var parameters=['id','Domain_name_id','dns_id','dns_name','dns_line','dns_type','dns_ttl','dns_value','dns_weight','dns_mx','dns_enabled','dns_updated_on','dnsop','dns_remark',];
+    var inputDomainList=addTableHtml.find("select[name='Domain_name_id']");
+    var inputRecordLineList=addTableHtml.find("select[name='dns_line']");
+    var inputRecordTypeList=addTableHtml.find("select[name='dns_type']");
+    
+    var Domain_name_id_selected=arguments[1];
+    var record_line_selected= arguments[4];
+    var record_type_selected= arguments[5];
+    
+      inputDomainList.attr("id","Domain_name_id");
+      inputRecordLineList.attr("id","dns_line");
+      inputRecordTypeList.attr("id","dns_type");
+
+            $.ajax({
+              type:'POST',
+              url:'/dns_data/domaininfo_pagedataList',
+              data:"hostop={{ true_name }}",
+              cache:false,
+              dataType:'json',
+              success:function(ret){
+                if(!ret){
+                  layer.alert("数据异常！");
+                }else{
+                  console.log(ret)
+                  var rows=ret.rows;
+                  var record_line = ret.record_line;
+                  var record_type = ret.record_type;
+                  // console.log(rows)
+
+                  for(var i=0;i<rows.length;i++){
+
+                    if(rows[i].id==Domain_name_id_selected){
+                      $("#Domain_name_id").append($('<option selected="selected" value="'+rows[i].id+'" name="'+rows[i].id+'"></option>').html(rows[i].domain_name));
+
+                      for(var j=0;j<record_type.length;j++){
+                        if(record_type[j].domain_name==rows[i].domain_name){
+                          if(record_type[j].record_type==record_type_selected){
+                            $("#dns_type").append($('<option selected="selected" value="'+record_type[j].id+'" name="'+record_type[j].id+'"></option>').html(record_type[j].record_type));
+                          }else{
+                            $("#dns_type").append($('<option value="'+record_type[j].id+'" name="'+record_type[j].id+'"></option>').html(record_type[j].record_type));
+                          }
+                        }
+                      }
+
+                      for(var k=0;k<record_line.length;k++){
+                        var record_zone = record_line[k].record_zone.replace(/\,/g,"&nbsp;")
+                        if(record_line[k].Domain_id==rows[i].domain_name){
+                          if(record_line[k].record_lines_ids==record_line_selected){
+                            $("#dns_line").append($('<option selected="selected" value="'+record_line[k].id+'" name="'+record_line[k].id+'"></option>').html(record_line[k].record_lines_ids));
+                          }else{
+                            $("#dns_line").append($('<option value="'+record_line[k].id+'" name="'+record_line[k].id+'"></option>').html(record_line[k].record_lines_ids));
+                          }
+                        }
+                      }
+
+                    }else{
+                      $("#Domain_name_id").append($('<option value="'+rows[i].id+'" name="'+rows[i].id+'"></option>').html(rows[i].domain_name));
+                      // $("#dns_type").empty;
+                      // $("#dns_line").empty;
+
+                      // var selected_val = document.getElementsByName(Domain_name_id).value;
+                      // console.log(selected_val)
+                      // $("#dns_type").append($('<option value="'+record_type[i].id+'" name="'+record_type[i].id+'"></option>').html(record_type[i].record_type));
+                      // $("#dns_line").append($('<option value="'+record_line[i].id+'" name="'+record_line[i].id+'"></option>').html(record_line[i].record_lines_ids));
+
+                    }
+                  }
+                }
+              },error:function(){
+                layer.alert("未知异常！");
+              }
+            });
+
+    if(arguments[0]){
+      var buttonValue="更新";
+      $.each(arguments,function(num,val){
+        var inputName=addTableHtml.find("input[name='"+parameters[num]+"']");
+        if(parameters[num]=='Domain_name_id'||parameters[num]=='dns_id'){
+          inputName.attr("readonly","readonly");
+        }
+          inputName.attr("id",parameters[num]);
+          inputName.attr("value",val);
+      });
+    }else{
+      var buttonValue="添加";
+
+      $.each(parameters,function(){
+        var inputName=addTableHtml.find("input[name='"+this+"']");
+          inputName.attr("id",this);
+      });
+    }
+
+    layer.open({
+          title:'编辑信息',
+          type: 1,
+          shift:2,
+          skin: 'layui-layer-rim', //加上边框
+          area: ['30%', '68%'], //宽高
+          content:addTableHtml.html(),
+          btn:[buttonValue,'取消'],
+          yes:function(index){
+            var ret='';
+            // var myDate = new Date();
+            // var mytime=myDate.toLocaleDateString()
+            // alert(mytime)
+            var mytime = getNowFormatDate()
+            $.each(parameters,function(){
+              ret+=this+'='+$("#"+this).val()+'&';
+            });
+            // ret+="hostop={{ true_name }}"
+            ret+="dnsop={{ true_name }}"+'&'
+            ret+="dns_updated_on="+mytime
+            console.log(ret)
+            $.ajax({
+              type:'POST',
+              url:'/dns_data/dnsinfo_editFun/',
+              data:ret,
+              dataType:'text',
+              success:function(val){
+                layer.close(index);
+                if(val=='1'){
+                  console.log('获取到了返回值')
+                  loadTable(1);
+                }else{
+                  layer.alert(val);
+                }
+              },error:function(){
+                layer.close(index);
+                layer.alert("操作失败02");
+              }
+            });
+
+          }
+      });
+  }
+
+  function keyEnter(event){
+     var e = event || window.event || arguments.callee.caller.arguments[0];
+     if(e && e.keyCode==13){ // enter 键
+             loadTable(1);
+      return false;
+          }
+
+  }
+
+  function loadTable(val){
+     $("#dataFrom").find("input[name='page']").val(val);
+     $("#dataTab").dataTable({
+        title:'DNS信息详情',
+        columns:[
+        {key:'id',check:true,checkAll:true,width:'1%',align:'center'},
+        {key:'Domain_name_id',name:'域名ID',width:'5%',align:'center'},
+        {key:'dns_id',name:'DNS ID',width:'10%',align:'center'},
+        {key:'dns_name',name:'主机记录',width:'10%',align:'center'},
+        {key:'dns_line',name:'线路',width:'5%',align:'center'},
+        {key:'dns_type',name:'类型',width:'5%',align:'center'},
+        {key:'dns_ttl',name:'TTL',width:'5%',align:'center'},
+        {key:'dns_value',name:'记录值',width:'10%',align:'center'},
+        {key:'dns_weight',name:'权重',width:'5%',align:'center'},
+        {key:'dns_mx',name:'MX优先级',width:'5%',align:'center'},
+        {key:'dns_enabled',name:'状态',width:'5%',align:'center'},
+        {key:'dns_updated_on',name:'更新时间',width:'15%',align:'center'},
+        {key:'dnsop',name:'操作人员',width:'10%',align:'center'},
+        {key:'dns_remark',name:'备注',width:'15%',align:'center'}],
+        formid:'dataFrom',
+        loadAfter:tab_trOnclick,
+    });
+  }
+
+  /**
+  行添加双击事件
+  **/
+  {% if perms.Matrix.dnsinfo_editFun %}
+  function tab_trOnclick(){
+    var trs=$("#dataFrom_table tbody tr");
+    for(var i=0;i<trs.length;i++){
+      $(trs[i]).on("dblclick",function(){
+        var tr=$(this);
+        var tds=tr.find("td");
+        var id=$(tds[0]).find("input").val();
+        addDialog(id,$(tds[1]).text(),$(tds[2]).text(),$(tds[3]).text(),$(tds[4]).text(),$(tds[5]).text(),$(tds[6]).text(),$(tds[7]).text(),$(tds[8]).text(),$(tds[9]).text(),$(tds[10]).text(),$(tds[11]).text(),$(tds[12]).text(),$(tds[13]).text());
+      });
+    }
+  }
+  {% else %}
+    function tab_trOnclick(){
+      
+    }
+
+  {% endif%}
+
+  /**
+  删除功能
+  **/
+  function delData(){
+    var inputChecks=$("input:checkbox[name='dataFrom_check']:checked");
+    if(inputChecks.length==0){
+      layer.alert('请选中删除项！');
+      return;
+    }
+    layer.confirm('确认删除?', {icon: 2, title:'提示'},function(index){
+      var orders='';
+      for(var i=0;i<inputChecks.length;i++){
+        orders+=inputChecks[i].value;
+        if(i!=inputChecks.length-1){
+          orders+=',';
+        }
+      }
+      console.log(orders)
+      $.ajax({
+        type:'POST',
+        url:'/dns_data/dnsinfo_deleteFun',
+        dataType:'text',
+        data:'id='+orders,
+        success:function(text){
+               layer.close(index);
+               if(text=='1'){
+                loadTable(1);
+               }else{
+                layer.alert('删除失败01');
+               }
+        },error:function(){
+          layer.close(index);
+          layer.alert('删除失败02');
+        }
+      });
+    });
+
+  }
+</script>
+
+
+
+{% endblock %}
+
+{% block content %}
+<!-- 承上连接V.html：content+content-header -->
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="span12">
+      <form action="/dns_data/dnsinfo_pagedataList" id="dataFrom" onSubmit="return false">
+        <input type="hidden" id="page" name="page" value="1"/>
+        <input type="hidden" id="num" name="num" value="15"/>
+        <div>
+          {% if perms.Matrix.dnsinfo_pagedataList %}
+            <input type="text" name="tj" placeholder="请输入关键字,回车查询" id="tj" style="background-color: white; float:right" onKeydown="keyEnter();"/>
+          {% endif %}          
+          {% if perms.Matrix.dnsinfo_editFun %}
+            <input class="btn btn-primary" type="button" name="addButton" value="添加" onclick="addDialog();" style="float:left;"/>
+          {% endif %}          
+          {% if perms.Matrix.dnsinfo_deleteFun %}
+            <input class="btn btn-danger" type="button" name="deleteButton" value="删除" onclick="delData();" style="float:left;"/>
+          {% endif %}
+        </div>
+      </form>
+      <input id="downData" class="btn btn-info" type="button" value="导出" name="DnsInfo" onclick="downData();">
+  <div id="dataTab"></div>
+
+
+  <div id="addTable" style="display:none;">
+      <center>
+           <table border="0" style="color:#000;">
+              <tr style="display:none;">
+                <td style="text-align:right;"><span style="position:relative; top:-5px;"></span></td>
+                    <td><input type="text" name="id"/></td>
+                </tr>
+                <td style="text-align:right;"><span style="position:relative; top:-5px;">所属域名：</span></td>
+                    <td>
+                    <select name="Domain_name_id" onchange="changeSelect(this)"/>
+                      <option >选择所属域名</option>
+                    </select>
+                    </td>
+                </tr>
+                <tr>
+                  <td style="text-align:right;"><span style="position:relative; top:-5px;">DNS记录ID：</span></td>
+                    <td><input type="text" name="dns_id" /></td>
+                </tr>
+                <tr>
+                  <td style="text-align:right;"><span style="position:relative; top:-5px;">主机记录：</span></td>
+                    <td><input type="text" name="dns_name"/></td>
+                </tr>
+                <tr>
+                  <td style="text-align:right;"><span style="position:relative; top:-5px;">线路类型：</span></td>
+                    <!-- <td><input type="text" name="dns_line"/></td> -->
+                    <td>
+                    <select name="dns_line"/>
+                    </select>
+                    </td>
+                </tr>
+                <tr>
+                  <td style="text-align:right;"><span style="position:relative; top:-5px;">记录类型：</span></td>
+                    <!-- <td><input type="text" name="dns_type"/></td> -->
+                    <td>
+                    <select name="dns_type"/>
+                    </select>
+                    </td>
+                </tr>
+                <tr>
+                  <td style="text-align:right;"><span style="position:relative; top:-5px;">TTL值：</span></td>
+                    <td><input type="text" name="dns_ttl"/></td>
+                </tr>
+                <tr>
+                  <td style="text-align:right;"><span style="position:relative; top:-5px;">记录值：</span></td>
+                    <td><input type="text" name="dns_value"/></td>
+                </tr>
+                <tr>
+                  <td style="text-align:right;"><span style="position:relative; top:-5px;">权重：</span></td>
+                    <td><input type="text" name="dns_weight"/></td>
+                </tr>
+                <tr>
+                  <td style="text-align:right;"><span style="position:relative; top:-5px;">MX优先级：</span></td>
+                    <td><input type="text" name="dns_mx"/></td>
+                </tr>
+                <tr>
+                  <td style="text-align:right;"><span style="position:relative; top:-5px;">启用状态：</span></td>
+                    <td><input type="text" name="dns_enabled"/></td>
+<!--                     <td>
+                    <select name="dns_enabled"/>
+                      <option value="enable" name="enable">启用</option>
+                      <option value="disable" name="disable">暂停</option>
+                    </select>
+                  </td> -->
+                </tr>
+                <tr>
+                  <td style="text-align:right;"><span style="position:relative; top:-5px;">最后更新时间：</span></td>
+                    <td><input type="text" name="dns_updated_on" onClick="WdatePicker({skin:'blueFresh',orderdate_end:'%Y-%m-%d %H:%M:%S',dateFmt:'yyyy-MM-dd HH:mm:ss',alwaysUseStartDate:true})" readonly="readonly"/></td>
+                </tr>
+                <tr>
+                  <td style="text-align:right;"><span style="position:relative; top:-5px;">最后更新操作人员：</span></td>
+                    <!-- <td><input type="text" name="dnsop" placeholder={{true_name}} value={{true_name}} readonly="readonly" /></td> -->
+                    <td><input type="text" name="dnsop" placeholder={{true_name}} value={{true_name}} /></td>
+                </tr>
+                <tr>
+                  <td style="text-align:right;"><span style="position:relative; top:-5px;">备注：</span></td>
+                    <td><input type="text" name="dns_remark"/></td>
+                </tr>
+
+            </table>
+         </center>
+   </div>
+
+      </div>
+    </div>
+  </div>
+
+
+{% endblock %}

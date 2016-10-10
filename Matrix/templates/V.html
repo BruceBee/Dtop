@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<head>
+<title>MaTriX-Dartou-{{ appname }}</title>
+
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0" />
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache">
+<META HTTP-EQUIV="Expires" CONTENT="0">
+<link rel="SHORTCUT ICON" href="/static/matrix/images/favicon.ico">
+<link rel="stylesheet" href="/static/matrix/css/bootstrap.min.css" />
+<link rel="stylesheet" href="/static/matrix/css/bootstrap-responsive.min.css" />
+
+<link rel="stylesheet" href="/static/matrix/css/matrix-style.css" />
+<link rel="stylesheet" href="/static/matrix/css/matrix-media.css" />
+<link href="/static/matrix/font-awesome/css/font-awesome.css" rel="stylesheet" />
+
+<script src="/static/matrix/js/jquery.min.js"></script>
+<script src="/static/matrix/js/js.cookie.js"></script>
+<script src="/static/matrix/js/csrf.token.js"></script>
+<script src="/static/matrix/js/bootstrap.min.js"></script>
+<script src="/static/matrix/js/matrix.js"></script>
+<script src="/static/matrix/js/jquery.JPlaceholder.js"></script>
+<script type="text/javascript">
+
+  function selectBackColor(liId,color){
+    $("#"+liId).css("background-color",color).css("color","#000000");
+  }
+
+  $(document).ready(function(){
+    selectBackColor("{{ appname }}","#EEE");
+    var aa=$("#header").outerHeight();
+    var bodyHeight=document.documentElement.clientHeight;
+    //获取导航标签名
+    $("#appgroup").text($('span[name="active_group"]')[0].innerHTML);
+	var ahref=$("#{{ appname }}");
+		ahref.find("span").empty();
+		ahref.find("span").remove();
+    $("#appname").text(ahref.html());
+    $("#iframe_{{ appname }}").attr("height",bodyHeight-aa);
+  });
+
+</script>
+{% block head %}{% endblock %}
+
+</head>
+<body>
+
+<!--Header-part-->
+<div id="header">
+  <h1><a href="/home/dashboard.html">Matrix Admin</a></h1>
+</div>
+<!--close-Header-part-->
+
+<!--top-Header-menu-->
+<div id="user-nav" class="navbar navbar-inverse">
+  <ul class="nav">
+    <li class=""><a title="" href="/V/"><i class="icon icon-user"></i> <span class="text">个人中心</span></a></li>
+    <!--li class="dropdown" id="menu-messages"><a href="#" data-toggle="dropdown" data-target="#menu-messages" class="dropdown-toggle"><i class="icon icon-envelope"></i> <span class="text">消息中心</span> <span class="label label-important">6</span> <b class="caret"></b></a>
+      <ul class="dropdown-menu">
+        <li><a class="sAdd" title="" href="#"><i class="icon-plus"></i> 新消息</a></li>
+        <li class="divider"></li>
+        <li><a class="sInbox" title="" href="#"><i class="icon-envelope"></i> 收件箱</a></li>
+        <li class="divider"></li>
+        <li><a class="sOutbox" title="" href="#"><i class="icon-arrow-up"></i> 发件箱</a></li>
+        <li class="divider"></li>
+        <li><a class="sTrash" title="" href="#"><i class="icon-trash"></i> 垃圾箱</a></li>
+      </ul>
+    </li-->
+    <li class=""><a title="" href="/V/password_change/"><i class="icon icon-cog"></i> <span class="text">修改密码</span></a></li>
+    <li class=""><a title="" href="/logout.html"><i class="icon icon-share-alt"></i> <span class="text">注销</span></a></li>
+  </ul>
+</div>
+<!--close-top-Header-menu-->
+<!--start-top-serch-->
+<!--div id="search">
+  <input type="text" placeholder="Search here..."/>
+  <button type="submit" class="tip-bottom" title="Search"><i class="icon-search icon-white"></i></button>
+</div-->
+<!--close-top-serch-->
+<div id="sidebar"><a href="#" class="visible-phone"><i class="icon icon-cogs"></i> 运维中心</a>
+  <ul>
+
+    <li class="{% if appgroup == 'home' %}{{ 'active' }}{% else %}{{ '' }}{% endif %}"><a href="{{ apps.dashboard.url }}"><i class="icon icon-home"></i> <span name="{% if appgroup == 'home' %}{{ 'active_group' }}{% else %}{{ 'inactive_group' }}{% endif %}">{{ apps.dashboard.name }}</span> <span id="dashboard" class="label label-info">V</span></a> </li>
+
+    <li class="submenu {% if appgroup == 'info' %}{{ 'active open' }}{% else %}{{ '' }}{% endif %}"> <a href="#"><i class="icon icon-cogs"></i> <span name="{% if appgroup == 'info' %}{{ 'active_group' }}{% else %}{{ 'inactive_group' }}{% endif %}">信息系统</span> </a>
+      <ul>
+        <li><a href="{{ apps.baseinfo.url }}" id="baseinfo">{{ apps.baseinfo.name }}</a></li>
+        <li><a href="{{ apps.hostconfig.url }}" id="hostconfig">{{ apps.hostconfig.name }}</a></li>
+      </ul>
+    </li>
+
+    <li class="submenu {% if appgroup == 'auto' %}{{ 'active open' }}{% else %}{{ '' }}{% endif %}"> <a href="#"><i class="icon icon-cogs"></i> <span name="{% if appgroup == 'auto' %}{{ 'active_group' }}{% else %}{{ 'inactive_group' }}{% endif %}">配置系统</span> </a>
+      <ul>
+        <li><a href="{{ apps.autorelease.url }}" id="autorelease">{{ apps.autorelease.name }}</a></li>
+      </ul>
+    </li>
+
+    <li class="content"> <span>磁盘空间用量</span>
+      <div class="progress progress-mini active progress-striped">
+        <div style="width: {{ Percent }}%;" class="bar"></div>
+      </div>
+      <span class="percent">{{ Percent }}%</span>
+      <div class="stat">{{ Used }} G / {{ Size }} G</div>
+    </li>
+
+  </ul>
+</div>
+
+<div id="content">
+  <div id="content-header">
+    <div id="breadcrumb"> <a href="#" class="tip-bottom"><i class="icon-home"></i> {{ true_name }}</a> <a href="#" id="appgroup"></a> <a href="{{ appname }}.html" class="current" id="appname"></a> </div>
+  </div>
+<!-- 启下连接各apps -->
+{% block content %}{% endblock %}
+</div>
+
+</body>
+</html>

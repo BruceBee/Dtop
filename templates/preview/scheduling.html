@@ -1,0 +1,459 @@
+{% extends "V.html" %}
+
+{% block head %}
+<script type="text/javascript" src="/js/layer/layer.js"></script>
+<link rel="stylesheet" href="/css/tab.css"/>
+<script language="javascript" type="text/javascript" src="/js/preview/WdatePicker.js"></script>
+
+<script type="text/javascript">
+$(function(){
+	getData();
+});
+
+
+var now ; //当前日期 
+var nowDayOfWeek; //今天本周的第几天 
+var nowDay ; //当前日 
+var nowMonth ; //当前月 
+var nowYear ; //当前年 
+
+function initdate(selectdate){
+	if(selectdate!=null&&selectdate!=""){
+		selectdate=selectdate.replace(/-/gm,'/');
+		now=new Date(Date.parse(selectdate));	
+	}else{
+		now=new Date();	
+	}
+	nowDayOfWeek = now.getDay(); //今天本周的第几天 
+	nowDay = now.getDate(); //当前日 
+	nowMonth = now.getMonth(); //当前月 
+	nowYear = now.getYear(); //当前年 
+	nowYear += (nowYear < 2000) ? 1900 : 0; // 
+}
+
+function formatDate(date) { 
+	var myyear = date.getFullYear(); 
+	var mymonth = date.getMonth()+1; 
+	var myweekday = date.getDate(); 
+
+	if(mymonth < 10){ 
+	mymonth = "0" + mymonth; 
+	} 
+	if(myweekday < 10){ 
+	myweekday = "0" + myweekday; 
+	} 
+	return (myyear+"-"+mymonth + "-" + myweekday); 
+} 
+
+
+//获得本周的日期 
+function getWeeks(selectdate) { 
+	initdate(selectdate);
+	var weekdays=[];
+	var daynum = new Array(6,0,1,2,3,4,5); 
+	var weekStartDate = new Date(nowYear, nowMonth, nowDay - daynum[nowDayOfWeek]); //星期一为一周第一天
+	for(var i=0;i<7;i++){	
+		weekdays.push(formatDate(weekStartDate));
+		weekStartDate= new Date(Date.parse(weekStartDate) + (86400000));
+	}
+	return weekdays; 
+} 
+
+
+function getData(){
+	$("#tab_tbody").empty();
+	var selectdate=$("#param_date").val();
+
+	if(selectdate==""||selectdate==null){
+		selectdate=formatDate(new Date());
+	}
+	//$("#param_date").val(selectdate);
+	var weekdays=getWeeks(selectdate);
+	var startd=weekdays[0];
+	var endd=weekdays[6];
+
+	 $.ajax( {  
+     url:'/preview_data/scheduling_dataList',// 跳转到 action  
+     data:{  
+             startd:startd,
+             endd:endd,
+	 },  
+     type:'POST',  
+     cache:false,  
+     dataType:'json',  
+     success:function(data) {  	
+		var tab_tbody=$("#tab_tbody");
+		var tr_remark=$("<tr></tr>");
+		var td_remark=$("<td class=\"stitle\" style=\"font-size:22px;\" colspan=\"30\"><span><strong><marquee direction=left behavior=\"alternate\" scrollamount=\"2\">C：0点-8点  A：8点-16点  Z:8点半-17点半  B：16点-24点  O：休假</marquee></strong></span></td>");	
+		tr_remark.append(td_remark);
+		tab_tbody.append(tr_remark);	
+		var tr_weektitle=$("<tr><td style=\"width:10%;font-size:22px;\">WEEK</td><td style=\"width:10%;font-size:22px;\">星期一</td><td style=\"width:10%;font-size:22px;\">星期二</td><td style=\"width:10%;font-size:22px;\">星期三</td><td style=\"width:10%;font-size:22px;\">星期四</td><td style=\"width:10%;font-size:22px;\">星期五</td><td style=\"width:10%;font-size:22px;\">星期六</td><td style=\"width:10%;font-size:22px;\">星期日</td><td style=\"width:20%;font-size:22px;\">备注</td></td></tr>");
+		tab_tbody.append(tr_weektitle);
+		var tr_week=$("<tr></tr>");
+		var td_nd=$("<td style=\"width:10%;font-size:22px;\">D/N</td>");
+		tr_week.append(td_nd);
+		for(var i=0;i<weekdays.length;i++){
+     		var td=$("<td style=\"width:10%;font-size:22px;\"></td>").html(weekdays[i]);
+			if(selectdate==weekdays[i]){
+				var td=$("<td style=\"width:10%;font-size:22px;background:#0FF\"></td>").html(weekdays[i]);
+			}
+     		tr_week.append(td);
+     	}
+		var td_note=$("<td style=\"width:20%;font-size:22px;\">NOTE</td>");
+		tr_week.append(td_note);
+		tab_tbody.append(tr_week);
+
+		var names=data.names;
+		for(var i=0;i<names.length;i++){
+			var trs=$("<tr></tr>");
+			if(names[i].name=="{{true_name}}"){
+				trs=$("<tr style=\"background:yellow\"></tr>");
+			}
+     		var name_=$("<td></td>").html(names[i].name);
+     		trs.append(name_);
+     		for(var e=0;e<weekdays.length;e++){
+     			var datetd=$("<td></td>").attr("id",names[i].name+"_"+weekdays[e]);
+     			trs.append(datetd);
+     		}
+			var td_weeknote=$("<td></td>").attr("id",names[i].name+"_"+weekdays[0]+"_note");
+			trs.append(td_weeknote);
+     		tab_tbody.append(trs);	
+     	}
+     	var rows=data.rows;
+
+		for(var i=0;i<rows.length;i++){
+			var cont=rows[i].cab;
+			$("#"+rows[i].name+"_"+rows[i].date).html(cont);
+			
+		}
+		for(var i=0;i<rows.length;i++){
+			var cont=rows[i].note;
+			$("#"+rows[i].name+"_"+rows[i].date+"_note").html(cont);
+			
+		}
+		inittaskData(selectdate);
+      },  
+      error:function(){     
+           alert("异常！");  
+      }  
+ });
+}
+
+
+function initadddata(){		
+	var jober
+	$.ajax( {  
+		 url:'/preview_data/jober_pagedataList',// 跳转到 action  
+		 data:{},  
+		 type:'POST',  
+		 cache:false,  
+		 dataType:'json',  
+		 async: false,
+		 success:function(data) { 
+			jober=data.rows;
+		 }		
+	});
+	var rows;
+	var add_selectdate=$("#add_selectdate").val();
+	if(add_selectdate==""||add_selectdate==null||add_selectdate=="undefined"){
+		add_selectdate=formatDate(new Date());
+		//$("#add_selectdate").val(add_selectdate);
+	}
+	var weekdays=getWeeks(add_selectdate);
+	$.ajax( {  
+		 url:'/preview_data/scheduling_dataList',// 跳转到 action  
+		 data:{  
+				 startd:weekdays[0],
+				 endd:weekdays[6]
+		 },  
+		 type:'POST',  
+		 cache:false,  
+		 dataType:'json',  
+		 async: false,
+		 success:function(data) { 
+			rows=data.rows
+		 }		
+	});	
+	if(jober!=null&&jober.length>0){
+		$("#tbody_add").empty();
+		var tbody_add=$("#tbody_add");
+		var tr_stitle=$("<tr>"+
+							"<td class=\"stitle\" style=\"font-size:22px;\" colspan=\"30\">"+
+								"<span>"+
+									"<strong>"+
+										"<marquee direction=left behavior=\"alternate\" scrollamount=\"2\">C：0点-8点 A：8点-16点 Z:8点半-17点半 B：16点-24点 O：休假</marquee>"+
+									"</strong>"+
+								"</span>"+
+							"</td>"+
+						"</tr>");
+		tbody_add.append(tr_stitle);
+		var tr_week=$("<tr>"+
+							"<td style=\"width:100px;font-size:22px;\">WEEK</td>"+
+							"<td style=\"font-size:22px;\">星期一</td>"+
+							"<td style=\"font-size:22px;\">星期二</td>"+
+							"<td style=\"font-size:22px;\">星期三</td>"+
+							"<td style=\"font-size:22px;\">星期四</td>"+
+							"<td style=\"font-size:22px;\">星期五</td>"+
+							"<td style=\"font-size:22px;\">星期六</td>"+
+							"<td style=\"font-size:22px;\">星期日</td>"+
+							"<td style=\"font-size:22px;\">备注</td>"+
+						"</tr>");
+		tbody_add.append(tr_week);
+		var tr_adddate=$("<tr></tr>");
+		var td_dn=$("<td style=\"font-size:20px;\"><span>D/N</span><input type=\"hidden\" name=\"jober\" value=\"\" /></td>");	
+		tr_adddate.append(td_dn);
+
+		for(var i=0;i<weekdays.length;i++){
+			var td_xq=$("<td style=\"font-size:20px;\"><span></span>"+weekdays[i]+"<input type=\"hidden\" name=\"job_xq"+(i+1)+"\"  value=\""+weekdays[i]+"\"/></td>");
+			if(add_selectdate==weekdays[i]){
+				td_xq=$("<td style=\"font-size:20px;background:#0FF\"><span></span>"+weekdays[i]+"<input type=\"hidden\" name=\"job_xq"+(i+1)+"\"  value=\""+weekdays[i]+"\"/></td>");
+			}
+			tr_adddate.append(td_xq);
+		}
+		var td_note=$("<td style=\"font-size:20px;\"><span>NOTE</span><input type=\"hidden\" name=\"note\" value=\"\" /></td>");	
+		tr_adddate.append(td_note);
+		tbody_add.append(tr_adddate);	
+
+
+		for(var i=0;i<jober.length;i++){
+			if(jober[i].state=="是"){
+				var trs=$("<tr></tr>");	
+				var name_=$("<td><span>"+jober[i].name+"</span><input type=\"hidden\" name=\"jober\" value=\""+jober[i].name+"\" /></td>");
+				trs.append(name_);
+
+				for(var e=0;e<weekdays.length;e++){
+					var xqid="add_"+jober[i].name+"_"+weekdays[e];
+					var datetd=$("<td><input id=\""+xqid+"\" type=\"text\" name=\"job_xq"+(e+1)+"\" style=\"width:90%;\" /></td>");
+					trs.append(datetd);
+				}
+				var noteid="add_"+jober[i].name+"_"+weekdays[0]+"_note";
+				var td_weeknote=$("<td><input id=\""+noteid+"\" type=\"text\" name=\"note\" style=\"width:90%;\" /></td>");
+				trs.append(td_weeknote);
+				tbody_add.append(trs);
+			}		
+		}
+
+		if(rows!=null&&rows.length>0){
+			for(var i=0;i<rows.length;i++){
+				var cont=rows[i].cab;
+				$("#add_"+rows[i].name+"_"+rows[i].date).val(cont);	
+			}
+			for(var i=0;i<rows.length;i++){
+				var cont=rows[i].note;
+				$("#add_"+rows[i].name+"_"+rows[i].date+"_note").val(cont);	
+			}
+		}
+	}
+}
+
+function editJoberDialog(){
+	layer.open({
+          title:'职员维护',
+          type: 2,
+          shift:2,
+          skin: 'layui-layer-rim', //加上边框
+          area: ['66%', '73%'], //宽高
+          content:'editJober.html'	
+      });
+
+}
+
+
+function addDialog(){
+	initadddata();	
+	layer.open({
+          title:'排班编辑',
+          type: 1,
+          shift:2,
+          skin: 'layui-layer-rim', //加上边框
+          area: ['70%', '76%'], //宽高
+          content:$("#div_add"),
+          btn:['添加/修改','取消'],
+          yes:function(index){
+
+			var arry_jober=new Array();
+			var arry_job_xq1=new Array();
+			var arry_job_xq2=new Array();
+			var arry_job_xq3=new Array();
+			var arry_job_xq4=new Array();
+			var arry_job_xq5=new Array();
+			var arry_job_xq6=new Array();
+			var arry_job_xq7=new Array();
+			var arry_note=new Array();
+
+			
+
+			$('input[name="jober"]').each(function(){
+				
+				arry_jober.push($(this).val());
+			}) 
+			$('input[name="job_xq1"]').each(function(){
+				
+				arry_job_xq1.push($(this).val());
+			}) 
+			$('input[name="job_xq2"]').each(function(){
+				
+				arry_job_xq2.push($(this).val());
+			}) 
+			$('input[name="job_xq3"]').each(function(){
+				
+				arry_job_xq3.push($(this).val());
+			}) 
+			$('input[name="job_xq4"]').each(function(){
+				
+				arry_job_xq4.push($(this).val());
+			}) 
+			$('input[name="job_xq5"]').each(function(){
+				
+				arry_job_xq5.push($(this).val());
+			}) 
+			$('input[name="job_xq6"]').each(function(){
+				
+				arry_job_xq6.push($(this).val());
+			}) 
+			$('input[name="job_xq7"]').each(function(){
+				
+				arry_job_xq7.push($(this).val());
+			}) 
+			$('input[name="note"]').each(function(){
+				
+				arry_note.push($(this).val());
+			}) 
+			$.ajax({
+				url:"/preview_data/scheduling_paiban",
+				type:"POST",
+				dataType:"text",
+				data:{"arry_jober[]":arry_jober,"arry_job_xq1[]":arry_job_xq1,"arry_job_xq2[]":arry_job_xq2,"arry_job_xq3[]":arry_job_xq3,"arry_job_xq4[]":arry_job_xq4,"arry_job_xq5[]":arry_job_xq5,"arry_job_xq6[]":arry_job_xq6,"arry_job_xq7[]":arry_job_xq7,"arry_note[]":arry_note},  
+				success:function(data){
+					if(data==1){
+						layer.alert("操作成功");
+						$("#param_date").val($("#add_selectdate").val());					
+						getData();
+					}else if(data==0){
+						layer.alert("操作失败！");
+					}else{
+						layer.alert(data);
+					}
+					layer.close(index);	
+				},
+				error: function() {
+					layer.close(index);
+					layer.alert("异常");
+				}
+			});
+			
+          }
+      });
+
+}
+
+/*******排版处理 start*********/
+function inittaskData(selectdate){		
+	var task_a="";
+	var task_b="";
+	$.ajax( {  
+		 url:'/preview_data/autotask_pagedataList',// 跳转到 action  
+		 type:'POST',  
+		 data:"tdate="+selectdate,
+		 dataType:'json',  
+		 success:function(data) { 
+			for(var i=0;data&&i<data.rows.length;i++){
+				if(data.rows[i].ban=='A'){
+					task_a+=data.rows[i].name+" : "+data.rows[i].task+"<br/>";
+				}else if(data.rows[i].ban=='B'){
+					task_b+=data.rows[i].name+" : "+data.rows[i].task+"<br/>";
+				}
+			}
+			if(task_a==""){
+			      task_a="时候未到，请耐心等待 ... ...";
+			}
+			$("#bp_A").html("<a class='close' data-dismiss='alert' href='#'>×</a><h4 class='alert-heading'>"+selectdate+" A班(08:00~16:00)任务分配</h4><br />"+task_a);
+			if(task_b==""){
+			     task_b="时候未到，请耐心等待 ... ...";
+			}
+			$("#bp_B").html("<a class='close' data-dismiss='alert' href='#'>×</a><h4 class='alert-heading'>"+selectdate+" B班(16:00~24:00)任务分配</h4><br />"+task_b);
+		 }		
+	});
+}
+/*******排版处理 end*********/
+
+</script>
+<style type="text/css">
+	input{
+		margin-bottom: 0 !important;
+	}
+	#tab_week tr td{
+		text-align:center;
+	}
+
+	#tab_add tr td{
+		text-align:center;
+	}
+
+	.widget-title{
+		margin-top:3px;
+		border-bottom: 1px solid #363636;
+	}
+
+	.alert {
+		margin-bottom: 0px;
+	}
+
+	.rrr{
+		text-align:right;
+		font-weight:bold;
+	}
+	
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- 承上连接V.html：content+content-header -->
+
+<div class="container-fluid">
+	<div class="widget-title">
+			<form action="#" method="post">{% csrf_token %}
+				<input class="span2 btn btn-info" type="button" name="editJoberButton" value="职员维护" onclick="editJoberDialog();" style="float:left;"/>
+				{% if perms.Matrix.delete_report %}
+				<input class="span2 btn btn-danger" type="button" name="addButton" value="排班" onclick="addDialog();" style="float:left;"/>
+				{% endif %}
+				<input style="float:right;" class="span2 btn btn-warning" type="button" onclick="window.open('kq.html')" value="本月考勤" />
+				<input style="float:right;" class="span2 btn btn-success" name="submit" type="button" value="查询/今日" onclick="getData();" />
+				<input style="float:right;text-align:center;" id="param_date" class="span2" name="date" type="datetime" onClick="WdatePicker({skin:'blueFresh',orderdate_end:'%Y-%m-%d',dateFmt:'yyyy-MM-dd',alwaysUseStartDate:true})" placeholder="选择日期" />
+			</form>
+	</div>
+
+	<div class="widget-content nopadding">
+
+		<table id="tab_week" class="table table-bordered table-striped data-table dataTable" name="tab" style="width:100%;">
+			<tbody id="tab_tbody" >
+			</tbody>
+		</table>
+
+	</div>
+
+		<div id="bp_A" class="alert alert-block"></div>
+		<div id="bp_B" class="alert alert-info alert-block"></div>
+
+	<div id="div_add" style="width:100%;display:none">
+		<center>			
+			<div style="width:80%">
+				<form action="#" method="post">{% csrf_token %}
+					<input id="add_selectdate" name="add_selectdate" type="datetime" onClick="WdatePicker({skin:'blueFresh',orderdate_end:'%Y-%m-%d',dateFmt:'yyyy-MM-dd',alwaysUseStartDate:true})" placeholder="选择日期排班" />
+					<input style="" class="btn btn-success" name="submit" type="button" value="跳转" onclick="initadddata();"/>		
+				</form>
+			</div>
+			<hr />
+
+			<div style="width:80%;">
+					<table id="tab_add" name="tab" style="color:#000; width:100%">
+						<tbody id="tbody_add">		
+						</tbody>
+					</table>
+			</div>
+		</center>
+   	</div>
+
+</div>
+
+{% endblock %}

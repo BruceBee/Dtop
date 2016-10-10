@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>监控中心-倍棒通行测试</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0" />
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache">
+<META HTTP-EQUIV="Expires" CONTENT="0">
+<link rel="SHORTCUT ICON" href="/images/favicon.ico">
+<link rel="stylesheet" href="/css/bootstrap.min.css" />
+<link rel="stylesheet" href="/css/bootstrap-responsive.min.css" />
+<link rel="stylesheet" href="/css/matrix-style-2.css" />
+<link href="/font-awesome/css/font-awesome.css" rel="stylesheet" />
+<script src="/js/jquery.min.js"></script>
+<script src="/js/js.cookie.js"></script>
+<script src="/js/csrf.token.js"></script>
+<script src="/js/jquery.JPlaceholder.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/matrix.js"></script>
+<script type="text/javascript" src="/js/layer/layer.js"></script>
+<script type="text/javascript" src="/js/dataBase.js"></script>
+<script language="javascript" type="text/javascript" src="/js/preview/WdatePicker.js"></script>
+<script type="text/javascript">
+	$(document).ready(function(){
+		loadTable(1);
+
+		$('#chaxun').click(function(){
+			loadTable(1);
+		});
+	});
+
+	
+	function loadTable(val){
+			$("#dataFrom").find("input[name='page']").val(val);
+			$("#dataTab").dataTable({
+				title:'倍棒测试结果记录表',
+				columns:[
+				{key:'datee',name:'测试时间',width:'auto',align:'center',valign:'middle'},
+				{key:'ban',name:'测试班次',width:'auto',align:'center',valign:'middle'},
+				{key:'pai',name:'测试机型',width:'auto',align:'center',valign:'middle'},
+				{key:'pa',name:'packets',width:'auto',align:'center',valign:'middle'},
+				{key:'re',name:'received',width:'auto',align:'center',valign:'middle'},
+				{key:'lo',name:'loss ',width:'auto',align:'center',valign:'middle'},
+				{key:'ti',name:'time',width:'auto',align:'center',valign:'middle'},
+				{key:'denglu',name:'登录结果',width:'auto',align:'center',valign:'middle'},
+				{key:'chongzhi',name:'充值结果',width:'auto',align:'center',valign:'middle'},
+				{key:'zhifu',name:'支付结果',width:'auto',align:'center',valign:'middle'}],
+				formid:'dataFrom',
+			});
+	}
+
+</script>
+<style type="text/css">
+input{
+	margin-bottom: 0 !important;
+}
+</style>
+</head>
+<body>
+
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="span12">
+
+<div>
+
+<table align="center"><tr><td>
+
+<table class="span6"><tr>
+<td><div style=""><img style="display:block;width:60%;margin-right:6%;" src="/images/pic/huawei.jpg" align="right"/></div></td>
+
+<td >
+<!--电信3G,huawei c8815,android4.1.2,倍棒3.0.4.4-->
+<table>
+<tr><td style="width:100px">参数名</td>       <td style="width:250px">详细参数</td></tr>
+<tr><td>网络</td>  <td>WiFi</td></tr>
+<tr><td>应用</td>       <td>倍棒4.04</td></tr>
+<tr><td>ping</td>      <td>bbgw.berbon.com</td></tr>
+<tr><td>型号</td>       <td>C8815</td></tr>
+<tr><td>操作系统</td>    <td>Android OS 4.1<td></tr>
+<tr><td>主屏尺寸</td>    <td>5英寸</td></tr>
+<tr><td>CPU频率</td>    <td>1.2GHz</td></tr>
+<tr><td>RAM容量</td>    <td>1GB</td></tr>
+</table>
+</td>
+
+</tr></table>
+
+<table class="span6"><tr>
+<td><div style=""><img style="display:block;width:60%;margin-right:6%;" src="/images/pic/iphone6.jpg" align="right"/></div></td>
+
+<td>
+<!--移动3G,iphone6,ios8.1,倍棒3.0.1.4-->
+<table>
+<tr><td style="width:100px">参数名</td>       <td style="width:250px">详细参数</td></tr>
+<tr><td>网络</td>      <td>电信4G</td></tr>
+<tr><td>应用</td>       <td>倍棒4.04</td></tr>
+<tr><td>ping</td>      <td>bbgw.berbon.com</td></tr>
+<tr><td>型号</td>       <td>MG4H2CH/A</td></tr>
+<tr><td>操作系统</td>   <td>IOS 9.01</td></tr>
+<tr><td>主屏尺寸</td>   <td>4.7英寸</td></tr>
+<tr><td>CPU频率</td>    <td>1.4GHz</td></tr>
+<tr><td>RAM容量</td>    <td>1GB</td></tr>
+</table>
+</td>
+
+</tr></table>
+
+</td></tr></table>
+	
+</div>
+   <hr />
+    <form action="/sa_data/beigang_pagedataList" id="dataFrom" onsubmit="return false">
+	<input type="hidden" id="page" name="page" value="1"/>
+	<input type="hidden" id="num" name="num" value="6"/>
+	<div style="text-align:center;">
+	<input id="startt" name="startt" type='text' onClick="WdatePicker({skin:'blueFresh',orderdate_end:'%Y-%m-%d %H:%M:%S',dateFmt:'yyyy-MM-dd HH:mm:ss',alwaysUseStartDate:true})" readonly="readonly" placeholder="开始日期"/><input name="endt" type='text' onClick="WdatePicker({skin:'blueFresh',orderdate_end:'%Y-%m-%d %H:%M:%S',dateFmt:'yyyy-MM-dd HH:mm:ss',alwaysUseStartDate:true})" readonly="readonly" placeholder="结束日期"/><button class="btn btn-success" type="button" id="chaxun">查询</button>
+	</div>
+    </form>
+	
+	
+
+
+	<div id="dataTab"></div>
+
+
+   </div>
+   </div>
+   </div>
+
+</body>
+</html>

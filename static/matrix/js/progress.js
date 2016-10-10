@@ -1,0 +1,15 @@
+$(document).ready(function(){
+	$('#objprogress').hide();
+	$('#icu').hide();
+	$('#footer').hide();
+	$('#cu').click(function(){
+		$('#cu').hide();
+		$('#progress').fadeIn('slow');
+	});
+	$('#obj').click(function(){
+		$('#upform').hide();
+		$('#cu').hide();
+		$('#footer').fadeIn('slow');
+		$('#objprogress').fadeIn('slow');
+	});
+});

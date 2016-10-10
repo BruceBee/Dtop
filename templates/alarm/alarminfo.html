@@ -1,0 +1,152 @@
+{% extends "V.html" %}
+
+{% block head %}
+<!-- 页面自动刷新 -->
+<!-- <meta http-equiv="refresh" content="5"> -->
+<script type="text/javascript" src="/static/matrix/js/layer/layer.js"></script>
+<script type="text/javascript" src="/static/matrix/js/dataBase.js"></script>
+<script type="text/javascript" src="/static/matrix/js/preview/WdatePicker.js"></script>
+<script type="text/javascript" src="/static/matrix/js/download.js"></script>
+<!-- <script type="text/javascript" src="/static/matrix/js/jquery.gritter.min.js"></script> -->
+<!-- <script type="text/javascript" src="/static/matrix/js/pnotify.custom.min.js"></script> -->
+<script type="text/javascript" src="/static/matrix/js/toastr.js"></script>
+<!-- <script type="text/javascript" src="/static/matrix/js/jquery.js"></script> -->
+<!-- <script type="text/javascript" src="/static/matrix/js/jquery.dataTables.min.js"></script> -->
+
+<!-- <script type="text/javascript" src="/static/matrix/js/echarts.min.js"></script> -->
+
+<!-- <script type="text/javascript" src="/static/matrix/js/matrix.interface.js"></script> -->
+<script type="text/javascript">
+	$(document).ready(function(){
+		$.ajax({
+			type:'POST',
+			url:'/alarm_data/alarminfo_getalert',
+			// data:test,
+			dataType:'json',
+			success:function(val){
+				// if(val){
+				// 	console.log(val);
+				// 	if (val.today_ok_total == 0 && val.today_problem_total == 0){
+				// 		toastr.info('最近2小时左右系统无告警，请继续保持','系统无告警')
+				// 	}
+				// 	else{
+				// 		toastr.error('最近2小时左右系统'+'<b>'+val.today_problem_total+'</b>'+"条故障告警 <a href='http://www.dartou.com'>点击详情</a>",'告警通知')
+				// 		toastr.success('最近2小时左右系统'+'<b>'+val.today_ok_total+'</b>'+"条故障恢复 <a href='http://www.dartou.com'>点击详情</a>",'恢复通知')
+				// 	}
+				// }
+				// else{
+				// 	layer.alert("告警加载失败01");
+				// }
+			}
+			// ,error:function(){
+			// 	layer.alert("告警加载失败02");
+			// }
+		});
+		loadTable(1);
+	});
+
+
+	// function myrefresh()
+	// {
+	//    window.location.reload();
+	// }
+	// setTimeout('myrefresh()',1000); //指定1秒刷新一次
+	
+	function keyEnter(event){
+		 var e = event || window.event || arguments.callee.caller.arguments[0];
+		 if(e && e.keyCode==13){ // enter 键
+             loadTable(1);
+			return false;
+          }
+
+	}
+
+	function loadTable(val){
+		 $("#dataFrom").find("input[name='page']").val(val);
+		 $("#dataTab").dataTable({
+				title:'zabbix告警日志',
+				columns:[
+				{key:'id',check:true,checkAll:true,width:'1%',align:'center'},
+				{key:'eventid',name:'事件ID',width:'4%',align:'center'},
+				{key:'alerttime',name:'告警时间',width:'10%',align:'center'},
+				{key:'subject',name:'告警主题',width:'20%',align:'left'},
+				{key:'message',name:'告警详情',width:'50%',align:'left'},
+				{key:'sendto',name:'收件人',width:'10%',align:'center'},
+				{key:'status',name:'告警状态',width:'10%',align:'center'}],
+				formid:'dataFrom',
+				// loadAfter:tab_trOnclick,
+		});
+		// $("#main").css("display","display");
+
+	}
+
+	/**
+	删除功能
+	**/
+	function delData(){
+		var inputChecks=$("input:checkbox[name='dataFrom_check']:checked");
+		if(inputChecks.length==0){
+			layer.alert('请选中删除项！');
+			return;
+		}
+		layer.confirm('确认删除记录?', {icon: 2, title:'提示'},function(index){
+			var orders='';
+			for(var i=0;i<inputChecks.length;i++){
+				orders+=inputChecks[i].value;
+				if(i!=inputChecks.length-1){
+					orders+=',';
+				}
+			}
+			console.log(orders)
+			$.ajax({
+				type:'POST',
+				url:'/alarm_data/alarminfo_deleteFun',
+				dataType:'text',
+				data:'id='+orders,
+
+				success:function(text){
+				       layer.close(index);
+				       if(text=='1'){
+				       	loadTable(1);
+				       }else{
+				       	layer.alert('操作失败01');
+				       }
+				},error:function(){
+					layer.close(index);
+					layer.alert('操作失败02');
+				}
+			});
+		});
+
+	}
+</script>
+{% endblock %}
+
+{% block content %}
+<!-- 承上连接V.html：content+content-header -->
+
+  <div class="container-fluid">
+
+    <div class="row-fluid">
+      <div class="span12">
+   <!--aaa-->
+	    <form action="/alarm_data/alarminfo_pagedataList" id="dataFrom" onSubmit="return false">
+	    	<input type="hidden" id="page" name="page" value="1"/>
+	        <input type="hidden" id="num" name="num" value="15"/>
+	        <div style="display:inline">
+				<!-- <input class="btn btn-primary" type="button" name="addButton" value="添加" onclick="addDialog();" style="float:left;"/> -->
+				{% if perms.delete_contenttype %}
+				<!-- <input class="btn btn-danger" type="button" name="deleteButton" value="删除" onclick="delData();" style="float:center;"/> -->
+	    		<input type="text" name="tj" placeholder="请输入关键字,回车查询" id="tj" style="background-color: white; float:right" onKeydown="keyEnter();"/>
+	    		{% endif %}
+	    		
+			</div>
+	    </form>
+	    <input id="downData" class="btn btn-info" type="button" value="导出" name="ZabbixAlertInfo" onclick="downData();">
+	<div id="dataTab"></div>
+
+   	  </div>
+   </div>
+  </div>
+
+{% endblock %}

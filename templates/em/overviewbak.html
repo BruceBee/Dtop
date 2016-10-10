@@ -1,0 +1,257 @@
+{% extends "em/base.html" %}
+
+{% block head %}
+
+<link rel="stylesheet" href="/static/em/css/style.css" type="text/css"/>
+
+<script type="text/javascript" src="/static/em/js/jquery-1.4.2.min.js"></script>
+<script type="text/javascript" src="/static/em/js/script.js"></script>
+<style type="text/css">
+	.container{
+		width: 95%;
+		text-align: left;
+	}
+	.overline{
+		height: 1px;
+		width: 95%;
+		background: green;
+		margin:0px auto;
+		overflow:hidden;
+	}
+	.table th{
+    height: auto;
+    font-size: 10px;
+    padding: 5px 10px 2px;
+    border-bottom: 0;
+    text-align: left;
+    color: #666666;
+	}
+
+</style>
+{% endblock %}
+
+{% block content %}
+
+
+
+<div class="container">
+	<h2><span>与 {{true_name}} 有关的所有事项</span></h2>    
+	<p><span class="badge badge-success">创建新事项</span></p>
+	<div class="overline" style="width:100%"></div>
+    <div id="search" style="display:inline;float:right;position:relative;right:0px;">
+      <form method="GET">
+        <input name="keywords" placeholder="输入搜索的字段" type="text" size=30 style="width:100px;float:left;background-color:white;color:black;"></input>
+        <button class="tip-bottom" type="submit"  style="margin-top:0px;"><i class="icon-search icon-white"></i></button>
+      </form>
+    </div>            
+	<table class="table">
+		<thead>
+			<tr>
+				<th style="width:80px">事项状态</th>
+				<th style="width:400px">事项标题</th>
+				<th style="width:80px">发起人</th>
+				<th  style="width:80px">主办人</th>
+				<th>知会人</th>
+				<th style="width:120px">计划开始时间</th>
+				<th style="width:120px">计划结束时间</th>
+				<th style="width:200px">当前进度</th>
+				<th style="width:80px">操作</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td><span class="badge badge-success">进行中</span></td>
+				<td><a href="/em/detail/">LIKE获得认同感的兴趣社交应用</a><br><span>创建于:2016-01-01 12:00:00</span></td>
+				<td>付小飞</td>
+				<td>付小飞</td>
+				<td>全部用户</td>
+				<td>2016-01-01 12:00:00</td>
+				<td>2016-01-01 12:00:00</td>
+				<td><div class="progress progress-mini active progress-striped active"><div style="width: 87%;" class="bar"></div></div></td>
+				<td><a class="tip" href="/em/detail/" title="查看"><i class="icon-folder-open"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="tip" href="#" title="编辑"><i class="icon-pencil"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="tip" href="#" title="删除"><i class="icon-remove"></i></a></td>
+			</tr>
+			<tr>
+				<td><span class="badge">未开始</span></td>
+				<td><a href="/em/detail/">米莫说｜MiMO Show </a><br><span>创建于:2016-01-01 12:00:00</span></td>
+				<td>付小飞</td>
+				<td>付小飞</td>
+				<td>付小飞、付小飞、付小飞</td>
+				<td>2016-01-01 12:00:00</td>
+				<td>2016-01-01 12:00:00</td>
+				<td><div class="progress progress-mini active progress-striped progress-success active"><div style="width: 99%;" class="bar"></div></div></td>
+				<td><a class="tip" href="/em/detail/" title="查看"><i class="icon-folder-open"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="tip" href="#" title="编辑"><i class="icon-pencil"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="tip" href="#" title="删除"><i class="icon-remove"></i></a></td>
+			</tr>
+			<tr>
+				<td><span class="badge badge-important">逾期</span></td>
+				<td><a href="/em/detail/">商家与购物用户的交互试衣应用</a><br><span>创建于:2016-01-01 12:00:00</span></td>
+				<td>test</td>
+				<td>test</td>
+				<td>用户A、用户B、用户A、用户B</td>
+				<td>2016-01-01 12:00:00</td>
+				<td>2016-01-01 12:00:00</td>
+				<td><div class="progress progress-mini active progress-striped progress-warning active"><div style="width: 20%;" class="bar"></div></div></td>
+				<td><a class="tip" href="/em/detail/" title="查看"><i class="icon-folder-open"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="tip" href="#" title="编辑"><i class="icon-pencil"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="tip" href="#" title="删除"><i class="icon-remove"></i></a></td>
+			</tr>
+			<tr>
+				<td><span class="badge badge-info">已结束</span></td>
+				<td><a href="/em/detail/">天狼---智能硬件项目 </a><br><span>创建于:2016-02-02 12:00:00</span></td>
+				<td>Anna</td>
+				<td>Anna</td>
+				<td>用户A、用户B、用户A、用户B</td>
+				<td>2016-01-01 12:00:00</td>
+				<td>2016-01-01 12:00:00</td>
+				<td><div class="progress progress-mini active progress-striped progress-danger active"><div style="width: 44%;" class="bar"></div></div></td>
+				<td><a class="tip" href="/em/detail/" title="查看"><i class="icon-folder-open"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="tip" href="#" title="编辑"><i class="icon-pencil"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="tip" href="#" title="删除"><i class="icon-remove"></i></a></td>
+
+			</tr>
+			<tr>
+				<td><span class="badge badge-success">进行中</span></td>
+				<td>Anna</td>
+				<td>Anna</td>
+				<td>Anna</td>
+				<td>Anna</td>
+				<td>2016-01-01 12:00:00</td>
+				<td>2016-01-01 12:00:00</td>
+				<td><div class="progress progress-mini active progress-striped progress-danger active"><div style="width: 44%;" class="bar"></div></div></td>
+				<td><a class="tip" href="/em/detail/" title="查看"><i class="icon-folder-open"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="tip" href="#" title="编辑"><i class="icon-pencil"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="tip" href="#" title="删除"><i class="icon-remove"></i></a></td>
+			</tr>
+			<tr>
+				<td><span class="badge badge-success">进行中</span></td>
+				<td>Anna</td>
+				<td>Anna</td>
+				<td>Anna</td>
+				<td>Anna</td>
+				<td>2016-01-01 12:00:00</td>
+				<td>2016-01-01 12:00:00</td>
+				<td><div class="progress progress-mini active progress-striped progress-danger active"><div style="width: 44%;" class="bar"></div></div></td>
+				<td><a class="tip" href="/em/detail/" title="查看"><i class="icon-folder-open"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="tip" href="#" title="编辑"><i class="icon-pencil"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="tip" href="#" title="删除"><i class="icon-remove"></i></a></td>
+			</tr>
+			<tr>
+				<td><span class="badge badge-success">进行中</span></td>
+				<td>Debbie</td>
+				<td>Anna</td>
+				<td>Anna</td>
+				<td>Debbie</td>
+				<td>2016-01-01 12:00:00</td>
+				<td>2016-01-01 12:00:00</td>
+				<td><div class="progress progress-mini active progress-striped progress-warning active"><div style="width: 44%;" class="bar"></div></div></td>
+				<td><a class="tip" href="/em/detail/" title="查看"><i class="icon-folder-open"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="tip" href="#" title="编辑"><i class="icon-pencil"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="tip" href="#" title="删除"><i class="icon-remove"></i></a></td>
+			</tr>
+			<tr>
+				<td><span class="badge">未开始</span></td>
+				<td>John</td>
+				<td>Anna</td>
+				<td>Anna</td>
+				<td>John</td>
+				<td>2016-01-01 12:00:00</td>
+				<td>2016-01-01 12:00:00</td>
+				<td><div class="progress progress-mini active progress-striped progress-info active"><div style="width: 66%;" class="bar"></div></div></td>
+				<td><a class="tip" href="/em/detail/" title="查看"><i class="icon-folder-open"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="tip" href="#" title="编辑"><i class="icon-pencil"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="tip" href="#" title="删除"><i class="icon-remove"></i></a></td>
+			</tr>
+			<tr>
+				<td><span class="badge badge-success">进行中</span></td>
+				<td>Anna</td>
+				<td>Anna</td>
+				<td>Anna</td>
+				<td>Anna</td>
+				<td>2016-01-01 12:00:00</td>
+				<td>2016-01-01 12:00:00</td>
+				<td><div class="progress progress-mini active progress-striped progress-info active"><div style="width: 1%;" class="bar"></div></div></td>
+				<td><a class="tip" href="/em/detail/" title="查看"><i class="icon-folder-open"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="tip" href="#" title="编辑"><i class="icon-pencil"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="tip" href="#" title="删除"><i class="icon-remove"></i></a></td>
+			</tr>
+			<tr>
+				<td><span class="badge badge-important">逾期</span></td>
+				<td>Anna</td>
+				<td>Anna</td>
+				<td>Debbie</td>
+				<td>Debbie</td>
+				<td>2016-01-01 12:00:00</td>
+				<td>2016-01-01 12:00:00</td>
+				<td><div class="progress progress-mini active progress-striped progress-danger active"><div style="width: 44%;" class="bar"></div></div></td>
+				<td><a class="tip" href="/em/detail/" title="查看"><i class="icon-folder-open"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="tip" href="#" title="编辑"><i class="icon-pencil"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="tip" href="#" title="删除"><i class="icon-remove"></i></a></td>
+			</tr>
+			<tr>
+				<td><span class="badge badge-important">逾期</span></td>
+				<td>Anna</td>
+				<td>Anna</td>
+				<td>John</td>
+				<td>John</td>
+				<td>2016-01-01 12:00:00</td>
+				<td>2016-01-01 12:00:00</td>
+				<td><div class="progress progress-mini active progress-striped progress-success active"><div style="width: 75%;" class="bar"></div></div></td>
+				<td><a class="tip" href="/em/detail/" title="查看"><i class="icon-folder-open"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="tip" href="#" title="编辑"><i class="icon-pencil"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="tip" href="#" title="删除"><i class="icon-remove"></i></a></td>
+			</tr>
+			<tr>
+				<td><span class="badge">未开始</span></td>
+				<td>Anna</td>
+				<td>Anna</td>
+				<td>Anna</td>
+				<td>Anna</td>
+				<td>2016-01-01 12:00:00</td>
+				<td>2016-01-01 12:00:00</td>
+				<td><div class="progress progress-mini active progress-striped progress-danger active"><div style="width: 44%;" class="bar"></div></div></td>
+				<td><a class="tip" href="/em/detail/" title="查看"><i class="icon-folder-open"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="tip" href="#" title="编辑"><i class="icon-pencil"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="tip" href="#" title="删除"><i class="icon-remove"></i></a></td>
+			</tr>
+			<tr>
+				<td><span class="badge">未开始</span></td>
+				<td>Anna</td>
+				<td>Anna</td>
+				<td>Debbie</td>
+				<td>Debbie</td>
+				<td>2016-01-01 12:00:00</td>
+				<td>2016-01-01 12:00:00</td>
+				<td><div class="progress progress-mini active progress-striped progress-danger active"><div style="width: 44%;" class="bar"></div></div></td>
+				<td><a class="tip" href="/em/detail/" title="查看"><i class="icon-folder-open"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="tip" href="#" title="编辑"><i class="icon-pencil"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="tip" href="#" title="删除"><i class="icon-remove"></i></a></td>
+			</tr>
+			<tr>
+				<td><span class="badge badge-info">已结束</span></td>
+				<td>Anna</td>
+				<td>Anna</td>
+				<td>John</td>
+				<td>John</td>
+				<td>2016-01-01 12:00:00</td>
+				<td>2016-01-01 12:00:00</td>
+				<td><div class="progress progress-mini active progress-striped progress-success active"><div style="width: 0%;" class="bar"></div></div></td>
+				<td><a class="tip" href="/em/detail/" title="查看"><i class="icon-folder-open"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="tip" href="#" title="编辑"><i class="icon-pencil"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="tip" href="#" title="删除"><i class="icon-remove"></i></a></td>
+			</tr>
+			<tr>
+				<td><span class="badge badge-info">已结束</span></td>
+				<td>Anna</td>
+				<td>Anna</td>
+				<td>Anna</td>
+				<td>Anna</td>
+				<td>2016-01-01 12:00:00</td>
+				<td>2016-01-01 12:00:00</td>
+				<td><div class="progress progress-mini active progress-striped progress-info active"><div style="width: 12%;" class="bar"></div></div></td>
+				<td><a class="tip" href="/em/detail/" title="查看"><i class="icon-folder-open"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="tip" href="#" title="编辑"><i class="icon-pencil"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="tip" href="#" title="删除"><i class="icon-remove"></i></a></td>
+			</tr>
+			<tr>
+				<td><span class="badge badge-important">逾期</span></td>
+				<td>Anna</td>
+				<td>Anna</td>
+				<td>Debbie</td>
+				<td>Debbie</td>
+				<td>2016-01-01 12:00:00</td>
+				<td>2016-01-01 12:00:00</td>
+				<td><div class="progress progress-mini active progress-striped progress-warning active"><div style="width: 22%;" class="bar"></div></div></td>
+				<td><a class="tip" href="/em/detail/" title="查看"><i class="icon-folder-open"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="tip" href="#" title="编辑"><i class="icon-pencil"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="tip" href="#" title="删除"><i class="icon-remove"></i></a></td>
+			</tr>
+			<tr>
+				<td><span class="badge badge-important">逾期</span></td>
+				<td>Anna</td>
+				<td>Anna</td>
+				<td>John</td>
+				<td>John</td>
+				<td>2016-01-01 12:00:00</td>
+				<td>2016-01-01 12:00:00</td>
+				<td><div class="progress progress-mini active progress-striped progress-warning active"><div style="width: 44%;" class="bar"></div></div></td>
+				<td><a class="tip" href="/em/detail/" title="查看"><i class="icon-folder-open"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="tip" href="#" title="编辑"><i class="icon-pencil"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="tip" href="#" title="删除"><i class="icon-remove"></i></a></td>
+			</tr>
+		</tbody>
+	</table>
+
+</div>
+<div class="overline"></div>
+
+
+{% endblock %}

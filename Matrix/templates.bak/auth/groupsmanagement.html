@@ -1,0 +1,365 @@
+{% extends "V.html" %}
+
+{% block head %}
+
+<script type="text/javascript" src="/static/matrix/js/layer/layer.js"></script>
+<script type="text/javascript" src="/static/matrix/js/dataBase.js"></script>
+<script type="text/javascript" src="/static/matrix/js/preview/WdatePicker.js"></script>
+<script type="text/javascript">
+	
+	$(document).ready(function(){
+		loadpermission();
+		{% if perms.Matrix.auth_get_grolist_and_perm %}
+		loadTable(1);
+		{% else %}
+		$('#myTabContent').html('对不起,非管理员没有此项功能权限').css('text-align','center');
+		{% endif%}
+	});
+
+	$("#reset").button("reset");
+
+	function loadpermission(){
+		$.ajax({
+			type:'POST',
+			url:'/auth_data/get_groupslist_and_permission/',
+			dataType:'json',
+			success:function(val){
+				console.log(val);
+				for(var i=0;i<val.all_permissionslist.length;i++){
+					$("#grouppermissionlist").append("<option>"+val.all_permissionslist[i]+"</option>")
+				}
+			}
+		})
+	};
+
+
+	// 以下是创建组权限限制
+	function addgroups(){
+		// var parameters = ['username','password','confirmpassword','first_name','email','groupsname','is_active','is_staff','is_superuser']
+		var parameters = ['groupname','grouppermissionlist']
+		data=""
+		$.each(parameters,function(){
+			data+=this+'='+$("#"+this).val()+'&';
+		});
+		var groupname =$("#groupname").val()
+		// console.log(data);
+		var grouppermissionlist =$("#grouppermissionlist option:selected").text()
+
+		if(groupname == ""){
+			$("#add_success").html('用户组名不能为空').css('color','red');
+		}else if(grouppermissionlist ==""){
+			$("#add_success").html('权限不能为空').css('color','red');
+		}else{
+			// var data = {'name':name,'password':password,"confirmpassword":confirmpassword};
+			// var url = '/authmanagement/'+'add_test/'
+			var url = '/auth_data/groupsadd/'
+			console.log(data);
+			console.log(url);
+			//url传url+动作，data传输具体数据
+			// data = 'username=biyingyong&password=yozo.com.3.&is_active=on&is_staff=on&is_superuser=on'
+			$.ajax({
+				type:'POST',
+				url:url,
+				dataType:'text',
+				data:data,
+				success:function(val){
+					if(val=='1'){
+						$("#add_success").html("用户组创建成功,<a href='#auth'>点击查看</a>").css('color','green');
+						// $("#reset").button("reset");
+					}else{
+						$("#add_success").html("创建失败，用户组已存在").css('color','red');
+					};
+					$("input").val("");
+					$("select").val("");
+					console.log(val);
+				},error:function(){
+					alert('no');
+					$("#add_success").html("创建失败，请联系系统管理员").css('color','red');
+				}
+			});
+		}
+	};
+
+
+	function loadTable(val){
+		 $("#dataFrom").find("input[name='page']").val(val);
+		 $("#dataTab").dataTable({
+				title:'用户组权限列表',
+				columns:[
+				{key:'id',check:true,checkAll:true,width:'1%',align:'center'},
+				{key:'name',name:'组名',width:'5%',align:'center'},
+				{key:'user',name:'下属用户',width:'10%',align:'center'},
+				{key:'groups_permissions',name:'组权限',width:'40%',align:'center'}],
+				formid:'dataFrom',
+				loadAfter:tab_trOnclick,
+		});
+	};
+
+	function keyEnter(event){
+		 var e = event || window.event || arguments.callee.caller.arguments[0];
+		 if(e && e.keyCode==13){ // enter 键
+             loadTable(1);
+			return false;
+          }
+
+	}
+
+	function addDialog(){
+		var addTableHtml=$("#addTable").clone();
+		var parameters=['id','name','groups_permissions'];
+		// var inputStatus=addTableHtml.find("select[name='status']");
+  //     		inputStatus.attr("id","status");
+  //     		if(arguments[4]){
+  //     			inputStatus.find("option[name='"+arguments[2]+"']").attr("selected",true);
+  //     		}
+
+
+		var inputUserNodeList=addTableHtml.find("select[name='usernode']");
+		var inputGroupPermissionList=addTableHtml.find("select[name='grouppermission']");
+		var UserNode_selected=arguments[2];
+		var GroupPermission_selected=arguments[3];
+			inputUserNodeList.attr("id","usernode");
+			inputGroupPermissionList.attr("id","grouppermission");
+            $.ajax({
+              type:'POST',
+              url:'/auth_data/get_groupslist_and_permission',
+              data:"hostop={{ true_name }}",
+              cache:false,
+              dataType:'json',
+              success:function(ret){
+              	console.log(ret);
+                if(!ret){
+                  layer.alert("数据异常01！");
+                }else{
+                  var UserNodelist=ret.all_userlist;
+                  var GroupPermissionlist=ret.all_permissionslist;
+
+                  for(var i=0;i<UserNodelist.length;i++){
+                    if("undefined" == typeof UserNode_selected||UserNodelist[i]!=UserNode_selected){
+                      $("#usernode").append($('<option value="'+UserNodelist[i]+'" name="'+UserNodelist[i]+'"></option>').html(UserNodelist[i]));
+                    }else{
+                      $("#usernode").append($('<option selected="selected" value="'+UserNodelist[i]+'" name="'+UserNodelist[i]+'"></option>').html(UserNodelist[i]));
+                    }
+                  }
+
+                  for(var i=0;i<GroupPermissionlist.length;i++){
+                    if("undefined" == typeof GroupPermission_selected||GroupPermission_selected.indexOf(GroupPermissionlist[i])<0){
+                      $("#grouppermission").append($('<option value="'+inputGroupPermissionList[i]+'" name="'+inputGroupPermissionList[i]+'"></option>').html(GroupPermissionlist[i]));
+                    }else{
+                      $("#grouppermission").append($('<option selected="selected" value="'+inputGroupPermissionList[i]+'" name="'+inputGroupPermissionList[i]+'"></option>').html(GroupPermissionlist[i]));
+                    }
+                  }
+
+                }
+              },error:function(){
+                layer.alert("未知异常02！");
+              }
+            });
+
+    if(arguments[0]){
+      var buttonValue="更新";
+      $.each(arguments,function(num,val){
+        var inputName=addTableHtml.find("input[name='"+parameters[num]+"']");
+        if(parameters[num]=='sid'){
+          inputName.attr("readonly","readonly");
+        }
+          inputName.attr("id",parameters[num]);
+          inputName.attr("value",val);
+      });
+    }else{
+      var buttonValue="添加";
+      $.each(parameters,function(){
+        var inputName=addTableHtml.find("input[name='"+this+"']");
+          inputName.attr("id",this);
+      });
+    }
+
+		layer.open({
+					title:'编辑信息',
+				 	type: 1,
+					shift:2,
+					skin: 'layui-layer-rim', //加上边框
+					area: ['30%', '65%'], //宽高
+					content:addTableHtml.html(),
+					btn:[buttonValue,'取消'],
+					yes:function(index){
+
+						var ret='';
+						$.each(parameters,function(){
+							ret+=this+'='+$("#"+this).val()+'&';
+						});
+						ret+="hostop={{ true_name }}"
+						// 测试输出
+						console.log(ret)
+						$.ajax({
+							type:'POST',
+							url:'/base_data/baseinfo_editFun',
+							data:ret,
+							dataType:'text',
+							success:function(val){
+								layer.close(index);
+								if(val=='1'){
+									loadTable(1);
+								}else{
+									layer.alert("操作失败，请补全红色必填字体");
+								}
+							},error:function(){
+								layer.close(index);
+								layer.alert("操作失败");
+							}
+						});
+
+					}
+			});
+	}
+
+	/**
+	行添加双击事件
+	**/
+	function tab_trOnclick(){
+		var trs=$("#dataFrom_table tbody tr");
+		for(var i=0;i<trs.length;i++){
+			$(trs[i]).on("dblclick",function(){
+				var tr=$(this);
+				var tds=tr.find("td");
+				var cloudurl=tr.find("a");
+				var id=$(tds[0]).find("input").val();
+				addDialog(id,$(tds[1]).text(),$(tds[2]).text(),$(tds[3]).text(),$(tds[4]).text(),$(tds[5]).text(),$(tds[6]).text(),$(tds[7]).text(),$(tds[8]).text(),$(tds[9]).text(),$(tds[10]).text());
+			});
+		}
+	}
+
+
+	/**
+	删除功能
+	**/
+	function groupsdel(){
+		var inputChecks=$("input:checkbox[name='dataFrom_check']:checked");
+		if(inputChecks.length==0){
+			layer.alert('请选中删除项！');
+			return;
+		}
+		layer.confirm('确认删除?', {icon: 2, title:'提示'},function(index){
+			var orders='';
+			for(var i=0;i<inputChecks.length;i++){
+				orders+=inputChecks[i].value;
+				if(i!=inputChecks.length-1){
+					orders+=',';
+				}
+			}
+			$.ajax({
+				type:'POST',
+				url:'/auth_data/groupsdel/',
+				dataType:'text',
+				data:'id='+orders,
+				success:function(text){
+				       layer.close(index);
+				       if(text=='1'){
+				       	loadTable(1);
+				       }else{
+				       	layer.alert('操作失败');
+				       }
+				},error:function(){
+					layer.close(index);
+					layer.alert('操作失败');
+				}
+			});
+		});
+
+	}
+
+
+</script>
+
+{% endblock %}
+
+{% block content %}
+<!-- 承上连接V.html：content+content-header -->
+
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="span12">
+		<ul id="myTab" class="nav nav-tabs">
+		   <li class="active"><a href="#addgroup" data-toggle="tab" class="btn btn-info">创建用户组</a></li>
+		   <li><a href="#auth" data-toggle="tab" class="btn btn-info" onclick="loadTable(1)">用户组权限列表</a></li>
+		</ul>
+		
+		<div id="myTabContent" class="tab-content">
+		   <div class="tab-pane fade in active" id="addgroup">
+		   	<div id="add_success"></div>
+		      <div class="widget-box">
+		        <div class="widget-title"> <span class="icon"> <i class="icon-align-justify"></i> </span>
+		          <h5>创建用户组</h5>
+		        </div>
+		        <div class="widget-content nopadding ">
+		          <form action="" method="" class="form-horizontal">
+		            <div class="control-group ">
+		            	<div class="control-group">
+			              <label class="control-label" style="color:red">**用户组名：</label>
+			              <div class="controls ">
+			                <input type="text" class="col-md-5" id='groupname' placeholder="输入用户组名" />
+			              </div>
+			            </div>
+		            <div class="control-group">
+		              <label class="control-label" style="color:red">**权限列表</label>
+		              <div class="controls">
+		                <select id="grouppermissionlist" multiple size=20 ></select>
+		              </div>
+		            </div>
+		            <div class="control-group">
+			            <div class="form-actions" style="float:right">
+			            	<button type="submit" class="btn btn-warning">重置</button>
+			              	<button type="button" class="btn btn-success" onclick="addgroups()";>创建</button>
+			            </div>
+		            </div>
+		          </form>
+		        </div>
+		      </div>
+		   </div>
+		  </div>
+		   <div class="tab-pane fade" id="auth">
+				<form action="/auth_data/groupsinfolist/" id="dataFrom" onSubmit="return false">
+			    	<input type="hidden" id="page" name="page" value="1"/>
+			        <input type="hidden" id="num" name="num" value="15"/>
+			        <div>
+						<!-- <input class="btn btn-primary" type="button" name="addButton" value="添加" onclick="addDialog();" style="float:left;"/> -->
+						<input class="btn btn-danger" type="button" name="deleteButton" value="删除" onclick="groupsdel();" style="float:left;"/>
+			    		<input type="text" name="tj" placeholder="请输入关键字,回车查询" id="tj" style="background-color: white; float:right" onKeydown="keyEnter();"/>
+					</div>
+			    </form>
+			    <div id="dataTab"></div>
+		   </div>
+		  </div>
+		   </div>
+		</div>
+   	</div>
+   </div>
+  </div>
+
+    <div id="addTable" style="display:none;">
+  		<center>
+        	 <table border="0" style="color:#000;">
+        	    <tr style="display:none;">
+                	<td style="text-align:right;"><span style="position:relative; top:-5px;"></span></td>
+                    <td><input type="text" name="id"/></td>
+                </tr>
+                <tr>
+                	<td style="text-align:right;"><span style="position:relative; top:-5px;">用户组名：</span></td>
+                    <td><input type="text" name="name"/></td>
+                </tr>
+                <tr>
+                	<td style="text-align:right;"><span style="position:relative; top:-5px;">下属用户：</span></td>
+                    <!-- <td><input type="url" name="domain"/></td> -->
+                    <td><select name='usernode' multiple size=5 ></select></td>
+                </tr>
+                <tr>
+                	<td style="text-align:right;"><span style="position:relative; top:-5px;">可选权限：</span></td>
+                    <!-- <td><input type="url" name="domain"/></td> -->
+                    <td><select name='grouppermission' multiple size=25 ></select></td>
+                </tr>
+            </table>
+         </center>
+   </div>
+
+
+{% endblock %}

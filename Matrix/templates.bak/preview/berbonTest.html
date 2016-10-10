@@ -1,0 +1,311 @@
+{% extends "V.html" %}
+
+{% block head %}
+
+<script type="text/javascript" src="/js/layer/layer.js"></script>
+<script type="text/javascript" src="/js/dataBase.js"></script>
+<script language="javascript" type="text/javascript" src="/js/preview/WdatePicker.js"></script>
+<script type="text/javascript">
+	$(document).ready(function(){
+		//getlinker();
+		loadTable(1);
+
+		$('#chaxun').click(function(){
+			loadTable(1);
+			getlinker();
+
+		});
+	});
+
+	
+  function addDialog(idValue,dtValue,banValue,paiValue,paValue,reValue,loValue,tiValue,dlValue,czValue,zfValue){
+    var addTableHtml=$("#addTable").clone();
+    var inputId=addTableHtml.find("input[name='id']");
+      inputId.attr("id","id");
+      if(idValue){
+        inputId.attr("value",idValue);
+      }
+    var inputDt=addTableHtml.find("input[name='datee']");
+      inputDt.attr("id","datee");
+      if(dtValue){
+        inputDt.attr("value",dtValue);
+      }
+    var inputPa=addTableHtml.find("input[name='pa']");
+      inputPa.attr("id","pa");
+      if(paValue){
+        inputPa.attr("value",paValue);
+      }
+    var inputRe=addTableHtml.find("input[name='re']");
+      inputRe.attr("id","re");
+      if(reValue){
+        inputRe.attr("value",reValue);
+      }
+    var inputLo=addTableHtml.find("input[name='lo']");
+      inputLo.attr("id","lo");
+      if(loValue){
+        inputLo.attr("value",loValue);
+      }
+    var inputTi=addTableHtml.find("input[name='ti']");
+      inputTi.attr("id","ti");
+      if(tiValue){
+        inputTi.attr("value",tiValue);
+      }
+    var inputDl=addTableHtml.find("input[name='denglu']");
+      inputDl.attr("id","denglu");
+      if(dlValue){
+        inputDl.attr("value",dlValue);
+      }
+    var inputCz=addTableHtml.find("input[name='chongzhi']");
+      inputCz.attr("id","chongzhi");
+      if(czValue){
+        inputCz.attr("value",czValue);
+      }
+    var inputZf=addTableHtml.find("input[name='zhifu']");
+      inputZf.attr("id","zhifu");
+      if(zfValue){
+        inputZf.attr("value",zfValue);
+      }
+
+    var buttonValue="添加";
+    if(idValue){
+      buttonValue="更新";
+    }
+    
+    layer.open({
+          title:'添加信息',
+          type: 1,
+          shift:2,
+          skin: 'layui-layer-rim', //加上边框
+          area: ['30%', '36%'], //宽高
+          content:addTableHtml.html(),
+          btn:[buttonValue,'取消'],
+          yes:function(index){
+            var id=$("#id").val();
+            var datee=$("#datee").val();
+            var ban=$("input[name='ban']:checked").val();
+            var pai=$("input[name='pai']:checked").val();
+            var pa=$("#pa").val();
+            var re=$("#re").val();
+            var lo=$("#lo").val();
+            var ti=$("#ti").val();
+            var denglu=$("#denglu").val();
+            var chongzhi=$("#chongzhi").val();
+            var zhifu=$("#zhifu").val();
+            $.ajax({
+              type:'POST',
+              url:'/preview_data/beigang_editFun',
+              data:'id='+id+'&datee='+datee+'&ban='+ban+'&pai='+pai+'&pa='+pa+'&re='+re+'&lo='+lo+'&ti='+ti+'&denglu='+denglu+'&chongzhi='+chongzhi+'&zhifu='+zhifu,
+              dataType:'text',
+              success:function(val){
+                layer.close(index);
+                if(val=='1'){
+                  loadTable(1);
+                }else{
+                  layer.alert("操作失败");
+                }
+              },error:function(){
+                layer.close(index);
+                laery.alert("操作失败");
+              }
+            });
+            
+          }
+      });
+  }
+
+	function loadTable(val){
+			$("#dataFrom").find("input[name='page']").val(val);
+			$("#dataTab").dataTable({
+				title:'倍棒测试结果记录表(双击修改)',
+				columns:[
+                {key:'id',check:true,checkAll:true,width:'1%',align:'center',valign:'middle'},
+				{key:'datee',name:'测试时间',width:'auto',align:'center',valign:'middle'},
+				{key:'ban',name:'测试班次',width:'auto',align:'center',valign:'middle'},
+				{key:'pai',name:'测试机型',width:'auto',align:'center',valign:'middle'},
+				{key:'pa',name:'packets',width:'auto',align:'center',valign:'middle'},
+				{key:'re',name:'received',width:'auto',align:'center',valign:'middle'},
+				{key:'lo',name:'loss ',width:'auto',align:'center',valign:'middle'},
+				{key:'ti',name:'time',width:'auto',align:'left',valign:'middle'},
+				{key:'denglu',name:'登录结果',width:'auto',align:'left',valign:'middle'},
+				{key:'chongzhi',name:'充值结果',width:'auto',align:'left',valign:'middle'},
+				{key:'zhifu',name:'支付结果',width:'auto',align:'left',valign:'middle'}],
+				formid:'dataFrom',
+                loadAfter:tab_trOnclick,
+			});
+	}
+
+	 
+  
+  /**
+  行添加双击事件
+  **/
+  function tab_trOnclick(){
+    var trs=$("#dataFrom_table tbody tr");
+    for(var i=0;i<trs.length;i++){
+      $(trs[i]).on("dblclick",function(){
+        var tr=$(this);
+        var tds=tr.find("td");
+        var id=$(tds[0]).find("input").val();
+        addDialog(id,$(tds[1]).text(),$(tds[2]).text(),$(tds[3]).text(),$(tds[4]).text(),$(tds[5]).text(),$(tds[6]).text(),$(tds[7]).text(),$(tds[8]).text(),$(tds[9]).text(),$(tds[10]).text());
+      });
+    }
+  }
+  
+  /**
+  删除功能
+  **/
+  function delData(){
+     var inputChecks=$("input:checkbox[name='dataFrom_check']:checked");
+     if(inputChecks.length==0){
+      layer.alert('请选中删除项！');
+      return;
+    }
+    layer.confirm('确认删除?', {icon: 2, title:'提示'},function(index){
+      var orders='';
+      for(var i=0;i<inputChecks.length;i++){
+        orders+=inputChecks[i].value;
+        if(i!=inputChecks.length-1){
+          orders+=',';
+        }
+      }
+      $.ajax({
+        type:'POST',
+        url:'/preview_data/beigang_deleteFun',
+        dataType:'text',
+        data:'id='+orders,
+        success:function(text){
+               layer.close(index);
+               if(text=='1'){
+                loadTable(1);
+               }else{
+                layer.alert('操作失败');
+               }
+        },error:function(){
+          layer.close(index);
+          layer.alert('操作失败');
+        }
+      });
+    });
+      
+  }
+</script>
+<style type="text/css">
+input{
+	margin-bottom: 0 !important;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- 承上连接V.html：content+content-header -->
+
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="span12">
+
+    <form action="/preview_data/beigang_pagedataList" id="dataFrom" onsubmit="return false">
+    	<input type="hidden" id="page" name="page" value="1"/>
+        <input type="hidden" id="num" name="num" value="10"/>
+        <div style="text-align:right;">
+
+            <input class="btn btn-primary" type="button" name="addButton" value="添加" onclick="addDialog();" style="float:left;"/>
+            {% if perms.Matrix.delete_report %}
+            <input class="btn btn-danger" type="button" name="deleteButton" value="删除" onclick="delData();" style="float:left;"/>
+            {% endif %}
+            <a target="_blank" class="btn btn-warning" href="/preview/sheet/bon/home.php" style="float:left;">查看签报</a>
+
+    <select id="select_num" style="width:65px;height:26px;position:relative;top:4px;">
+      <option value="10" selected="selected">10</option>
+      <option value="20">20</option>
+      <option value="50">50</option>
+      <option value="100">100</option>
+      <option value="500">500</option>
+    </select>(每页显示数量)
+
+		<input id="startt" name="startt" type='text' onClick="WdatePicker({skin:'blueFresh',orderdate_end:'%Y-%m-%d %H:%M:%S',dateFmt:'yyyy-MM-dd HH:mm:ss',alwaysUseStartDate:true})" readonly="readonly" placeholder="开始日期"/>
+            <input name="endt" type='text' onClick="WdatePicker({skin:'blueFresh',orderdate_end:'%Y-%m-%d %H:%M:%S',dateFmt:'yyyy-MM-dd HH:mm:ss',alwaysUseStartDate:true})" readonly="readonly" placeholder="结束日期"/>
+            <button class="btn btn-success" type="button" id="chaxun">查询</button>	
+
+		</div>
+
+    </form>
+	
+	
+
+
+	<div id="dataTab"></div>
+
+
+
+    <!-- end aa-->
+    
+
+
+    
+    
+    
+  <div id="addTable" style="display:none;">
+      <center>
+           <table border="0" style="color:#000;">
+               <tr style="display:none;">
+                  <td style="text-align:right;"><span style="position:relative; top:-5px;"></span></td>
+                    <td><input type="text" name="id"/></td>
+                </tr>
+                <tr>
+                  <td style="text-align:right;"><span style="position:relative; top:-5px;">测试时间：</span></td>
+                    <td><input name="datee" type='text' onClick="WdatePicker({skin:'blueFresh',orderdate_end:'%Y-%m-%d %H:%M:%S',dateFmt:'yyyy-MM-dd HH:mm:ss',alwaysUseStartDate:true})" readonly="readonly"/></td>
+                </tr>
+                <tr>
+                  <td style="text-align:right;"><span style="position:relative; top:-5px;">测试班次：</span></td>
+                    <td>
+						<input name="ban" type="radio" value="A">A
+						<input name="ban" type="radio" value="B">B
+						<input name="ban" type="radio" value="C">C
+					</td>
+                </tr>
+                <tr>
+                  <td style="text-align:right;"><span style="position:relative; top:-5px;">测试机型：</span></td>
+                    <td>
+						<input  name="pai" type="radio" value="华为">华为
+						<input  name="pai" type="radio" value="苹果">苹果
+					</td>
+                </tr>
+                <tr>
+                  <td style="text-align:right;"><span style="position:relative; top:-5px;">packets：</span></td>
+                    <td><input type="text" name="pa"/></td>
+                </tr>
+                <tr>
+                  <td style="text-align:right;"><span style="position:relative; top:-5px;">received：</span></td>
+                    <td><input type="text" name="re"/></td>
+                </tr>
+                <tr>
+                  <td style="text-align:right;"><span style="position:relative; top:-5px;">loss：</span></td>
+                    <td><input type="text" name="lo"/></td>
+                </tr>
+                <tr>
+                  <td style="text-align:right;"><span style="position:relative; top:-5px;">time：</span></td>
+                    <td><input type="text" name="ti" value="0"/></td>
+                </tr>
+                <tr>
+                  <td style="text-align:right;"><span style="position:relative; top:-5px;">登录结果：</span></td>
+                    <td><input type="text" name="denglu" value="成功"/></td>
+                </tr>
+                <tr>
+                  <td style="text-align:right;"><span style="position:relative; top:-5px;">充值结果：</span></td>
+                    <td><input type="text" name="chongzhi" value="成功"/></td>
+                </tr>
+                <tr>
+                  <td style="text-align:right;"><span style="position:relative; top:-5px;">支付结果：</span></td>
+                    <td><input type="text" name="zhifu" value="成功"/></td>
+                </tr>
+            </table>
+         </center>
+   </div>
+
+
+
+   </div>
+   </div>
+   </div>
+
+{% endblock %}

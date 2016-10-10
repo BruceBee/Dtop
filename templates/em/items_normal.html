@@ -1,0 +1,707 @@
+{% extends "em/base.html" %}
+
+{% block head %}
+
+<!-- <link rel="stylesheet" href="/static/em/css/style.css" type="text/css"/> -->
+<!-- <link rel="stylesheet" href="/static/matrix/css/bootstrap.min.css" /> -->
+
+<!-- <script type="text/javascript" src="/static/matrix/js/preview/WdatePicker.js"></script> -->
+<!-- 分页 -->
+<!-- <link rel="stylesheet" type="text/css" href="/static/em/css/kkpager_orange.css" /> -->
+<link rel="stylesheet" type="text/css" href="/static/em/css/kkpager_blue.css" />
+<script type="text/javascript" src="/static/em/js/kkpager.min.js"></script>
+
+
+<script type="text/javascript" src="/static/em/js/jquery-1.4.2.min.js"></script>
+<!-- <script type="text/javascript" src="/static/em/js/script.js"></script> -->
+<style type="text/css">
+	.container{
+		width: 95%;
+		text-align: left;
+	}
+	.overline{
+		height: 1px;
+		width: 95%;
+		background: green;
+		margin:0px auto;
+		overflow:hidden;
+	}
+	.table th{
+    height: auto;
+    font-size: 10px;
+    padding: 5px 10px 2px;
+    border-bottom: 0;
+    text-align: left;
+    color: #666666;
+	}
+
+	option{
+		font-size: 8px;
+	}
+
+	input{
+		font-size: 8px;
+	}
+
+</style>
+<script type="text/javascript">
+
+	$(document).ready(function(){
+		// $(".table tbody ").html("");
+		// $(".table tbody tr").remove();
+		// $("#bottom").html();
+		// $("#bottom").append('<div id="kkpager"></div>')
+
+		// var keywords = $("input[name='keywords']").val()
+		// $.ajax({
+		// 	type:'POST',
+		// 	url:'/em/overview/',
+		// 	data:{'page':1,'keywords':keywords},
+		// 	dataType:'json',
+		// 	success:function(val){
+		// 		var total = val.page_total
+		// 		console.log(total)
+		// 		LoadData(1,"",total)
+		// 	}
+		// })
+
+
+		LoadData(1,"");
+		// console.log('-----自动加载页面------')
+	});
+
+	function LoadData(page,keywords){
+
+		// $("#bottom").html("");
+		// $("#bottom").html('<div id="kkpager"></div>');
+		$.ajax({
+			type:'POST',
+			url:'/em/Items_handle/',
+			data:{'page':page,'itemstype':'{{ itemstype }}'},
+			dataType:'json',
+			// success:function(val){
+			// 	console.log(val)
+			// }
+			success:function(val){
+				console.log("数据返回")
+				console.log(val)
+				$(".table tbody tr").remove();
+				$("#items_total").html('<span style="color:red">'+val.items_total+'</span>')
+				// console.log(val)
+				var detail = val.rows
+				// var pars = ['items_status','items_title','items_starter']
+				// console.log(pars[0])
+				for(var i=0;i<detail.length;i++){
+					// console.log(detail[i]['items_title'])
+					// console.log(detail[i]['items_rate'])
+					var items_status = 'items_status_'+detail[i]['id']
+					var items_title = 'items_title_'+detail[i]['id']
+					var items_starter = 'items_starter_'+detail[i]['id']
+					var items_owner = 'items_owner_'+detail[i]['id']
+					var items_relater = 'items_relater_'+detail[i]['id']
+					var start_time = 'start_time_'+detail[i]['id']
+					var end_time = 'end_time_'+detail[i]['id']
+					var items_rate = 'items_rate_'+detail[i]['id']
+
+					// console.log(items_status)
+					//生成表格
+					$(".table tbody ").append("<tr id='tr_"+(detail[i]['id'])+"'><td id='"+(items_status)+"'></td>\
+						<td id='"+(items_title)+"'></td>\
+						<td id='"+(items_starter)+"'></td>\
+						<td id='"+(items_owner)+"'></td>\
+						<td id='"+(items_relater)+"'></td>\
+						<td id='"+(start_time)+"'></td>\
+						<td id='"+(end_time)+"'></td>\
+						<td id='"+(items_rate)+"'></td>\
+						<td><a class='tip' href='/em/detail/"+(detail[i]['id'])+"' title='查看'><i class='icon-folder-open'></i></a>&nbsp;&nbsp;&nbsp;&nbsp;<a class='tip' onclick='Item_modify(this);' title='修改'><i class='icon-pencil'></i></a>&nbsp;&nbsp;&nbsp;&nbsp;<a id='"+(detail[i]['id'])+"' class='tip' onclick='DelItems(this);' title='删除'><i class='icon-remove'></i></a></td></tr>")
+					// $(".table").append('<div class="collapse" id="collapseGOne"><tr><td>append</td><td>b</td></tr></div>')
+
+					//加载表格数据
+					$("#"+(items_status)+"").html('<span class="badge">'+detail[i]['items_status']+'</span>')
+					$("#"+(items_title)+"").html('<a href="/em/detail/'+(detail[i]["id"])+'">'+detail[i]['items_title']+'</a><br><span>创建于:'+(detail[i]["create_time"])+'</span>')
+					$("#"+(items_starter)+"").html(detail[i]['items_starter'])
+					$("#"+(items_owner)+"").html(detail[i]['items_owner'])
+					$("#"+(items_relater)+"").html(detail[i]['items_relater'])
+					$("#"+(start_time)+"").html(detail[i]['start_time'])
+					$("#"+(end_time)+"").html(detail[i]['end_time'])
+					$("#"+(items_rate)+"").html('<div class="progress progress-mini progress-striped active"><div style="width: '+(detail[i]["items_rate"])+'%;" class="bar"></div></div>')
+
+					//判断状态，以不同的颜色进行标示
+					if(detail[i]['items_status']=='进行中'){
+						$("#"+(items_status)+" span").addClass("badge-success")
+					}else if(detail[i]['items_status']=='已结束'){
+						$("#"+(items_status)+" span").addClass("badge-warning")
+					}else if(detail[i]['items_status']=='未开始'){
+						$("#"+(items_status)+" span").addClass("badge-info")
+					}else{
+						$("#"+(items_status)+" span").addClass("badge-important")
+					}
+
+					//判断百分百，以不同的颜色进行标示
+
+
+					if(detail[i]['items_rate']== -1){
+						$("#"+(items_rate)+"").html('<div class="progress progress-mini progress-striped active"><div style="width: 100%;" class="bar"></div></div>')
+						$("#"+(items_rate)+" div").addClass("progress-danger")
+					}else if(detail[i]['items_rate']<25){
+						$("#"+(items_rate)+" div").addClass("progress-danger")
+					}else if(detail[i]['items_rate']<50){
+						$("#"+(items_rate)+" div").addClass("progress-warning")
+					}else if(detail[i]['items_rate']<75){
+						$("#"+(items_rate)+" div").addClass("progress-striped")
+					}else{
+						$("#"+(items_rate)+" div").addClass("progress-warning")
+					}
+				}
+				// return detail.total
+				console.log('显示完成')
+				console.log(val.page_total)
+				// total = val.page_total
+				var keywords = $("input[name='keywords']").val()
+				console.log(keywords)
+				// PageTurn(val.page_total,keywords)
+				// $("#bottom").html("")
+				// $("#button").html("<div id='kkpager'></div>")
+				// kkpage(1,val.total);
+
+				// $(function(){
+				kkpager.generPageHtml({
+					pno : 1,
+					//总页码
+					total : val.page_total,
+					//总数据条数
+					totalRecords : val.items_total,
+					mode : 'click',//默认值是link，可选link或者click
+					click : function(n){
+						// var keywords = $("input[name='keywords']").val()
+						// console.log(keywords)
+						// LoadData(n,keywords);
+						// LoadDataPageTurn(n,keywords);
+						// LoadData(n,keywords)
+						console.log('内部执行一次')
+						// console.log(n)
+						// do something
+						//手动选中按钮
+						// if(keywords!=""){
+						// 	this.selectPage(1);
+						// }
+						this.selectPage(n);
+						LoadDataPageTurn(n,keywords);
+						return false;
+					}
+				},true);
+			// });
+
+				console.log('加载翻页')
+			}
+		})
+	};
+
+
+	function LoadDataPageTurn(page,keywords){
+		$.ajax({
+			type:'POST',
+			url:'/em/overview/',
+			data:{'page':page,'keywords':keywords},
+			dataType:'json',
+			// success:function(val){
+			// 	console.log(val)
+			// }
+			success:function(val){
+				console.log("数据返回")
+				console.log(val)
+				$(".table tbody tr").remove();
+				$("#items_total").html('<span style="color:red">'+val.items_total+'</span>')
+				// console.log(val)
+				var detail = val.rows
+				// var pars = ['items_status','items_title','items_starter']
+				// console.log(pars[0])
+				for(var i=0;i<detail.length;i++){
+					// console.log(detail[i]['items_title'])
+					// console.log(detail[i]['items_rate'])
+					var items_status = 'items_status_'+detail[i]['id']
+					var items_title = 'items_title_'+detail[i]['id']
+					var items_starter = 'items_starter_'+detail[i]['id']
+					var items_owner = 'items_owner_'+detail[i]['id']
+					var items_relater = 'items_relater_'+detail[i]['id']
+					var start_time = 'start_time_'+detail[i]['id']
+					var end_time = 'end_time_'+detail[i]['id']
+					var items_rate = 'items_rate_'+detail[i]['id']
+
+					// console.log(items_status)
+					//生成表格
+					$(".table tbody ").append("<tr id='tr_"+(detail[i]['id'])+"'><td id='"+(items_status)+"'></td>\
+						<td id='"+(items_title)+"'></td>\
+						<td id='"+(items_starter)+"'></td>\
+						<td id='"+(items_owner)+"'></td>\
+						<td id='"+(items_relater)+"'></td>\
+						<td id='"+(start_time)+"'></td>\
+						<td id='"+(end_time)+"'></td>\
+						<td id='"+(items_rate)+"'></td>\
+						<td><a class='tip' href='/em/detail/"+(detail[i]['id'])+"' title='查看'><i class='icon-folder-open'></i></a>&nbsp;&nbsp;&nbsp;&nbsp;<a class='tip' onclick='Item_modify(this);' title='修改'><i class='icon-pencil'></i></a>&nbsp;&nbsp;&nbsp;&nbsp;<a id='"+(detail[i]['id'])+"' class='tip' onclick='DelItems(this);' title='删除'><i class='icon-remove'></i></a></td></tr>")
+					// $(".table").append('<div class="collapse" id="collapseGOne"><tr><td>append</td><td>b</td></tr></div>')
+
+					//加载表格数据
+					$("#"+(items_status)+"").html('<span class="badge">'+detail[i]['items_status']+'</span>')
+					$("#"+(items_title)+"").html('<a href="/em/detail/'+(detail[i]["id"])+'">'+detail[i]['items_title']+'</a><br><span>创建于:'+(detail[i]["create_time"])+'</span>')
+					$("#"+(items_starter)+"").html(detail[i]['items_starter'])
+					$("#"+(items_owner)+"").html(detail[i]['items_owner'])
+					$("#"+(items_relater)+"").html(detail[i]['items_relater'])
+					$("#"+(start_time)+"").html(detail[i]['start_time'])
+					$("#"+(end_time)+"").html(detail[i]['end_time'])
+					$("#"+(items_rate)+"").html('<div class="progress progress-mini progress-striped active"><div style="width: '+(detail[i]["items_rate"])+'%;" class="bar"></div></div>')
+
+					//判断状态，以不同的颜色进行标示
+					if(detail[i]['items_status']=='进行中'){
+						$("#"+(items_status)+" span").addClass("badge-success")
+					}else if(detail[i]['items_status']=='已结束'){
+						$("#"+(items_status)+" span").addClass("badge-warning")
+					}else if(detail[i]['items_status']=='未开始'){
+						$("#"+(items_status)+" span").addClass("badge-info")
+					}else{
+						$("#"+(items_status)+" span").addClass("badge-important")
+					}
+
+					//判断百分百，以不同的颜色进行标示
+
+
+					if(detail[i]['items_rate']== -1){
+						$("#"+(items_rate)+"").html('<div class="progress progress-mini progress-striped active"><div style="width: 100%;" class="bar"></div></div>')
+						$("#"+(items_rate)+" div").addClass("progress-danger")
+					}else if(detail[i]['items_rate']<25){
+						$("#"+(items_rate)+" div").addClass("progress-danger")
+					}else if(detail[i]['items_rate']<50){
+						$("#"+(items_rate)+" div").addClass("progress-warning")
+					}else if(detail[i]['items_rate']<75){
+						$("#"+(items_rate)+" div").addClass("progress-striped")
+					}else{
+						$("#"+(items_rate)+" div").addClass("progress-warning")
+					}
+				}
+				console.log('显示完成')
+
+			}
+		})
+	};
+
+	function PageTurn(page_total,keywords){
+		console.log('----PageTurn----')
+		console.log(page_total)
+		console.log(keywords)
+		kkpager.generPageHtml({
+			pno : 1,
+			//总页码
+			total : page_total,
+			//总数据条数
+			totalRecords : 200,
+			mode : 'click',//默认值是link，可选link或者click
+			click : function(n){
+				LoadData(n,keywords);
+				console.log(n)
+				var keywords = $("input[name='keywords']").val()
+				console.log(keywords)
+				console.log('内部执行一次')
+				// console.log(n)
+				// do something
+				//手动选中按钮
+				this.selectPage(n);
+				return false;
+			}
+		});
+	}
+
+
+
+	function AddItems(){
+		$("select[name='items_owner']").html("")
+		$("select[name='itmes_relater']").html("")
+		// console.log($("#addarea").text())
+		if($("#addarea").text() == ""){
+			$("#addarea").append('<div class="overline" style="width:100%"></div>');
+			$("#addarea").append($("#inputbox").html());
+			$.ajax({
+				type:'GET',
+				url:'/em/Item_init/',
+				dataType:'json',
+				success:function(val){
+					console.log(val)
+					// console.log(val.rows[1])
+					for(var i=0;i<val.rows.length;i++){
+						if(val.rows[i]== val.user){
+							$("select[name='items_owner']").append('<option selected="selected" value='+val.rows[i]+' name="outline">'+val.rows[i]+'</option>')
+							$("select[name='itmes_relater']").append('<option selected="selected" value='+val.rows[i]+' name="outline">'+val.rows[i]+'</option>')
+						}else{
+							$("select[name='items_owner']").append('<option value='+val.rows[i]+' name="outline">'+val.rows[i]+'</option>')
+							$("select[name='itmes_relater']").append('<option value='+val.rows[i]+' name="outline">'+val.rows[i]+'</option>')
+						}
+						
+					}
+					console.log($("select[name='items_owner']").val())
+					console.log($("select[name='itmes_relater']").val())
+				}
+			})
+		}else{
+			$("#addarea").text("");
+		}
+
+	}
+
+	function DataSubmit(){
+		var items_status=$("select[name='items_status']").val()
+		var items_title=$("input[name='items_title']").val()
+		var items_owner=$("select[name='items_owner']").val()
+		var start_time=$("input[name='start_time']").val()
+		var end_time=$("input[name='end_time']").val()
+		var itmes_relater=$("select[name='itmes_relater']").val()
+		var itmes_info=$("textarea[name='itmes_info']").val()
+		var myDate = new Date();
+		// var mytime=myDate.toLocaleString();
+		console.log(myDate)
+		// console.log(start_time)
+
+		if(items_status=="" || items_title =="" || items_owner =="" || start_time ==""|| end_time ==""|| itmes_relater ==""){
+			layer.msg('所有字段不能为空',{icon:2});
+		}else if(start_time > end_time){
+			layer.msg('开始时间不能晚于结束时间',{icon:2})
+
+		}else{
+			var Date_all = items_status+'&'+items_title+'&'+items_owner+'&'+start_time+'&'+end_time+'&'+itmes_relater+'&'+itmes_info
+			// console.log(Date_all)
+			$.ajax({
+				type:'POST',
+				url:'/em/AddItems/',
+				data:{'data':Date_all},
+				dataType:'text',
+				success:function(ret){
+					if(ret == '1'){
+						AddItems();
+						LoadData(1,"");
+					}
+				}
+			})
+
+		}
+	
+	}
+
+	function search(){
+		var keywords = $("input[name='keywords']").val()
+		$(".table tbody tr").remove();
+		// $("#bottom").html("");
+		// $("#bottom").append('<div id="kkpager"></div>')
+
+		$.ajax({
+			type:'POST',
+			url:'/em/overview/',
+			data:{'page':1,'keywords':keywords},
+			dataType:'json',
+			success:function(val){
+				console.log('点击查找')
+				console.log(val)
+
+				$(".table tbody tr").remove();
+				$("#items_total").html('<span style="color:red">'+val.items_total+'</span>')
+				var detail = val.rows
+				for(var i=0;i<detail.length;i++){
+					// console.log(detail[i]['items_title'])
+					// console.log(detail[i]['items_rate'])
+					var items_status = 'items_status_'+detail[i]['id']
+					var items_title = 'items_title_'+detail[i]['id']
+					var items_starter = 'items_starter_'+detail[i]['id']
+					var items_owner = 'items_owner_'+detail[i]['id']
+					var items_relater = 'items_relater_'+detail[i]['id']
+					var start_time = 'start_time_'+detail[i]['id']
+					var end_time = 'end_time_'+detail[i]['id']
+					var items_rate = 'items_rate_'+detail[i]['id']
+
+					// console.log(items_status)
+					//生成表格
+					$(".table tbody ").append("<tr id='tr_"+(detail[i]['id'])+"'><td id='"+(items_status)+"'></td>\
+						<td id='"+(items_title)+"'></td>\
+						<td id='"+(items_starter)+"'></td>\
+						<td id='"+(items_owner)+"'></td>\
+						<td id='"+(items_relater)+"'></td>\
+						<td id='"+(start_time)+"'></td>\
+						<td id='"+(end_time)+"'></td>\
+						<td id='"+(items_rate)+"'></td>\
+						<td><a class='tip' href='/em/detail/"+(detail[i]['id'])+"' title='查看'><i class='icon-folder-open'></i></a>&nbsp;&nbsp;&nbsp;&nbsp;<a class='tip' onclick='Item_modify(this);' title='修改'><i class='icon-pencil'></i></a>&nbsp;&nbsp;&nbsp;&nbsp;<a id='"+(detail[i]['id'])+"' class='tip' onclick='DelItems(this);' title='删除'><i class='icon-remove'></i></a></td></tr>")
+					// $(".table").append('<div class="collapse" id="collapseGOne"><tr><td>append</td><td>b</td></tr></div>')
+
+					//加载表格数据
+					$("#"+(items_status)+"").html('<span class="badge">'+detail[i]['items_status']+'</span>')
+					$("#"+(items_title)+"").html('<a href="/em/detail/'+(detail[i]["id"])+'">'+detail[i]['items_title']+'</a><br><span>创建于:'+(detail[i]["create_time"])+'</span>')
+					$("#"+(items_starter)+"").html(detail[i]['items_starter'])
+					$("#"+(items_owner)+"").html(detail[i]['items_owner'])
+					$("#"+(items_relater)+"").html(detail[i]['items_relater'])
+					$("#"+(start_time)+"").html(detail[i]['start_time'])
+					$("#"+(end_time)+"").html(detail[i]['end_time'])
+					$("#"+(items_rate)+"").html('<div class="progress progress-mini progress-striped active"><div style="width: '+(detail[i]["items_rate"])+'%;" class="bar"></div></div>')
+
+					//判断状态，以不同的颜色进行标示
+					if(detail[i]['items_status']=='进行中'){
+						$("#"+(items_status)+" span").addClass("badge-success")
+					}else if(detail[i]['items_status']=='已结束'){
+						$("#"+(items_status)+" span").addClass("badge-warning")
+					}else if(detail[i]['items_status']=='未开始'){
+						$("#"+(items_status)+" span").addClass("badge-info")
+					}else{
+						$("#"+(items_status)+" span").addClass("badge-important")
+					}
+
+					//判断百分百，以不同的颜色进行标示
+
+
+					if(detail[i]['items_rate']== -1){
+						$("#"+(items_rate)+"").html('<div class="progress progress-mini progress-striped active"><div style="width: 100%;" class="bar"></div></div>')
+						$("#"+(items_rate)+" div").addClass("progress-danger")
+					}else if(detail[i]['items_rate']<25){
+						$("#"+(items_rate)+" div").addClass("progress-danger")
+					}else if(detail[i]['items_rate']<50){
+						$("#"+(items_rate)+" div").addClass("progress-warning")
+					}else if(detail[i]['items_rate']<75){
+						$("#"+(items_rate)+" div").addClass("progress-striped")
+					}else{
+						$("#"+(items_rate)+" div").addClass("progress-warning")
+					}
+				}
+
+
+
+				// var keywords = $("input[name='keywords']").val()
+				// console.log(total)
+				// LoadData(1,keywords)
+			
+			kkpager.generPageHtml({
+					pno : 1,
+					//总页码
+					total : val.page_total,
+					//总数据条数
+					totalRecords : val.items_total,
+					mode : 'click',//默认值是link，可选link或者click
+					click : function(n){
+						// var keywords = $("input[name='keywords']").val()
+						// console.log(keywords)
+						// LoadData(n,keywords);
+						// LoadDataPageTurn(n,keywords);
+						// LoadData(n,keywords)
+						console.log('内部执行一次')
+						// console.log(n)
+						// do something
+						//手动选中按钮
+						// if(keywords!=""){
+						// 	this.selectPage(1);
+						// }
+						this.selectPage(n);
+						console.log(n)
+						LoadDataPageTurn(n,keywords);
+						return false;
+					}
+				},true);
+			}
+		})
+		// LoadData(1,keywords)
+	}
+
+
+	// function Item_modify (ths){
+	// 	var tr_id = $(ths).parent().parent().attr('id')
+	// 	// var id = tr_id.split('_')[1]
+	// 	var mod_status = $("#items_status_"+tr_id.split('_')[1]+"").text()
+	// 	var mod_title = $("#items_title_"+tr_id.split('_')[1]+"").text()
+	// 	var mod_starter = $("#items_starter_"+tr_id.split('_')[1]+"").text()
+	// 	var mod_owner = $("#items_owner_"+tr_id.split('_')[1]+"").text()
+	// 	var mod_relater = $("#items_relater_"+tr_id.split('_')[1]+"").text()
+	// 	var start_time = $("#start_time_"+tr_id.split('_')[1]+"").text()
+	// 	var end_time = $("#end_time_"+tr_id.split('_')[1]+"").text()
+
+	// 	console.log(mod_title)
+	// 	if($("#mod_"+tr_id+"").length == 0){
+	// 		$("#"+tr_id+"").after("<tr id='mod_"+tr_id+"'><td><div></div></td></tr>")
+	// 		$("#mod_"+tr_id+" td div").append($("#inputbox").html())
+	// 	}
+	// 	else{
+	// 		$("#mod_"+tr_id+"").remove()
+	// 	}
+ // 		// $("#"+tr_id+"").after("<tr id='mod_"+tr_id+"'><td>事项状态</td><td>事项标题</td><td>发起人</td></tr>")
+	// }
+
+	function Item_modify(ths){
+		//获取当前点击编辑所在的列
+		var tr_id = $(ths).parent().parent().attr('id')
+		var mod_status = $("#items_status_"+tr_id.split('_')[1]+"").text()
+		var mod_title = $("#items_title_"+tr_id.split('_')[1]+"").text()
+		var mod_starter = $("#items_starter_"+tr_id.split('_')[1]+"").text()
+		var mod_owner = $("#items_owner_"+tr_id.split('_')[1]+"").text()
+		var mod_relater = $("#items_relater_"+tr_id.split('_')[1]+"").text()
+		var start_time = $("#start_time_"+tr_id.split('_')[1]+"").text()
+		var end_time = $("#end_time_"+tr_id.split('_')[1]+"").text()
+
+		console.log(start_time)
+
+		$("#items_status_"+tr_id.split('_')[1]+"").html('<select style="width:80px;padding:0px" name="items_status"><option value="未开始" name="nostart">未开始</option><option value="进行中" name="working">进行中</option></select>')
+		$("#items_title_"+tr_id.split('_')[1]+"").html('<input style="width:400px" value='+(mod_title)+'/>')
+		$("#items_starter_"+tr_id.split('_')[1]+"").html('<select style="width:80px" name="items_status"><option value="未开始" name="nostart">未开始</option><option value="进行中" name="working">进行中</option></select>')
+		$("#items_owner_"+tr_id.split('_')[1]+"").html('<select style="width:80px" name="items_status"><option value="未开始" name="nostart">未开始</option><option value="进行中" name="working">进行中</option></select>')
+		$("#items_relater_"+tr_id.split('_')[1]+"").html('<select style="width:120px" multiple="multiple" size="6" name="items_status"><option value="未开始" name="nostart">未开始</option><option value="进行中" name="working">进行中</option></select>')
+		$("#start_time_"+tr_id.split('_')[1]+"").html('<input style="font-size:8px" type="text" style="width:80px" value="'+(start_time)+'" readonly="readonly" />')
+		$("#end_time_"+tr_id.split('_')[1]+"").html('<input style="font-size:8px" type="text" style="width:80px" value="'+(end_time)+'" readonly="readonly" />')
+
+		//<input type="text" name="end_time" onClick="WdatePicker({skin:'blueFresh',orderdate_end:'%Y-%m-%d %H:%M:%S',dateFmt:'yyyy-MM-dd HH:mm:ss',alwaysUseStartDate:true})" readonly="readonly"/>
+	}
+
+
+	function DelItems(ths){
+		layer.confirm('事项及其对应记录会被删除,确定?', {
+			btn: ['是','否'] //按钮
+		}, function(){
+			del_id = $(ths).attr('id')
+			$.ajax({
+				type:'POST',
+				url:'/em/DelItems/',
+				data:{'del_id':$(ths).attr('id')},
+				dataType:'text',
+				success:function(val){
+					if(val==1){
+						layer.msg('删除成功', {icon: 1});
+						LoadData(1,"");
+					}else{
+						layer.alert('删除失败')
+					}
+				}
+			})
+
+			layer.alert($(ths).attr('id'));
+		  	// layer.msg('删除成功', {icon: 1});
+		}, function(){
+			layer.close()
+		});
+	}
+
+</script>
+{% endblock %}
+
+{% block content %}
+
+
+
+<div class="container">
+	<!-- <h2><span>与 {{true_name}} 有关的所有事项</span></h2>     -->
+	<h3><span>{{ true_name}}的{{ items_title }}</span></h3>
+	<p><button class="btn btn-primary btn-mini" onclick="AddItems();">创建新事项</button></p>
+	<div id="addarea"></div>
+	<!-- <div class="overline" style="width:100%"></div> -->
+	<div style="display:inline;float:left;margin:10px">当前总共 <span id="items_total"></span> 条记录</div>
+    <div id="search" style="display:inline;float:right;position:relative;right:0px;">
+      <!-- <form method="GET"> -->
+        <input name="keywords" placeholder="输入搜索的字段" type="text" size=30 style="width:100px;float:left;background-color:white;color:black;"></input>
+        <button class="tip-bottom" style="margin-top:0px;" onclick="search();"><i class="icon-search icon-white"></i></button>
+      <!-- </form> -->
+    </div>  
+	<div class="overline" style="width:100%"></div>      
+	<table class="table">
+		<thead>
+			<tr>
+				<th style="width:80px">事项状态</th>
+				<th style="width:400px">事项标题</th>
+				<th style="width:80px">发起人</th>
+				<th style="width:80px">主办人</th>
+				<th style="width:120px">知会人</th>
+				<th style="width:120px">计划开始时间</th>
+				<th style="width:120px">计划结束时间</th>
+				<th style="width:200px">当前进度</th>
+				<th style="width:80px">操作</th>
+			</tr>
+		</thead>
+		<tbody>
+		</tbody>
+	</table>
+
+</div>
+<div class="overline"></div>
+<div style="width:60%;margin:auto" id="bottom">
+	<div id="kkpager"></div>
+</div>
+
+
+
+
+<div id="inputbox" style="display:none;margin-top:20px" >
+  	<center style="margin-top:20px">
+    	 <table border="0" style="color:#000;">
+            <tr>
+            	<td style="text-align:left;"><span style="position:relative; top:-5px;">事项状态：</span></td>
+                <td style="text-align:right;">
+                	<select name="items_status"/>
+                      <option value="未开始" name="nostart">未开始</option>
+                      <option value="进行中" name="working">进行中</option>
+                    </select>
+                </td>
+
+                <td style="text-align:left;"><span style="position:relative; top:-5px;">事项标题：</span></td>
+                <td><input type="text" name="items_title" placeholder="事项标题"/></td>
+
+                <td style="text-align:left;"><span style="position:relative; top:-5px;">主办人：</span></td>
+                <!-- <td><input type="text" name="items_owner" placeholder="主办人"/></td> -->
+                <td>
+                    <select name="items_owner"/>
+<!--                 		<option value="在线" name="outline">用户A</option>
+                      	<option value="停用" name="outline">用户B</option>
+                      	<option value="测试" name="testline">用户C</option>
+                      	<option value="备用" name="backup">用户D</option>
+                      	<option value="其他" name="others">用户E</option>
+                      	<option value="其他" name="others">用户F</option>
+                      	<option value="其他" name="others">用户G</option>
+                      	<option value="其他" name="others">用户H</option>
+                      	<option value="其他" name="others">用户I</option> -->
+                	</select>
+                </td>
+                <td style="text-align:left;"><span style="position:relative; top:-5px;">事项开始时间：</span></td>
+                <td><input type="text" name="start_time" onClick="WdatePicker({skin:'blueFresh',orderdate_end:'%Y-%m-%d %H:%M:%S',dateFmt:'yyyy-MM-dd HH:mm:ss',alwaysUseStartDate:true})" readonly="readonly"/></td>
+
+
+                <td style="text-align:left;"><span style="position:relative; top:-5px;">事项结束时间：</span></td>
+                <td><input type="text" name="end_time" onClick="WdatePicker({skin:'blueFresh',orderdate_end:'%Y-%m-%d %H:%M:%S',dateFmt:'yyyy-MM-dd HH:mm:ss',alwaysUseStartDate:true})" readonly="readonly"/></td>
+
+            <tr>
+            <tr>
+                <td style="text-align:left;"><span style="position:relative; top:-5px;">知会人：</span></td>
+                <td>
+                	<select name="itmes_relater" multiple="multiple" size="6"/>
+<!--                 		<option value="在线" name="outline">用户A</option>
+                      	<option value="停用" name="outline">用户B</option>
+                      	<option value="测试" name="testline">用户C</option>
+                      	<option value="备用" name="backup">用户D</option>
+                      	<option value="其他" name="others">用户E</option>
+                      	<option value="其他" name="others">用户F</option>
+                      	<option value="其他" name="others">用户G</option>
+                      	<option value="其他" name="others">用户H</option>
+                      	<option value="其他" name="others">用户I</option> -->
+                	</select>
+                </td>
+
+                <td style="text-align:left;"><span style="position:relative; top:-5px;">事项描述：</span></td>
+                <td><textarea  rows="6" name="itmes_info" placeholder="请输入事项描述"></textarea></td>
+
+                <td></td>
+                <td></td>
+
+                <td></td>
+                <td></td>
+
+                <td></td>
+                <td>
+                	<input style="float:right;" type="button" class="btn " value="取消" onclick="AddItems()"/>
+                	<input style="float:right;" type="button" class="btn btn-primary" value="创建" onclick="DataSubmit();"/>
+                	
+                </td>
+
+            </tr>
+
+        </table>
+     </center>
+</div>
+
+
+
+
+{% endblock %}

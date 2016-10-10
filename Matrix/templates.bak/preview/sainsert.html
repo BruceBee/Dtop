@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>运营统计分析编辑</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0" />
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache">
+<META HTTP-EQUIV="Expires" CONTENT="0">
+<link rel="stylesheet" type="text/css" href="/css/footer.css" />
+<script type="text/javascript" src="/js/jquery-1.8.3.min.js"></script>
+<script language="javascript" type="text/javascript" src="/js/preview/WdatePicker.js"></script>
+<script src="/js/js.cookie.js"></script>
+<script src="/js/csrf.token.js"></script>
+
+<script>
+$(function(){
+	getdata_fxjy_cbhz();
+});
+
+
+
+var tdate;
+var ydate;
+
+function formatDate(date) { 
+	var myyear = date.getFullYear(); 
+	var mymonth = date.getMonth()+1; 
+	var myweekday = date.getDate(); 
+
+	if(mymonth < 10){ 
+	mymonth = "0" + mymonth; 
+	} 
+	if(myweekday < 10){ 
+	myweekday = "0" + myweekday; 
+	} 
+	return (myyear+"-"+mymonth + "-" + myweekday); 
+} 
+
+function initdate(selectdate){
+	if(selectdate!=null&&selectdate!=""){
+		now=new Date(selectdate);		
+	}else{
+		now=new Date();	
+	}
+	tdate=formatDate(now);
+	var result = new Date(Date.parse(now) - (86400000));;
+	ydate=formatDate(result);
+
+	 $("#sacab-date").attr('value',tdate);
+	 $("#cbhz-date").attr('value',tdate);
+	 $("#fxjy-date").attr('value',tdate);
+	 $("#zdyysj_month-date").attr('value',tdate.substr(0, 7));
+
+}
+
+
+function getdata_fxjy_cbhz(){
+	initdate($("#selectdate_edit").val());
+	initcbhz(tdate);
+	initfxjy(tdate);
+	inityycab(tdate);
+}
+
+function getdata_sacode () {
+	$("#copyboard").val($("#sacode").val()).show();
+}
+
+function getdata_saman () {
+	$("#copyboard").val($("#saman").val()).show();
+}
+
+function getdata_bbcode () {
+	$("#copyboard").val($("#bbcode").val()).show();
+}
+
+function getdata_bbman () {
+	$("#copyboard").val($("#bbman").val()).show();
+}
+
+function getdata_sgman () {
+	$("#copyboard").val($("#sgman").val()).show();
+}
+
+function initfxjy(tdate){
+	$.ajax( {  
+		url:"/sa_data/satext_view",// 跳转到 action  
+		data:{  
+			tdate:tdate,
+			ydate:tdate
+		},  
+		type:'POST',  
+		cache:false,  
+		dataType:'json',  
+		success:function(data) { 
+			var pbdata=data.pbdata;
+			var workC="";
+			var workA="";
+			var workB="";
+			for(var v=0;v<pbdata.length;v++){
+				switch(pbdata[v].cab){
+				case 'C':
+					workC+=pbdata[v].name+" ";
+					break;
+				case 'A':
+					workA+=pbdata[v].name+" ";
+					break;
+				case 'B':
+					workB+=pbdata[v].name+" ";
+					break;
+				default:
+					break;
+				}
+			}
+
+			var fxjy=data.fxjy;
+			var cbhz=data.cbhz;
+			var data_fxjy=$("#data_fxjy");
+			data_fxjy.empty();
+			if ((fxjy==''||fxjy==null)&&(cbhz==''||cbhz==null)){
+				$("#action_fxjy").val("insert");
+				$("#time_fxjy").html(""+tdate+"- <font color=#2AE708>"+workA+"</font>-A班未填写【分析建议】");
+			}else if (fxjy==''||fxjy==null){
+				$("#action_fxjy").val("update");
+				$("#time_fxjy").html(""+tdate+"- <font color=#2AE708>"+workA+"</font>-A班未填写【分析建议】");
+			}else{
+				$("#action_fxjy").val("update");
+				$("#time_fxjy").html(""+tdate+"-已填写【分析建议】：");
+				for(var i=0;i<fxjy.length;i++){
+					data_fxjy.append($("<span></span>").html(fxjy[i]));
+					if(i<fxjy.length-1){
+						data_fxjy.append($("<br/>"));
+					}
+				}
+			}
+		},  
+		error:function(){     
+		   alert("异常！");  
+		}  
+	 });
+}
+
+function initcbhz(tdate){
+	
+	$.ajax( {  
+		url:"/sa_data/satext_view",// 跳转到 action  
+		data:{  
+			tdate:tdate,
+			ydate:tdate
+		},  
+		type:'POST',  
+		cache:false,  
+		dataType:'json',  
+		success:function(data) { 
+			var pbdata=data.pbdata;
+			var workC="";
+			var workA="";
+			var workB="";
+			for(var v=0;v<pbdata.length;v++){
+				switch(pbdata[v].cab){
+				case 'C':
+					workC+=pbdata[v].name+" ";
+					break;
+				case 'A':
+					workA+=pbdata[v].name+" ";
+					break;
+				case 'B':
+					workB+=pbdata[v].name+" ";
+					break;
+				default:
+					break;
+				}
+			}
+
+			var cbhz=data.cbhz;
+			var fxjy=data.fxjy;
+			var data_cbhz=$("#data_cbhz");
+			data_cbhz.empty();
+			if ((fxjy==''||fxjy==null)&&(cbhz==''||cbhz==null)){
+				$("#action_cbhz").val("insert");
+				$("#time_cbhz").html(""+tdate+"- <font color=#2AE708>"+workC+"</font>-C班未填写【C班汇总】");
+			}else if (cbhz==''||cbhz==null){
+				$("#action_cbhz").val("update");
+				$("#time_cbhz").html(""+tdate+"- <font color=#2AE708>"+workC+"</font>-C班未填写【C班汇总】");
+			}else{
+				$("#action_cbhz").val("update");
+				$("#time_cbhz").html(""+tdate+"-已填写【C班汇总】：");	
+				for(var i=0;i<cbhz.length;i++){
+					data_cbhz.append($("<span></span>").html(cbhz[i]));
+					if(i<cbhz.length-1){
+						data_cbhz.append($("<br/>"));
+					}
+				}
+			}		
+		},  
+		error:function(){     
+		   alert("异常！");  
+		}  
+	 });
+
+
+}
+
+function initzdyysjmonth(tdate){
+	$.ajax( {  
+		url:"/sa_data/satext_view",// 跳转到 action  
+		data:{  
+			tdate:tdate+'-01',
+			cycle:"monthly"
+		},  
+		type:'POST',  
+		cache:false,  
+		dataType:'json',  
+		success:function(data) { 
+			
+			var fxjy=data.fxjy;
+			var cbhz=data.cbhz;
+			var data_fxjy=$("#sacab-content");
+			data_fxjy.empty();
+			if ((fxjy==''||fxjy==null)&&(cbhz==''||cbhz==null)){
+				$("#action_zdyysj_month").val("insert");
+				$("#sacab-content").html(""+tdate+"-月报表内容-请在此填写");
+			}else if (fxjy==''||fxjy==null){
+				$("#action_zdyysj_month").val("update");
+				$("#sacab-content").html(""+tdate+"-月报表内容-请在此填写");
+			}else{
+				$("#action_zdyysj_month").val("update");
+				//$("#sacab-content").html("\n");
+				for(var i=0;i<fxjy.length;i++){
+					data_fxjy.append(fxjy[i]);
+					if(i<fxjy.length-1){
+						data_fxjy.append("\n");
+					}
+				}
+			}
+		},  
+		error:function(){     
+		   alert("异常！");  
+		}  
+	 });
+}
+
+function inityycab(tdate){
+	$.ajax( {  
+		url:"/sa_data/satext_view",// 跳转到 action  
+		data:{  
+			tdate:tdate,
+			ydate:tdate
+		},  
+		type:'POST',  
+		cache:false,  
+		dataType:'json',  
+		success:function(data) {
+			var pbdata=data.pbdata;
+			var workC="";
+			var workA="";
+			var workB="";
+			for(var v=0;v<pbdata.length;v++){
+				switch(pbdata[v].cab){
+				case 'C':
+					workC+=pbdata[v].name+" ";
+					break;
+				case 'A':
+					workA+=pbdata[v].name+" ";
+					break;
+				case 'B':
+					workB+=pbdata[v].name+" ";
+					break;
+				default:
+					break;
+				}
+			}
+
+			var yycab=data.yycab;
+			var data_yycab=$("#data_yycab");
+			data_yycab.empty();
+
+			if (yycab==''||yycab==null||yycab.length!=3){
+				$("#time_yycab").html(""+tdate+"-【重点运营事件】异常！");	
+			}else{
+				$("#time_yycab").html(""+tdate+"【重点运营事件】（必须按时间顺序填写，请交接班时仔细检查！）：<br />");	
+				for(var i=0;i<yycab.length;i++){
+					switch(i){
+					case 0:
+						data_yycab.append($("<span></span>").html("<br />C班（00:00-08:00）"));		
+						if ((yycab[i]!=''&&yycab[i]!=null)||(yycab[1]!=''&&yycab[1]!=null)||(yycab[2]!=''&&yycab[2]!=null)){
+							if (yycab[i]==''||yycab[i]==null){
+								yycab[i]="<font color=#2AE708>"+workC+"</font><font color=red><b>未填写数据</b></font>";
+							}
+							$("#action_zdyysj_c").val("update");
+						}else{
+							$("#action_zdyysj_c").val("insert");
+							yycab[i]="<font color=#2AE708>"+workC+"</font><font color=red><b>未填写数据</b></font>";
+						}
+						break;
+					case 1:
+						data_yycab.append($("<span></span>").html("<br />A班（08:00-16:00）"));
+						if ((yycab[i]!=''&&yycab[i]!=null)||(yycab[0]!=''&&yycab[0]!=null)||(yycab[2]!=''&&yycab[2]!=null)){
+							if (yycab[i]==''||yycab[i]==null){
+								yycab[i]="<font color=#2AE708>"+workA+"</font><font color=red><b>未填写数据</b></font>";
+							}
+							$("#action_zdyysj_a").val("update");
+						}else{
+							$("#action_zdyysj_a").val("insert");
+							yycab[i]="<font color=#2AE708>"+workA+"</font><font color=red><b>未填写数据</b></font>";
+						}
+						break;
+					case 2:
+						data_yycab.append($("<span></span>").html("<br />B班（16:00-24:00）"));
+						if ((yycab[i]!=''&&yycab[i]!=null)||(yycab[1]!=''&&yycab[1]!=null)||(yycab[0]!=''&&yycab[0]!=null)){
+							if (yycab[i]==''||yycab[i]==null){
+								yycab[i]="<font color=#2AE708>"+workB+"</font><font color=red><b>未填写数据</b></font>";
+							}
+							$("#action_zdyysj_b").val("update");
+						}else{
+							$("#action_zdyysj_b").val("insert");
+							yycab[i]="<font color=#2AE708>"+workB+"</font><font color=red><b>未填写数据</b></font>";
+						}
+						break;
+					default:
+						data_yycab.append($("<span></span>").html("<br />此班次数据异常！"));
+						break;
+					}
+					data_yycab.append($("<span></span>").html(yycab[i]));
+					if(i<yycab.length-1){
+						data_yycab.append($("<br/>"));
+					}
+				}
+			}
+		},  
+		error:function(){     
+		   alert("异常！");  
+		}  
+	 });
+}
+
+
+
+
+function sumbit_fxjy(){
+	var action=$("#action_fxjy").val();
+	var date=$("#fxjy-date").val();
+	var content=$("#fxjy-content").val();
+	$.ajax( {  
+		url:"/sa_data/satext_editFun",// 跳转到 action  
+		data:{  
+			action:action,
+			date:date,
+			fxjy:content
+		},  
+		type:'POST',  
+		cache:false,  
+		dataType:'text',  
+		success:function(data) { 
+			
+			if(data==1){
+				initfxjy(date);
+			}else if(data==0){
+				alert("内容相同或操作失败！");
+			}else{
+				alert(data);
+				getdata_fxjy_cbhz();
+			}
+			
+		},  
+		error:function(){     
+		   alert("异常！");  
+		}  
+	 });
+}
+
+
+function sumbit_cbhz(){
+	var action=$("#action_cbhz").val();
+	var date=$("#cbhz-date").val();
+	var content=$("#cbhz-content").val();
+	$.ajax( {  
+		url:"/sa_data/satext_editFun",// 跳转到 action  
+		data:{  
+			action:action,
+			date:date,
+			cbhz:content
+		},  
+		type:'POST',  
+		cache:false,  
+		dataType:'text',  
+		success:function(data) { 
+			
+			if(data==1){
+				initcbhz(date);
+			}else if(data==0){
+				alert("内容相同或操作失败！！");
+			}else{
+				alert(data);
+				getdata_fxjy_cbhz();
+			}
+			
+		},  
+		error:function(){     
+		   alert("异常！");  
+		}  
+	 });
+}
+
+function sumbit_zdyysj_month(){
+	var action=$("#action_zdyysj_month").val();
+	var date=$("#zdyysj_month-date").val();
+	var content=$("#sacab-content").val();
+	$.ajax( {  
+		url:"/sa_data/satext_editFun",// 跳转到 action  
+		data:{  
+			action:action,
+			date:date+'-01',
+			zdyysj_month:content
+		},  
+		type:'POST',  
+		cache:false,  
+		dataType:'text',  
+		success:function(data) { 
+			
+			if(data==1){
+				initzdyysjmonth(date);
+			}else if(data==0){
+				alert("内容相同或操作失败！");
+			}else{
+				alert(data);
+				getdata_fxjy_cbhz();
+			}
+			
+		},  
+		error:function(){     
+		   alert("异常！");  
+		}  
+	 });
+}
+
+function submit_zdyysj(){
+	var date=$("#sacab-date").val();
+	var select_cab=$("#select_cab").val();
+	var content=$("#sacab-content").val();
+	var action="";
+	if(select_cab==''||select_cab==null){
+		alert('请选择班次');
+		return;
+	}else if(select_cab=='c'){
+		action=$("#action_zdyysj_c").val();
+	}else if(select_cab=='a'){
+		action=$("#action_zdyysj_a").val();
+	}else if(select_cab=='b'){
+		action=$("#action_zdyysj_b").val();
+	}
+	
+	$.ajax( {  
+		url:"/sa_data/sacab_editFun",// 跳转到 action  
+		data:{  
+			action:action,
+			date:date,
+			select_cab:select_cab,
+			content:content
+		},  
+		type:'POST',  
+		cache:false,  
+		dataType:'text',  
+		success:function(data) { 
+			
+			if(data==1){
+				alert("操作成功！");
+				inityycab(date);
+			}else if(data==0){
+				alert("内容相同或操作失败！");
+			}else{
+				alert(data);
+				getdata_fxjy_cbhz();
+			}
+			
+		},  
+		error:function(){     
+		   alert("异常！");  
+		}  
+	 });
+}
+
+
+
+
+</script>
+
+<style>
+ th {
+	font: bold 12px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+	color: #4f6b72;
+	border-right: 1px solid #C1DAD7;
+	border-bottom: 1px solid #C1DAD7;
+	border-top: 1px solid #C1DAD7;
+	letter-spacing: 2px;
+	text-transform: uppercase;
+	text-align: center;
+	padding: 6px 6px 6px 12px;
+	background: #CAE8EA url(images/bg_header.jpg) no-repeat;
+}
+
+ .table td {
+	border-right: 1.5px solid #C1DAD7;
+	border-bottom: 1.5px solid #C1DAD7;
+	background: #fff;
+	font-size: 12px;
+	padding: 6px 6px 6px 12px;
+	color: #4f6b72;
+}
+
+</style>
+
+</head>
+<body >
+
+	
+	<table style="width:100%;height:100%;background-color:#337FE5;" cellpadding="3"
+		cellspacing="0" align="center" border="3" bordercolor="#111111">
+		<tbody>
+			<tr>
+				<td>
+					<br /><h1 style="text-align:center;">
+						<span style="font-size:32px;font-weight:normal;line-height:1.5;font-family:'Microsoft YaHei';"><strong><span style="color:yellow;font-family:'Microsoft YaHei';"> 监 控 中 心 </span><span style="color:white;font-family:'Microsoft YaHei';">运 营 统 计 分 析 </span><span style="color:yellow;font-family:'Microsoft YaHei';"> 编 辑 器 </span><span style="color:pink;font-family:'YouYuan';" title=" 现网页版运营日志中【重要报警占比】、【代理商进单图表】、【业务报警系统】、【呼叫中心】、【拨号器分配】及【Schedule程序重启】为自动生成数据与图表，下列项为人工手动填写内容：
+
+【运营分析与建议】
+ 由AB班填写，对当天所发生的重点运营事件进行原因分析并提出改进方案。也可对公司的业务提出些好的建议。
+
+【C班报警汇总】
+ 由C班填写，记录C班的重点报警事件或线上的应急响应与维护工作。
+
+【Nagios&Cacti监控】
+ 由B班填写，如有磁盘报警，请注意记录的是free space小于20%的磁盘空间。
+
+【系统项报警】
+ 由B班填写，主要记录报警中的磁盘使用。
+
+【重点运营事件统计】
+ 由A、B、C班根据各自的班次进行记录。
+
+ 注意：要选择正确的日期和班次，以上各项提交前，请检查各项是否有错误，避免损坏有效数据。">填写指南</span> <a style="font-size:22px;" href="/preview/sa.php">查看效果</a></strong></span> 
+					</h1><br />
+
+<input id="sacode" type="hidden" value="
+&lt;div align=center style=&quot;background:#1A1A1A;-moz-border-radius:15px;-webkit-border-radius:15px;border-radius:15px;&quot;&gt;
+ &lt;hr style=&quot;border:none;&quot; /&gt;&lt;br /&gt;
+ &lt;span style=&quot;color:white;font-size:32px;font-weight:normal;line-height:1.5;font-family:'YouYuan';&quot; id=&quot;show&quot;&gt;正在加载报表系统&lt;/span&gt;
+ &lt;br&gt;&lt;br /&gt;&lt;hr style=&quot;border:none;&quot; /&gt;
+ &lt;script&gt;
+ var oadate=document.getElementsByName(&quot;DATA_6&quot;)[0].value;
+ window.open(&quot;http://10.1.100.110/preview/sa.php?oadate=&quot;+oadate);
+
+document.getElementById('show').innerHTML=&quot;&lt;span style=\&quot;font-size:32px;font-weight:normal;line-height:1.5;font-family:\'Microsoft YaHei\';\&quot;&gt;&lt;span&gt;&lt;a style=\&quot;color:yellow;font-family:\'Microsoft YaHei\';\&quot; href='http://10.1.100.110/' target='_blank'&gt; 监 控 中 心 &lt;/a&gt;&lt;/span&gt;&lt;span&gt;&lt;a style=\&quot;color:white;font-family:\'Microsoft YaHei\';\&quot; href='http://10.1.100.110/preview/sa.php?oadate=&quot;+oadate+&quot;' target='_blank'&gt; 运 营 统 计 分 析 &lt;/a&gt;&lt;/span&gt;&quot;;
+
+&lt;/script&gt;
+ &lt;/div&gt;
+"/>
+<input id="saman" type="hidden" value="
+赵智刚,莫铿,徐俊杰,李忠祥,黎励,朱艾琳,柯婷,唐海瑞,左裕霞,徐鼎仁,潘继超,李积兵,马志成,谭斌城,张展新,刘凯铭,谢浩,田媛,饶维,尤位明,刘晨阳,杨义,吴连春,华宝城,罗明星,万菩,刘佩辉,陈修伟,谭立伟,袁海涛,谭煜,张新娜,江跃丽,王莉sw,谭碧君,刘艺华,何芳锦,杨明伟,卢亚军,刘楷桐,刘凤英,谢锶杰,雷鑫,曾国强,刘垚,柳晖艳,刘淑娟,周三保,王琪,曾鹏鹏,许冰冰,张金凤,侯超,伍来俊,赵力,支颖,缪巧,
+"/>
+<input id="bbcode" type="hidden" value="
+&lt;div align=center style=&quot;background:#1A1A1A;-moz-border-radius:15px;-webkit-border-radius:15px;border-radius:15px;&quot;&gt;
+ &lt;hr style=&quot;border:none;&quot; /&gt;&lt;br /&gt;
+ &lt;span style=&quot;color:white;font-size:32px;font-weight:normal;line-height:1.5;font-family:'YouYuan';&quot; id=&quot;show&quot;&gt;正在加载报表系统&lt;/span&gt;
+ &lt;br&gt;&lt;br /&gt;&lt;hr style=&quot;border:none;&quot; /&gt;
+ &lt;script&gt;
+ var oadate=document.getElementsByName(&quot;DATA_6&quot;)[0].value;
+ window.open(&quot;http://10.1.100.110/preview/sheet/bon/home.php&quot;);
+
+document.getElementById('show').innerHTML=&quot;&lt;span style=\&quot;font-size:32px;font-weight:normal;line-height:1.5;font-family:\'Microsoft YaHei\';\&quot;&gt;&lt;span&gt;&lt;a style=\&quot;color:yellow;font-family:\'Microsoft YaHei\';\&quot; href='http://10.1.100.110/' target='_blank'&gt; 监 控 中 心 &lt;/a&gt;&lt;/span&gt;&lt;span&gt;&lt;a style=\&quot;color:white;font-family:\'Microsoft YaHei\';\&quot; href='http://10.1.100.110/preview/sheet/bon/home.php' target='_blank'&gt; 倍 棒 通 行 测 试 &lt;/a&gt;&lt;/span&gt;&quot;;
+
+&lt;/script&gt;
+ &lt;/div&gt;
+"/>
+<input id="bbman" type="hidden" value="
+黎励,彭彩芳,刘凯铭,李佳娜,曹芳娇,袁礼明,罗艺鹏,陈佳,曲宏锐,潘伟崇,杨桥榕,邹佳,常李,张敏,康翔,崔玲娜,陈羽茜,张荣,屈念,丁力,陈雪芹,郭凡,覃燕,边疆,李雪,陆琳,曹政,罗杰,梁鸿杰,王曦,唐静,王鹏飞,蒲志宏,姚升,周洪明,周礼,何柳,陈守川,杨超,熊怡,董洋洋,王培,肖仕川,雷乾,王敏,蔡海军,覃禹顺,袁光明,付清奎,刘帮超,余丹曦,胡娟,王莉yf,刘阳,李懿,谢强,王文涛,羊绍波,王宇,宋虎,尹寿华,林燕惠,李长安,姜龙,黄强,向凌顶,方小敏,张丽,姚利行,杨锋,山云冲,余亮,张超,徐强,张强,邱良良,黎强,侯建霞,阳芳,杨华,杨怀光,林丹,荣嫒,罗曼,刘芷彤,赵智刚,
+"/>
+<input id="sgman" type="hidden" value="
+李积兵,马志成,谭斌城,张展新,周玉雄,付小飞,李忠祥,谢浩,朱艾琳,侯超,伍来俊,黎励,田媛,饶维,易乡玥,陈安兵,刘凯铭,唐海瑞,郭云坤,柯婷,监控中心,左裕霞,潘继超,徐鼎仁,柳晖艳,刘淑娟,周三保,王琪,曾鹏鹏,温洁辉,罗健,程浩,刘慧洁,甘杰祥,黄泽鑫,许冰冰,蒋凤艳,聂罗凯,曾伟红,黄功林,杨丹丹,杨春娇,卢耀佳,刘凤梅,谭红枫,许双颖,马倩,朱广能,章红英,陈俊英,赵玉玲,黎晓君,曾海涛,曾海安,黄铁岳,张万东,许丽娟,黄涛,黄若薇,陈翥,张金凤,王欣怡,罗丹,苗杰,谢鲜,杨玉梅,黄怡,蒙莉,邬倩,吴天钢,雷兆峰,唐俊燕,林虹,鲁子鹏,李理,谭馨,褚宏鹏,白欢欢,张彩林,苏莉,吴粮莹,庞孔洋,朱艳钧,陈婕,张晓东,史科,叶思敏,朱明,韩晓霞,张翠,卢亚军,梁彪,刘楷桐,刘凤英,谢锶杰,刘艺华,蓝伟云,蔡锦燕,杨明伟,雷鑫,蒙珍妮,曾国强,刘垚,林宇川,李凤,黄哲聪,唐艳,吕方瑜,袁海涛,钟文,李阳锋,刘勇,吴淑正,胡中春,邓建东,张浩,杨志涛,曹书涵,江燕红,林育文,黎文思,李凯,史玉,周江,刘波,刘锦华,谢慈兵,郭伟兴,彭云,陈龙源,舒威,易阳,陈华海,周焕鸣,韩苏敏,王锟,刘芳友,李波,甘丽,何波,
+"/>
+					<form action="sa.php" method="post"  style="text-align:center;">
+							<input style="float:left;" type="button" value="运营签报抄送人" onclick="getdata_saman();"/>
+							<input style="float:left;" type="button" value="运营签报源码" onclick="getdata_sacode();"/>
+							<input style="float:left;" type="button" value="倍棒签报抄送人" onclick="getdata_bbman();"/>
+							<input style="float:left;" type="button" value="倍棒签报源码" onclick="getdata_bbcode();"/>
+							<input style="float:left;" type="button" value="事故报告抄送人" onclick="getdata_sgman();"/>
+							<input style="float:right;" name="submit" type="button" value="查询签报" onclick="getdata_fxjy_cbhz();"/><input style="float:right;text-align:center;" id="selectdate_edit" name="date" type="datetime" onClick="WdatePicker({skin:'blueFresh',orderdate_end:'%Y-%m-%d',dateFmt:'yyyy-MM-dd',alwaysUseStartDate:true,maxDate:'%y-%M-%d'})" placeholder="点击选择日期"  />
+					</form>
+				</td>
+			</tr>
+			<tr>
+					<td style="background-color:#FFFFF8;">
+						<textarea style="border:solid 5px #f00;border-radius:20px;font-size:17px;width:98%;height:400px;display:none;" id="copyboard" name="copyboard"></textarea>
+						<div style="text-align:left;">
+							<span style="line-height:1.5;"><span style="font-size:24px;color:#E53333;font-family:'Microsoft YaHei';"><strong>运营分析与建议<span style="color:#2AE708;font-size:14px;font-family:'Microsoft YaHei';">（A、B班填写）</span></strong></span></span> 
+						</div>
+						<form method="post">
+						<input type="hidden" id="action_fxjy" name="action_fxjy"/>	
+						<input type="datetime" id="fxjy-date" name="fxjy-date" onclick="WdatePicker({skin:'blueFresh',orderdate_end:'%Y-%m-%d',dateFmt:'yyyy-MM-dd',alwaysUseStartDate:true})" value="" onchange="initfxjy(this.value);">
+						<input type="button" name="fxjy" value="提交" id="but_fxjy" onclick="sumbit_fxjy();"><span id="time_fxjy" style="color:red;"></span><span id="data_fxjy" style="color:#6633FF;font-size:14px;"></span>
+						<textarea style="font-size:17px;width:98%;height:77px;" id="fxjy-content" name="fxjy-content"></textarea>
+						</form>
+					</td>
+		
+			</tr>
+
+			<tr>
+				<td style="background-color:#FFFFF8;">
+					<div style="text-align:left;">
+						<span style="line-height:1.5;"><span style="font-size:24px;color:#E53333;font-family:'Microsoft YaHei';"><strong>C班报警汇总<span style="color:#2AE708;font-size:14px;font-family:'Microsoft YaHei';">（C班填写）</span></strong></span></span>
+					</div>
+					<form method="post">
+					<input type="hidden" id="action_cbhz" name="action_cbhz"/>	
+					<input type="datetime" id="cbhz-date" name="cbhz-date" onclick="WdatePicker({skin:'blueFresh',orderdate_end:'%Y-%m-%d',dateFmt:'yyyy-MM-dd',alwaysUseStartDate:true})" value="" onchange="initcbhz(this.value);">
+					<input type="button" id="btn_cbjz" name="cbhz" value="提交" onclick="sumbit_cbhz();"><span id="time_cbhz" style="color:red;"></span><span id="data_cbhz" style="color:#6633FF;font-size:14px;"></span>
+					<textarea style="font-size:17px;width:98%;height:77px;" id="cbhz-content" name="cbhz-content"></textarea>
+					</form>
+				</td>
+			</tr>
+			<!--<tr>
+				<td style="width:50%;padding:0;" colspan="5555">
+					<form method="post">
+						<div style="text-align:center;">
+							<span style="line-height:2;"><span style="font-size:24px;color:yellow;"><strong>重要报警（TOP）<span style="color:#2AE708;font-size:14px;font-family:'Microsoft YaHei';">（B班填写）</span></strong></span></span>
+							<input type="datetime" id="zybj-date" name="zybj-date" onclick="WdatePicker({skin:'blueFresh',orderdate_end:'%Y-%m-%d',dateFmt:'yyyy-MM-dd',alwaysUseStartDate:true})" value="注意选择正确日期">
+							<input type="button" id="btn_zybj" name="zybj" value="提交" onclick="submit_zybj();">
+						</div>
+					</form>
+				</td>
+			</tr>-->
+			<tr>
+				<td style="width:50%;padding:0;" colspan="5555">	
+					<!--<table style="width:100%;background-color:#FFFFF8;" cellpadding="3" cellspacing="0" border="1" bordercolor="#000000">
+						<tbody>
+							<tr>
+								<td style="width:50%;">
+									<div style="text-align:center;">
+										<span style="line-height:1.5;color:#E53333;font-size:14px;font-family:'Microsoft YaHei';"><em><strong>Nagios&amp;Cacti监控(free space&lt;=20)：</strong></em></span> 
+									</div>
+									<textarea style="font-size:17px;width:98%;height:77px;" id="nc-content" name="nc-content"></textarea>
+								</td>
+								<td style="width:50%;">
+									<div style="text-align:center;">
+										<span style="line-height:1.5;color:#E53333;font-size:14px;font-family:'Microsoft YaHei';"><em><strong>系统项报警TOP：</strong></em></span> 
+									</div>
+
+									<textarea style="font-size:17px;width:98%;height:77px;" id="disk-content" name="disk-content"></textarea>
+
+								</td>
+							</tr>
+						</tbody>
+					</table>-->
+					<div style="text-align:center;">
+						<span style="line-height:2;"><span style="font-size:24px;color:yellow;"><strong> 重点运营事件统计</strong></span></span>
+					</div>
+					<table id="sacab" style="width:100%;background-color:#FFFFF8;" cellpadding="3" cellspacing="0" border="1" bordercolor="#000000">
+						<tbody>
+							<tr>
+								<td style="background-color:#FFFFF8;">
+									<form method="post">
+										<input type="hidden" id="action_zdyysj_a" name="action_zdyysj_a"/>	
+										<input type="hidden" id="action_zdyysj_b" name="action_zdyysj_b"/>	
+										<input type="hidden" id="action_zdyysj_c" name="action_zdyysj_c"/>
+
+										<input type="hidden" id="action_zdyysj_month" name="action_zdyysj_month"/>
+
+										<input type="datetime" id="sacab-date" name="sacab-date" onClick="WdatePicker({skin:'blueFresh',orderdate_end:'%Y-%m-%d',dateFmt:'yyyy-MM-dd',alwaysUseStartDate:true})" value="" onchange="inityycab(this.value);"/>
+
+										<input style="float:right;" type="button" id="btn_zdyysj_month" name="zdyysj_month" value="月度重点运营事件提交" title="先选择月份后点击下方输入框填写" onclick="sumbit_zdyysj_month();"/>
+										<input style="float:right;" type="datetime" id="zdyysj_month-date" name="zdyysj_month-date" onClick="WdatePicker({skin:'blueFresh',orderdate_end:'%Y-%m',dateFmt:'yyyy-MM',alwaysUseStartDate:true})" value="" onchange="initzdyysjmonth(this.value);"/>
+
+										<select id="select_cab" name="cab">
+											<option value="" >--选择班次--</option>
+											<option value="c">C</option>
+											<option value="a">A</option>
+											<option value="b">B</option>
+										</select>
+										<input type="button" id="btn_zdyysj" name="sacab" value="提交" onclick="submit_zdyysj();"/>
+										<strong><span style="color:#2AE708;font-size:14px;font-family:'Microsoft YaHei';">（C、A、B班填写）</span></strong>
+										<textarea style="font-size:17px;width:99.3%;height:77px;" id="sacab-content" name="sacab-content"></textarea>
+									</form>
+									<span id="time_yycab" style="color:red;"></span><span id="data_yycab" style="color:#6633FF;font-size:14px;"></span>
+								</td>
+							</tr>
+						</tbody>
+					</table>				
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</body>
+</html>

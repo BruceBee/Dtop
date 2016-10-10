@@ -1,0 +1,50 @@
+﻿html, body{
+	padding:0;
+	margin:0;
+	position:relative;
+	text-align: center;
+	background:url(/jkzx/icon/009.jpg);
+	background-repeat:repeat;
+	letter-spacing:1px;
+	font-family:'YouYuan';
+	font-weight:bold;
+}
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+	width:100%;
+}
+
+.title
+{
+	color:white;
+	font-size:17px;
+}
+
+.stitle
+{
+	background-color:#FFFF99;
+	color:black;
+	font-size:22px;
+}
+
+.date
+{
+	width:100%;
+	height:38px;
+	border-spacing:0px;
+	background-color:#1A1A1A;
+	color:white;
+	font-size:22px;
+}
+
+td:hover
+{
+	box-shadow: 0px 0px 15px #000;
+	font-size:25px;
+	font-family:'YouYuan';
+	background-color:rgb(237, 230, 92);
+}
+
+tr:hover{box-shadow: 0px 0px 2px #fff;}

@@ -1,0 +1,222 @@
+{% extends "V.html" %}
+
+{% block head %}
+
+<script type="text/javascript" src="/static/matrix/js/layer/layer.js"></script>
+<script type="text/javascript" src="/static/matrix/js/dataBase.js"></script>
+<script type="text/javascript">
+  $(document).ready(function(){
+      loadTable(1);
+  });
+
+  function addDialog(){
+    var addTableHtml=$("#addTable").clone();
+    var parameters=['id','lip','wip','net','cpu','mem','disk','sys','usage'];
+    $.each(arguments,function(num,val){
+      var inputName=addTableHtml.find("input[name='"+parameters[num]+"']");
+        inputName.attr("id",parameters[num]);
+        if(val){
+          inputName.attr("value",val);
+        }
+    });
+
+    var buttonValue="添加";
+    if(arguments[0]){
+      buttonValue="更新";
+    }
+
+    layer.open({
+          title:'编辑信息',
+          type: 1,
+          shift:2,
+          skin: 'layui-layer-rim', //加上边框
+          area: ['30%', '46%'], //宽高
+          content:addTableHtml.html(),
+          btn:[buttonValue,'取消'],
+          yes:function(index){
+
+            var ret='';
+            $.each(parameters,function(){
+              ret+=this+'='+$("#"+this).val()+'&';
+            });
+            ret+="hostop={{ true_name }}"
+
+            $.ajax({
+              type:'POST',
+              url:'/admin_data/configinfo_editFun',
+              data:ret,
+              dataType:'text',
+              success:function(val){
+                layer.close(index);
+                if(val=='1'){
+                  loadTable(1);
+                }else{
+                  layer.alert("操作失败");
+                }
+              },error:function(){
+                layer.close(index);
+                laery.alert("操作失败");
+              }
+            });
+
+          }
+      });
+  }
+
+  function keyEnter(event){
+     var e = event || window.event || arguments.callee.caller.arguments[0];
+     if(e && e.keyCode==13){ // enter 键
+             loadTable(1);
+      return false;
+          }
+
+  }
+
+  function loadTable(val){
+     $("#dataFrom").find("input[name='page']").val(val);
+     $("#dataTab").dataTable({
+        title:'主机配置信息详情',
+        columns:[
+        {key:'id',check:true,checkAll:true,width:'1%',align:'center'},
+        {key:'lip',name:'私网',width:'15%',align:'center'},
+        {key:'wip',name:'公网',width:'15%',align:'center'},
+        {key:'net',name:'带宽',width:'5%',align:'center'},
+        {key:'cpu',name:'处理器',width:'5%',align:'center'},
+        {key:'mem',name:'内存',width:'10%',align:'center'},
+        {key:'disk',name:'磁盘',width:'10%',align:'center'},
+        {key:'sys',name:'操作系统',width:'20%',align:'center'},
+        {key:'usage',name:'用途',width:'auto',align:'center'}],
+        formid:'dataFrom',
+        loadAfter:tab_trOnclick,
+    });
+  }
+
+  /**
+  行添加双击事件
+  **/
+  function tab_trOnclick(){
+    var trs=$("#dataFrom_table tbody tr");
+    for(var i=0;i<trs.length;i++){
+      $(trs[i]).on("dblclick",function(){
+        var tr=$(this);
+        var tds=tr.find("td");
+        var id=$(tds[0]).find("input").val();
+        addDialog(id,$(tds[1]).text(),$(tds[2]).text(),$(tds[3]).text(),$(tds[4]).text(),$(tds[5]).text(),$(tds[6]).text(),$(tds[7]).text(),$(tds[8]).text());
+      });
+    }
+  }
+
+  /**
+  删除功能
+  **/
+  function delData(){
+    var inputChecks=$("input:checkbox[name='dataFrom_check']:checked");
+    if(inputChecks.length==0){
+      layer.alert('请选中删除项！');
+      return;
+    }
+    layer.confirm('确认删除?', {icon: 2, title:'提示'},function(index){
+      var orders='';
+      for(var i=0;i<inputChecks.length;i++){
+        orders+=inputChecks[i].value;
+        if(i!=inputChecks.length-1){
+          orders+=',';
+        }
+      }
+      $.ajax({
+        type:'POST',
+        url:'/admin_data/configinfo_deleteFun',
+        dataType:'text',
+        data:'id='+orders,
+        success:function(text){
+               layer.close(index);
+               if(text=='1'){
+                loadTable(1);
+               }else{
+                layer.alert('操作失败');
+               }
+        },error:function(){
+          layer.close(index);
+          layer.alert('操作失败');
+        }
+      });
+    });
+
+  }
+</script>
+{% endblock %}
+
+{% block content %}
+<!-- 承上连接V.html：content+content-header -->
+
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="span12">
+   <!--aaa-->
+    <form action="/admin_data/configinfo_pagedataList" id="dataFrom" onSubmit="return false">
+      <input type="hidden" id="page" name="page" value="1"/>
+        <input type="hidden" id="num" name="num" value="15"/>
+        <div>
+      <input class="btn btn-primary" type="button" name="addButton" value="添加" onclick="addDialog();" style="float:left;"/>
+      {% if perms.delete_contenttype %}
+      <input class="btn btn-danger" type="button" name="deleteButton" value="删除" onclick="delData();" style="float:left;"/>
+      {% endif %}
+        <input type="text" name="tj" placeholder="请输入关键字,回车查询" id="tj" style="background-color: white; float:right" onKeydown="keyEnter();"/>
+    </div>
+    </form>
+  <div id="dataTab"></div>
+    <!-- end aa-->
+
+
+
+
+
+
+  <div id="addTable" style="display:none;">
+      <center>
+           <table border="0" style="color:#000;">
+               <tr style="display:none;">
+                <td style="text-align:right;"><span style="position:relative; top:-5px;"></span></td>
+                    <td><input type="text" name="id"/></td>
+                </tr>
+                <tr>
+                  <td style="text-align:right;"><span style="position:relative; top:-5px;">私网IP：</span></td>
+                    <td><input type="text" name="lip"/></td>
+                </tr>
+                <tr>
+                  <td style="text-align:right;"><span style="position:relative; top:-5px;">公网IP：</span></td>
+                    <td><input type="text" name="wip"/></td>
+                </tr>
+                <tr>
+                  <td style="text-align:right;"><span style="position:relative; top:-5px;">带宽/峰值：</span></td>
+                    <td><input type="text" name="net"/></td>
+                </tr>
+                <tr>
+                  <td style="text-align:right;"><span style="position:relative; top:-5px;">处理器：</span></td>
+                    <td><input type="text" name="cpu"/></td>
+                </tr>
+                <tr>
+                  <td style="text-align:right;"><span style="position:relative; top:-5px;">内存：</span></td>
+                    <td><input type="text" name="mem"/></td>
+                </tr>
+                <tr>
+                  <td style="text-align:right;"><span style="position:relative; top:-5px;">磁盘：</span></td>
+                    <td><input type="text" name="disk"/></td>
+                </tr>
+                <tr>
+                  <td style="text-align:right;"><span style="position:relative; top:-5px;">操作系统：</span></td>
+                    <td><input type="text" name="sys"/></td>
+                </tr>
+                <tr>
+                  <td style="text-align:right;"><span style="position:relative; top:-5px;">用途：</span></td>
+                    <td><input type="text" name="usage"/></td>
+                </tr>
+            </table>
+         </center>
+   </div>
+
+   </div>
+   </div>
+   </div>
+
+{% endblock %}

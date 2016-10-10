@@ -1,0 +1,30 @@
+{% extends "V.html" %}
+
+{% block head %}
+<!--script src="/static/matrix/js/matrix.chat.js"></script-->
+{% endblock %}
+
+{% block content %}
+<!-- 承上连接V.html：content+content-header -->
+
+<!--Action boxes-->
+  <div class="container-fluid">
+    <div class="quick-actions_homepage">
+      <ul class="quick-actions">
+
+        <li class="bg_lr"> <a href="{{ apps.baseinfo.url }}"> <i class="icon-info-sign"></i> {{ apps.baseinfo.name }}</a> </li>
+        <li class="bg_lr"> <a href="{{ apps.hostconfig.url }}"> <i class="icon-info-sign"></i> {{ apps.hostconfig.name }}</a> </li>
+
+      </ul>
+    </div>
+    <div class="row-fluid">
+      <div class="span12">
+          {% for i in last_login %}
+        <marquee direction="left" behavior="alternate" onmouseout="this.start();" onmouseover="this.stop();" scrollamount="{{ i.3 }}"><span class="label label-info">{{ i.0 }}</span><span class="label label-warning">{{ i.1 }}</span><span class="label label-important">{{ i.2 }}</span></marquee>
+          {% endfor %}
+        </div>
+    </div>
+
+  </div>
+
+{% endblock %}

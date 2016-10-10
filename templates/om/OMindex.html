@@ -1,0 +1,274 @@
+{% extends "om/base.html" %}
+
+{% block head %}
+
+<link rel="stylesheet" href="/static/om/css/cmdlist.css" />
+<link rel="stylesheet" href="/static/om/css/multi-select.css" />
+
+<!--script src="/static/matrix/js/matrix.chat.js"></script-->
+<!-- <script src="/static/matrix/js/jquery.min.js"></script> -->
+<script language="javascript" src="/static/om/js/prototype.js"></script>
+<script type="text/javascript" src="/static/matrix/js/toastr.js"></script>
+<script type="text/javascript" src="/static/matrix/js/layer/layer.js"></script>
+<!-- <script type="text/javascript" src="/static/om/js/multselect.js"></script> -->
+
+<!-- <script type="text/javascript" src="/static/matrix/js/echarts.min.js"></script> -->
+<!-- <script type="text/javascript" src="/static/om/js/select2.js"></script> -->
+<script type="text/javascript" src="/static/om/js/base.js"></script>
+<script type="text/javascript" src="/static/om/js/base2.js"></script>
+<script type="text/javascript" src="/static/matrix/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static/om/js/multselect.js"></script>
+
+<!-- <script type="text/javascript" src="/static/matrix/js/matrix.interface.js"></script> -->
+<script type="text/javascript">
+  loadOMgroupinfo();
+  loadOMuserinfo();
+  ServerSync();
+  function showUserSelect(){
+    var items = ""
+    $("#serveruser option:selected").each(function(){
+      items +=$(this).text()+';';
+    });
+    if(items==""){
+      layer.alert('未选择服务器组', {icon: 2});
+    }else{
+      $("#user_select_list").html('<hr><input class="btn btn-mini btn-primary pull-right" type="button" value="清除选择" onclick="clearUserSelect();"></input>')
+      $("#user_select_list").append('<span style="color:green">已选用户:</span>'+items)
+    }
+  };
+
+function showGroupSelect(){
+    var items = ""
+    $("#servergroup option:selected").each(function(){
+      items +=$(this).text()+';';
+    });
+    if(items==""){
+      layer.alert('未选择服务器', {icon: 2});
+    }else{
+      $("#group_select_list").html('<hr><input class="btn btn-mini btn-primary pull-right" type="button" value="清除选择" onclick="clearGroupSelect();"></input>')
+      $("#group_select_list").append('<span style="color:red">已选用户组:</span>'+items)
+    }
+  };
+
+
+</script>
+<style type="text/css">
+  #mainbox
+    {
+    width:500px;
+    height:400px;
+    /*overflow:scroll;*/
+   /*overflow-y:scroll;*/
+   overflow-y:auto;
+    }
+</style>
+
+{% endblock %}
+
+{% block content %}
+<!-- 承上连接V.html：content+content-header -->
+
+<!--Action boxes-->
+  <div class="container-fluid">
+    <div class="row-fluid ">
+      <div class="span2">
+        <div class="widget-box">
+
+          <div class="widget-title"> <span class="icon"><i class="icon-cloud"></i></span>
+            <span class="label label-success pull-right "><a onclick='item_action(this)' value='group_add'><font color=#EEEEEE><i class="icon icon-plus"></i></font></a>&nbsp;<a onclick='item_action(this)' value='group_del'><font color=#EEEEEE><i class="icon icon-minus"></i></font></a></span>
+            
+            <h5>服务器组选择</h5>
+          </div>
+          <div class="widget-content">
+            <form action="" method="get" name="servergroupForm">
+              <select name="servergroup" id="servergroup" multiple class="form-control" size=12 onchange="showGroupSelect();">
+              </select>
+              <input  class="btn btn-mini btn-danger pull-right" type="button" value="取消" onclick="clearGroupSelect();"></input >
+              <input  class="btn btn-mini btn-info pull-right" type="button" value="全选" onclick="GroupSelectselectAll();"></input >
+              <input  class="btn btn-mini btn-inverse pull-right" type="button" value="反选" onclick="GroupSelectreverse();"></input>&nbsp;
+              <input  class="btn btn-mini btn-primary pull-left" type="button" value="查看详情" onclick="showGroupDetail();"></input >&nbsp;
+            </form>
+          </div>
+        </div>
+        <div class="widget-box">
+
+          <div class="widget-title"> <span class="icon"><i class="icon-desktop"></i></span>
+            <span class="label label-success pull-right "><a onclick='item_action(this)' value='server_add'><font color=#EEEEEE><i class="icon icon-plus"></i></font></a>&nbsp;<a onclick='item_action(this)' value='server_del'><font color=#EEEEEE><i class="icon icon-minus"></i></font></a></span>
+            
+            <h5>服务器列表选择</h5>
+          </div>
+          <div class="widget-content">
+            <form action="" method="get" name="serveruserForm">
+              <select name="serveruser" id="serveruser" multiple='multiple'  class="form-control" size=18 onchange="showUserSelect();">
+              </select>
+              <input  class="btn btn-mini btn-danger pull-right" type="button" value="取消" onclick="clearUserSelect();"></input >
+              <input  class="btn btn-mini btn-info pull-right" type="button" value="全选" onclick="UserSelectselectAll();"></input >
+              <input  class="btn btn-mini btn-inverse pull-right" type="button" value="反选" onclick="UserSelectreverse();"></input >&nbsp;
+              <input  class="btn btn-mini btn-primary pull-left" type="button" value="查看详情" onclick="showUserDetail();"></input>&nbsp;
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="span10">
+        <div class="widget-box">
+          <div class="widget-title"> <span class="icon"><i class="icon-briefcase"></i></span>
+            <!-- <span class="label label-success pull-right "><a href="/asset/assetinfo.html"><font color=#EEEEEE>点击详情</font></a></span> -->
+            <h5>操作命令</h5>
+          </div>
+          <div class="widget-content">
+            <form class="form-inline">
+              <select id="cmdselect"class="form-control">
+                <option value='-1'>--请选择操作项--</option>
+                <option>ls</option>
+                <option>df -h</option>
+                <option>fdisk -l</option>
+                <option>pwd</option>
+                <option>uptime</option>
+                <option>free -m</option>
+              </select>
+              <select id="argselect" class="form-control">
+                <option>--请选择参数--</option>
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+              </select>
+              <input class="btn btn-primary" type="button" value="运行" onclick="workStart()"></input>
+              <div class="form-inline pull-right">
+                <input class="btn btn-info " type="button" value="上传文件"></input>
+                <input class="btn btn-success " type="button" value="下载文件"></input>
+              </div> 
+            </form>
+            <div id='group_select_list' value='group_select_list'></div>
+            <div id='user_select_list' value='user_select_list'></div>
+          </div>
+  
+
+        <div class="widget-box">
+          <div class="widget-title"> <span class="icon"><i class="icon-bar-chart"></i></span>
+            <span class="label label-success pull-right "><a onclick="clearScreen()"><font color=#EEEEEE><i class="icon icon-undo">清屏</i></font></a></span>
+            <!-- <input class="form-inline btn btn-primary btn-mini pull-right" type="button" value="清屏" onclick="clearScreen()"></input> -->
+            <h5 >结果展示</h5>
+          </div>
+          <div class="widget-content" style="height:570px">
+            <div id="mainbox" style="width: 100%;height:80%;background:#000; opacity: 0.8;color:white;font-family:Microsoft YaHei,Times New Roman,Georgia,Serif;">
+              [Dartou OM]#<br>
+            </div><br>
+            <div id="inputbox" style="width: 100%;height:15%;background:#000; opacity: 0.8;">
+              <!-- <input id="inputbox" type='text' style="width: 100%;height:15%;background:#000; opacity: 0.8;"></input> -->
+              <input id ="cmdenter" style="width: 100%;height:100%;" placeholder='请输入linux命令...' onkeydown="return CMDenter(event)"></input>
+            </div>
+            <!-- <input id="inputbox" type='text' style="width: 100%;height:15%;background:#000; opacity: 0.8;"></input> -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="GroupAddTable" style="display:none;">
+    <br>
+    <center>
+      <table border="0" style="color:#000;">
+        <tr>
+          <td style="text-align:right;"><span>服务器组ID：</span></td>
+            <td><input id="groupid" type="text" name="groupid"/></td>
+        </tr>
+        <tr>
+          <td style="text-align:right;"><span>服务器组名称：</span></td>
+            <td><input id="groupname" type="text" name="groupname"/></td>
+        </tr>
+        <tr>
+          <td style="text-align:right;"><span style="position:relative; top:-5px;">&nbsp;</span></td>
+          <td>已选服务器列表</td>
+          <td>&nbsp;</td>
+          <td>未选服务器列表</td>
+        </tr>
+        <tr>
+          <td style="text-align:right;"><span style="position:relative; top:-5px;">&nbsp;</span></td>
+            <form>
+            <td>
+              <select multiple='multiple' id="members" class="form-control" size=10 name="listLeft">
+<!--                 <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option> -->
+              </select>
+              </td>
+              <td>
+                <!-- <a class='icon icon-arrow-right' onclick="moveDualList( this.form.listLeft,  this.form.listRight, false )"></a><br> -->
+                <!-- <a onclick="moveDualList( this.form.listLeft,  this.form.listRight, false )">1122</a> -->
+                <input  value=">" type="button" onclick="moveDualList( this.form.listLeft,  this.form.listRight, false )"><br>
+                <input value="<" type="button" onclick="moveDualList( this.form.listRight, this.form.listLeft,  false )"><br>
+                <input value=">>"type="button" onclick="moveDualList( this.form.listLeft,  this.form.listRight, true  )"><br>
+                <input value="<<" type="button" onclick="moveDualList( this.form.listRight, this.form.listLeft,  true  )"><br>
+              </td>
+              <td>
+              <select multiple='multiple' id="unselect" class="form-control" size=10 name="listRight">
+              </select>
+            </td>
+          </form>
+        </tr>
+      </table>
+    </center>
+  </div>
+
+<div id="GroupDelTable" style="display:none;">
+    <br>
+    <center>
+      <table border="0" style="color:#000;">
+        <tr>
+          <!-- <td style="text-align:right;"><span style="position:relative; top:-5px;">下属服务器列表：</span></td> -->
+            <td><select multiple='multiple' id="groupdel" class="form-control" size=20>
+<!--                 <option>test.ping</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option> -->
+              </select>
+            </td>
+        </tr>
+      </table>
+    </center>
+  </div>
+
+  <div id="UserAddTable" style="display:none;">
+    <br>
+    <center>
+      <table border="0" style="color:#000;">
+        <tr>
+          <td style="text-align:right;"><span style="position:relative; top:-5px;">主机名：</span></td>
+            <td><input type="text" id="server_name"/></td>
+        </tr>
+        <tr>
+          <td style="text-align:right;"><span style="position:relative; top:-5px;">IP：</span></td>
+          <td><input type="text" id="server_ip"/></td>
+        </tr>
+        <tr>
+          <td style="text-align:right;"><span style="position:relative; top:-5px;">备注信息：</span></td>
+          <td><input type="text" id="server_memo"/></td>
+        </tr>
+      </table>
+    </center>
+  </div>
+
+  <div id="UserDelTable" style="display:none;">
+    <br>
+    <center>
+      <table border="0" style="color:#000;">
+        <tr>
+            <td><select multiple='multiple' id="serverdel" class="form-control" size=20>
+                <option>test.ping</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+              </select>
+            </td>
+        </tr>
+      </table>
+    </center>
+  </div>
+{% endblock %}

@@ -1,0 +1,323 @@
+{% extends "em/base.html" %}
+
+{% block head %}
+
+<link rel="stylesheet" href="/static/em/css/style.css" type="text/css"/>
+
+<script type="text/javascript" src="/static/em/js/jquery-1.4.2.min.js"></script>
+<script type="text/javascript" src="/static/em/js/script.js"></script>
+
+<script type="text/javascript">
+	// $(document).ready(function(){
+	// 	console.log('12')
+	// 	$.ajax({
+	// 		type:'GET',
+	// 		url:'/em/detail_info/',
+	// 		dataType:'json',
+	// 		success:function(val){
+	// 			console.log(val)
+	// 		}
+	// 	})
+
+
+	// });
+	$(document).ready(function(){
+		//判断状态，以不同的颜色进行标示
+		var c_status = $("#c_status").html()
+		console.log(c_status)
+		if(c_status=='进行中'){
+			$("#c_status").addClass("badge-success")
+		}else if(c_status=='已结束'){
+			$("#c_status").addClass("badge-warning")
+		}else if(c_status=='未开始'){
+			$("#c_status").addClass("badge-info")
+		}else{
+			$("#c_status").addClass("badge-important")
+		}
+	});
+
+
+	function AddItems(){
+		layer.open({
+			title:'编辑信息',
+			type: 1,
+			shift:2,
+			skin: 'layui-layer-rim', //加上边框
+			area: ['30%', '65%'], //宽高
+			content:'null',
+			btn:['确认','取消'],
+			yes:function(index){
+
+				layer.alert('null')
+			}
+			});
+	};
+
+
+	function TakeItems(){
+		// console.log($("#addarea").text())
+		if($("#takebox").text() == ""){
+			$("#takebox").append($("#inputbox").html());
+			$("#takebox").append('<div class="detail_line"></div>');
+		}else{
+			$("#takebox").text("");
+		}
+	};
+
+	function takeSubmit(){
+		var items_status=$("select[name='items_status']").val()
+		var handle_time=$("input[name='handle_time']").val()
+		var handle_info=$("textarea[name='handle_info']").val()
+		var handle_id = $("#handle_id").text().split(':')[0].split('-')[1]
+		var create_time = $("#create_time").val()
+		console.log(handle_id)
+		// var start_time=$("input[name='start_time']").val()
+		// var end_time=$("input[name='end_time']").val()
+		// var itmes_relater=$("select[name='itmes_relater']").val()
+		// var itmes_info=$("textarea[name='itmes_info']").val()
+		if(items_status=="" || handle_time =="" || handle_info ==""){
+			layer.msg('所有字段不能为空',{icon: 2});
+		}else{
+			var Date_all = handle_id+'&'+items_status+'&'+handle_time+'&'+handle_info
+			console.log(Date_all)
+			$.ajax({
+				type:'POST',
+				url:'/em/TakeItems/',
+				data:{'data':Date_all},
+				dataType:'text',
+				success:function(ret){
+					if(ret == '1'){
+						TakeItems();
+						window.location.reload();
+						// LoadData();
+					}else{
+						layer.msg('处理时间不能早于发起时间',{icon: 2})
+					}
+				}
+			})
+
+		}
+	}
+
+</script>
+{% endblock %}
+
+{% block content %}
+
+
+	<div class="detail_zone">
+		<div class="detail_content">
+			<div class="row-fluid">
+				<!-- <div class="span12"> -->
+
+					<h3 id="handle_id" style="float:left">ID-{{ detail_obj.id }}:{{ detail_obj.items_title }}</h3>&nbsp;&nbsp;
+					<button class="btn btn-info btn-mini" style="margin-left:10px;margin-top:22px;float:right"><a href="/em/" style="color:white;">返回</a></button>
+					{% if not detail_obj.finish_time %}
+					<button class="btn btn-success btn-mini" style="margin-left:10px;margin-top:22px;float:left" onclick="AddItems();">编辑</button>
+					
+					<button class="btn btn-primary btn-mini" style="margin-top:22px;float:right;" onclick="TakeItems();">处理该事项</button>
+					{% endif %}
+
+					
+					
+				<!-- </div> -->
+			</div>
+			<div class="row-fluid">
+				<div class="span2">
+					<span><strong>事项当前状态:</strong></span>
+				</div>
+				<div class="span10">
+					<span class="badge" id="c_status">{{ detail_obj.items_status }}</span>
+				</div>
+			</div>
+			<div class="row-fluid">
+				<div class="span2">
+					<span><strong>发起人:</strong></span>
+				</div>
+				<div class="span4">
+					<span>{{ detail_obj.items_starter }}</span>
+				</div>
+				<div class="span2">
+					<span><strong>发起时间:</strong></span>
+				</div>
+				<div class="span4">
+					<span id="create_time">{{ detail_obj.create_time }}</span>
+				</div>
+			</div>
+			<div class="row-fluid">
+				<div class="span2">
+					<span><strong>主办人:</strong></span>
+				</div>
+				<div class="span4">
+					<span>{{ detail_obj.items_owner }}</span>
+				</div>
+				<div class="span2">
+					<span><strong>事项计划开始时间:</strong></span>
+				</div>
+				<div class="span4">
+					<span>{{ detail_obj.start_time }}</span>
+				</div>
+			</div>
+			<div class="row-fluid">
+				<div class="span2">
+					<span><strong>知会人:</strong></span>
+				</div>
+				<div class="span4">
+					<span>{{ detail_obj.items_relater }}</span>
+				</div>
+				<div class="span2">
+					<span><strong>事项计划结束时间:</strong></span>
+				</div>
+				<div class="span4">
+					<span>{{ detail_obj.end_time }}</span>
+				</div>
+			</div>
+			<div class="row-fluid">
+				<div class="span2">
+					<span><strong>事项简介:</strong></span>
+				</div>
+				<div class="span4">
+					<span>{{ detail_obj.items_title }}</span>
+				</div>
+				<div class="span2">
+					<span><strong>实际结束时间:</strong></span>
+				</div>
+				<div class="span4">
+					<span>{{ detail_obj.finish_time }}</span>
+				</div>
+			</div>
+			<div class="row-fluid">
+				<div class="span2">
+					<span><strong>事项说明:</strong></span>
+				</div>
+				<div class="span4">
+					<span>{{ detail_obj.items_content }}</span>
+				</div>
+
+			</div>
+			<div class="row-fluid">
+				<div class="span2">
+					</span><strong>当前进度:</strong></span>
+				</div>
+				<div class="span10">
+					<div class="span11">
+						<div class="progress progress-striped active">
+	                  		<div style="width: {{ detail_obj.items_rate }}%;" class="bar"></div>
+	                  		<!-- <div style="width: 12%;" class="bar"></div> -->
+	                	</div>
+					</div>
+					<div class="span1">
+						<span>{{ detail_obj.items_rate }}%</span>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="detail_line"></div>
+		<div id="takebox"></div>
+
+		<div id="inputbox" style="display:none;">
+		  	<left style="padding:5px">
+		    	 <table border="0">
+<!-- 		    	 	<tr>
+		            	<div class="detail_line"></div>
+		            </tr> -->
+		            <tr>
+		            	<td style="text-align:right;width:100px"><span style="position:relative; top:-5px;">事项状态：</span></td>
+		                <td style="text-align:right;">
+		                	<select name="items_status"/>
+		                      <option value="进行中" name="working">进行中</option>
+		                      <option value="已结束" name="nostart">已结束</option>
+		                    </select>
+		                </td>
+
+		                <td style="text-align:right;width:100px"><span style="position:relative; top:-5px;">处理时间：</span></td>
+		                <td><input type="text" name="handle_time" onClick="WdatePicker({skin:'blueFresh',orderdate_end:'%Y-%m-%d %H:%M:%S',dateFmt:'yyyy-MM-dd HH:mm:ss',alwaysUseStartDate:true})" readonly="readonly"/></td>
+
+		                <td style="text-align:right;width:100px"><span style="position:relative; top:-5px;">处理意见：</span></td>
+		                <td><textarea  rows="1" name="handle_info" placeholder="请输入事项描述"></textarea></td>
+
+		                <td style="text-align:right;width:100px"></td>
+		                <td>
+		                	<input style="position:relative; top:-5px;float:right;" type="button" class="btn " value="取消" onclick="TakeItems()";/>&nbsp;
+		                	<input style="position:relative; top:-5px;float:right;" type="button" class="btn btn-primary" value="处理" onclick="takeSubmit();"/>
+		                	
+		                </td>
+		            </tr>
+
+		        </table>
+		     </left>
+		     
+
+		</div>
+
+
+
+		<div class="paimai_list">
+	    	<div class="paimai_content">   
+
+	    		<!--事件完结-->
+	    		{% if detail_obj.finish_time %}
+		    	<div class="list_head">
+		    		<div class="time_box" ><p>事项结束</p></div>
+		            <div class="clear"></div>
+		       </div>   
+		    	<div class="list_content">
+		        	<div class="circle_title">{{ detail_obj.items_owner | slice:"1" }}</div>
+		        	<div class="title_time">
+		        		<h2>&nbsp;&nbsp;{{ detail_obj.finish_time }}</h2>
+		        	</div>
+		            <dl>
+		                <dd class="pm_organ">处理人员：<span>{{ detail_obj.items_owner }}</span></dd>
+		                <dd class="pm_organ">处理信息：<span>{{ detail_obj.finish_info }}</span></dd>
+		                <dd class="pm_organ">处理结果：<span>处理完成</span></dd>
+		            </dl>
+		        </div>
+				{% endif %}
+
+
+
+		        <!--事件处理-->
+		        {% if handle_info%}
+		    	<div class="list_head1">
+		    		<div class="time_box" ><p>事项处理</p></div>
+		            <div class="clear"></div>
+		        </div>
+		        {% for i in handle_info%}
+		    	<div class="list_content">
+		    		
+		        	<div class="circle_title">{{ i.handle_user | slice:"1" }}</div>
+		        	<div class="title_time">
+		        		<h2>&nbsp;&nbsp;{{ i.handle_time }}</h2>
+		        	</div>
+		            <dl>
+		                <dd class="pm_organ">处理人员：<span>{{ i.handle_user }}</span></dd>
+		                <dd class="pm_organ">处理信息：<span>{{ i.handle_info }}</span></dd>
+		                <dd class="pm_organ">处理结果：<span>进行中</span></dd>
+		            </dl>
+		            
+				</div>
+				{% endfor %}
+				{% endif %}
+
+
+		       <!--事件发起-->
+		    	<div class="list_head2">
+		    		<div class="time_box" ><p>事项发起</p></div>
+		            <div class="clear"></div>
+		        </div>
+		    	<div class="list_content">
+		        	<div class="circle_title">{{ detail_obj.items_starter | slice:"1" }}</div>
+		        	<div class="title_time">
+		        		<h2>&nbsp;&nbsp;{{ detail_obj.start_time }}</h2>
+		        	</div>
+		            <dl>
+		                <dd class="pm_organ">处理人员：<span>{{ detail_obj.items_owner }}</span></dd>
+		                <dd class="pm_organ">处理信息：<span>{{ detail_obj.items_content }}</span></dd>
+		                <dd class="pm_organ">处理结果：<span>发起</span></dd>
+		            </dl>
+				</div></div> 
+    	</div>
+	</div>
+
+
+{% endblock %}

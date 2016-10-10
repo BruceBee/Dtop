@@ -1,0 +1,106 @@
+{% extends "V.html" %}
+
+{% block head %}
+<style>
+
+.widget-content {
+    border-bottom: 0px !important;
+}
+</style>
+
+<script type="text/javascript">
+$(function(){
+	//init();
+
+});
+
+function getDnsInfo(){
+	var domain_id=arguments[0];
+	$.ajax({
+		url:'/auto_data/recordlist_sync',
+		data:"domain_id="+domain_id+"&dnsop={{ true_name }}",
+		type:'post',
+		cache:false,
+		dataType:'json',
+		success:function(ret){
+			if(!ret){
+				layer.alert("同步异常！");
+			}else{
+				//服务器成功响应处理函数
+				var result='<button class="btn btn-success">'+domain_id+'</button><hr />';
+				$.each(ret,function(){
+					result+='<button class="btn btn-info">'+this[0]+'</button>'+'<button class="btn btn-warning">'+this[1]+'</button>'+'</button>'+'<button class="btn btn-danger">'+this[2]+'</button>'+'<hr />';
+				});
+				layer.alert(result);
+			}
+		},error:function(){
+			layer.alert("未知异常！");
+		}
+	});
+}
+
+function getDomainInfo(){
+	$('#info_btn').hide();
+	$('#info_pg').show();
+	$('#wait_info').show();
+	$.ajax({
+		url:'/auto_data/domainlist_sync',
+		data:"hostop={{ true_name }}",
+		type:'post',
+		cache:false,
+		dataType:'json',
+		success:function(ret){
+			$('#info_pg').hide();
+			$('#wait_info').hide();
+			$('#info_btn').show();
+			if(!ret){
+				layer.alert("同步异常！");
+			}else{
+				//服务器成功响应处理函数
+				console.log(ret)
+				
+				//var ret=JSON.parse(val);
+				for(var i in ret){
+					$("#info_result").append($('<hr />'));
+					$("#info_result").append($('<button class="btn btn-info"></button>').html(i));
+					$("#info_result").append($('<button class="btn btn-warning"></button>').html(ret[i][0]));
+					$("#info_result").append($('<button class="btn btn-danger"></button>').html(ret[i][1]));
+					if(ret[i][1]=='created'||ret[i][1]=='updated'){
+						$("#info_result").append($('<button class="btn btn-success" onclick="getDnsInfo('+i+');"></button>').html('同步记录值'));
+					}
+				}
+			}
+		},error:function(){
+			$('#info_pg').hide();
+			$('#info_btn').show();
+			layer.alert("未知异常！");
+		}
+	});
+}
+
+</script>
+
+{% endblock %}
+
+{% block content %}
+<!-- 承上连接V.html：content+content-header -->
+
+  <div class="container-fluid" align=center>
+
+	<div class="alert alert-block">
+	<a class="close" data-dismiss="alert" href="#">×</a>
+	<div class="widget-content">
+
+	<input id="info_btn" class="btn btn-info btn-large" type="button" value="同步DNSPOD域名信息" onclick="getDomainInfo();" />
+	<img style="display:none;" id="info_pg" class="btn-large" src="/static/matrix/images/loading.gif" />
+	<a style="display:none;" id="wait_info" class="btn-large">同步大约需要2-3分钟，请耐心等待...</a>
+
+	</div>
+	<div id="info_result"></div>
+	</div>
+
+  </div>
+
+{% endblock %}
+
+

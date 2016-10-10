@@ -1,0 +1,426 @@
+{% extends "V.html" %}
+
+{% block head %}
+
+<script type="text/javascript" src="/js/layer/layer.js"></script>
+<script type="text/javascript" src="/js/dataBase.js"></script>
+<script language="javascript" type="text/javascript" src="/js/preview/WdatePicker.js"></script>
+<script type="text/javascript">
+	$(document).ready(function(){
+		loadTable(1);
+		$('#chaxun').click(function(){
+            loadTable(1);
+            getlinker();
+
+        });
+	});
+
+  function addDialog(idValue,timeValue,rmValue,n1Value,n2Value,n3Value,mcValue,dcValue,aValue,bValue,cValue,mrValue,cdValue,wdValue,prValue,tuValue,miValue,leValue,in1Value,cpValue,o1Value,crdValue,in2Value,o2Value){
+    var addTableHtml=$("#addTable").clone();
+    var inputId=addTableHtml.find("input[name='id']");
+      inputId.attr("id","id");
+      if(idValue){
+        inputId.attr("value",idValue);
+      }
+    var inputTime=addTableHtml.find("input[name='time']");
+      inputTime.attr("id","time");
+      if(timeValue){
+        inputTime.attr("value",timeValue);
+      }
+    var inputRm=addTableHtml.find("input[name='recordman']");
+      inputRm.attr("id","recordman");
+      if(rmValue){
+        inputRm.attr("value",rmValue);
+      }
+    var inputN1=addTableHtml.find("input[name='number1']");
+      inputN1.attr("id","number1");
+      if(n1Value){
+        inputN1.attr("value",n1Value);
+      }
+    var inputN2=addTableHtml.find("input[name='number2']");
+      inputN2.attr("id","number2");
+      if(n2Value){
+        inputN2.attr("value",n2Value);
+      }
+    var inputN3=addTableHtml.find("input[name='number3']");
+      inputN3.attr("id","number3");
+      if(n3Value){
+        inputN3.attr("value",n3Value);
+      }
+    var inputO1=addTableHtml.find("input[name='other_1']");
+      inputO1.attr("id","other_1");
+      if(o1Value){
+        inputO1.attr("value",o1Value);
+      }
+    var inputO2=addTableHtml.find("input[name='other_2']");
+      inputO2.attr("id","other_2");
+      if(o2Value){
+        inputO2.attr("value",o2Value);
+      }
+
+    var buttonValue="添加";
+    if(idValue){
+      buttonValue="更新";
+    }
+    
+    layer.open({
+          title:'添加信息',
+          type: 1,
+          shift:2,
+          skin: 'layui-layer-rim', //加上边框
+          area: ['40%', '76%'], //宽高
+          content:addTableHtml.html(),
+          btn:[buttonValue,'取消'],
+          yes:function(index){
+            var id=$("#id").val();
+            var time=$("#time").val();
+            var recordman=$("#recordman").val();
+            var number1=$("#number1").val();
+            var number2=$("#number2").val();
+            var number3=$("#number3").val();
+            var main_condition=$("input[name='main_condition']:checked").val();
+            var deputy_condition=$("input[name='deputy_condition']:checked").val();
+			if(main_condition==null||deputy_condition==null){
+				alert("请值班负责巡检的小伙伴认真填写，综合部同事会定期抽查！");
+				return false;
+			}
+            var a=$("input[name='a']:checked").val();
+            var b=$("input[name='b']:checked").val();
+            var c=$("input[name='c']:checked").val();
+            var meeting_room=$("input[name='meeting_room']:checked").val();
+            var company_door=$("input[name='company_door']:checked").val();
+            var water_dispenser=$("input[name='water_dispenser']:checked").val();
+            var printer=$("input[name='printer']:checked").val();
+            var tube=$("input[name='tube']:checked").val();
+            var miehuoqi=$("input[name='miehuoqi']:checked").val();
+            var leaking=$("input[name='leaking']:checked").val();
+            var in_out_1=$("input[name='in_out_1']:checked").val();
+            var computer=$("input[name='computer']:checked").val();
+            var other_1=$("#other_1").val();
+            var computer_room_door=$("input[name='computer_room_door']:checked").val();
+            var in_out_2=$("input[name='in_out_2']:checked").val();
+            var other_2=$("#other_2").val();
+            $.ajax({
+              type:'POST',
+              url:'/preview_data/inspection_editFun',
+              data:'id='+id+'&time='+time+'&recordman='+recordman+'&number1='+number1+'&number2='+number2+'&number3='+number3+'&main_condition='+main_condition+'&deputy_condition='+deputy_condition+'&a='+a+'&b='+b+'&c='+c+'&meeting_room='+meeting_room+'&company_door='+company_door+'&water_dispenser='+water_dispenser+'&printer='+printer+'&tube='+tube+'&miehuoqi='+miehuoqi+'&leaking='+leaking+'&in_out_1='+in_out_1+'&computer='+computer+'&other_1='+other_1+'&computer_room_door='+computer_room_door+'&in_out_2='+in_out_2+'&other_2='+other_2,
+              dataType:'text',
+              success:function(val){
+                layer.close(index);
+                if(val=='1'){
+                  loadTable(1);
+                }else{
+                  layer.alert("操作失败");
+                }
+              },error:function(){
+                layer.close(index);
+                laery.alert("操作失败");
+              }
+            });
+            
+          }
+      });
+}
+
+	function loadTable(val){
+			$("#dataFrom").find("input[name='page']").val(val);
+			$("#dataTab").dataTable({
+				title:'办公区域巡检报表(双击修改)',
+				columns:[
+                {key:'id',check:true,checkAll:true,align:'center',valign:'middle'},
+				{key:'time',name:'记录时间',align:'center',valign:'middle'},
+				{key:'recordman',name:'记录人',align:'center',valign:'middle'},
+				{key:'number1',name:'UPS温度℃',align:'center',valign:'middle'},
+				{key:'number2',name:'主空调温度℃',align:'center',valign:'middle'},
+				{key:'number3',name:'副空调温度℃',align:'center',valign:'middle'},
+				{key:'main_condition',name:'主空调指示灯',align:'center',valign:'middle'},
+				{key:'deputy_condition',name:'副空调指示灯',align:'center',valign:'middle'},
+				{key:'a',name:'发电机',align:'center',valign:'middle'},
+				{key:'b',name:'呼叫中心',align:'center',valign:'middle'},
+				{key:'c',name:'web主站访问',align:'center',valign:'middle'},
+				{key:'meeting_room',name:'会议室是否正常',align:'center',valign:'middle'},
+				{key:'company_door',name:'公司大门是否关好',align:'center',valign:'middle'},
+				{key:'water_dispenser',name:'饮水机是否已关',align:'center',valign:'middle'},
+				{key:'printer',name:'打印机设备是否已关',align:'center',valign:'middle'},
+				{key:'tube',name:'灯管是否已关',align:'center',valign:'middle'},
+				{key:'miehuoqi',name:'灭火器设备是否正常',align:'center',valign:'middle'},
+				{key:'leaking',name:'是否漏水积水',align:'center',valign:'middle'},
+				{key:'in_out_1',name:'有无可疑人进出',align:'center',valign:'middle'},
+				{key:'computer',name:'办公电脑是否关闭',align:'center',valign:'middle'},
+				{key:'other_1',name:'异常情况(六楼)',align:'center',valign:'middle'},
+				{key:'computer_room_door',name:'机房门是否关好(七楼)',align:'center',valign:'middle'},
+				{key:'in_out_2',name:'有无可疑人进出(七楼)',align:'center',valign:'middle'},
+				{key:'other_2',name:'异常情况(七楼)',align:'center',valign:'middle'}],
+				formid:'dataFrom',
+                loadAfter:tab_trOnclick,
+			});
+	}
+
+	 
+  
+  /**
+  行添加双击事件
+  **/
+  function tab_trOnclick(){
+    var trs=$("#dataFrom_table tbody tr");
+    for(var i=0;i<trs.length;i++){
+      $(trs[i]).on("dblclick",function(){
+        var tr=$(this);
+        var tds=tr.find("td");
+        var id=$(tds[0]).find("input").val();
+        addDialog(id,$(tds[1]).text(),$(tds[2]).text(),$(tds[3]).text(),$(tds[4]).text(),$(tds[5]).text(),$(tds[6]).text(),$(tds[7]).text(),$(tds[8]).text(),$(tds[9]).text(),$(tds[10]).text(),$(tds[11]).text(),$(tds[12]).text(),$(tds[13]).text(),$(tds[14]).text(),$(tds[15]).text(),$(tds[16]).text(),$(tds[17]).text(),$(tds[18]).text(),$(tds[19]).text(),$(tds[20]).text(),$(tds[21]).text(),$(tds[22]).text(),$(tds[23]).text());
+      });
+    }
+  }
+  
+  /**
+  删除功能
+  **/
+  function delData(){
+     var inputChecks=$("input:checkbox[name='dataFrom_check']:checked");
+     if(inputChecks.length==0){
+      layer.alert('请选中删除项！');
+      return;
+    }
+    layer.confirm('确认删除?', {icon: 2, title:'提示'},function(index){
+      var orders='';
+      for(var i=0;i<inputChecks.length;i++){
+        orders+=inputChecks[i].value;
+        if(i!=inputChecks.length-1){
+          orders+=',';
+        }
+      }
+      $.ajax({
+        type:'POST',
+        url:'/preview_data/inspection_deleteFun',
+        dataType:'text',
+        data:'id='+orders,
+        success:function(text){
+               layer.close(index);
+               if(text=='1'){
+                loadTable(1);
+               }else{
+                layer.alert('操作失败');
+               }
+        },error:function(){
+          layer.close(index);
+          layer.alert('操作失败');
+        }
+      });
+    });
+      
+  }
+	
+
+	function keyEnter(event){
+     var e = event || window.event || arguments.callee.caller.arguments[0];
+     if(e && e.keyCode==13){ // enter 键
+         loadTable(1);
+        return false;
+      }
+
+    }
+
+</script>
+<style type="text/css">
+	input{
+		margin-bottom: 0 !important;
+	}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- 承上连接V.html：content+content-header -->
+
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="span12">
+<!--
+	<div id="xxxeee" style="display:none">
+
+		<iframe id="iframe_linker" src="http://10.1.100.125:8082/jobPlanFreeTimeAction_viewSelectedWeek.action" style="width:100%;border:0" scrolling="no"></iframe>
+		
+	</div>
+-->
+    <form action="/preview_data/inspection_pagedataList" id="dataFrom" onsubmit="return false">
+    	<input type="hidden" id="page" name="page" value="1"/>
+        <input type="hidden" id="num" name="num" value="6"/>
+		<input class="btn btn-primary" type="button" name="addButton" value="添加" onclick="addDialog();" style="float:left;"/> 
+          {% if perms.Matrix.delete_report %}
+		<input class="btn btn-danger" type="button" name="deleteButton" value="删除" onclick="delData();" style="float:left;"/>
+          {% endif %}
+        <div style="text-align:right;">
+			<input id="startt" name="startt" type='text' onClick="WdatePicker({skin:'blueFresh',orderdate_end:'%Y-%m-%d %H:%M:%S',dateFmt:'yyyy-MM-dd HH:mm:ss',alwaysUseStartDate:true})" readonly="readonly" placeholder="开始日期"/>
+            <input name="endt" type='text' onClick="WdatePicker({skin:'blueFresh',orderdate_end:'%Y-%m-%d %H:%M:%S',dateFmt:'yyyy-MM-dd HH:mm:ss',alwaysUseStartDate:true})" readonly="readonly" placeholder="结束
+日期"/>
+            <button class="btn btn-success" type="button" id="chaxun">查询</button>
+
+		</div>
+		
+    </form>
+		<div id="dataTab"></div>
+
+    <!-- end aa-->    
+    
+  <div id="addTable" style="display:none;">
+      <center>
+           <table border="0" style="color:#000;">
+               <tr style="display:none;">
+                  <td style="text-align:right;"><span style="position:relative; top:-5px;"></span></td>
+                    <td><input type="text" name="id"/></td>
+                </tr>
+                <tr>
+                  <td style="text-align:right;"><span style="position:relative; top:-5px;">记录时间：</span></td>
+                    <td><input name="time" type='text' onClick="WdatePicker({skin:'blueFresh',orderdate_end:'%Y-%m-%d %H:%M:%S',dateFmt:'yyyy-MM-dd HH:mm:ss',alwaysUseStartDate:true})" readonly="readonly"/></td>
+                </tr>
+                <tr>
+                  <td style="text-align:right;"><span style="position:relative; top:-5px;">记录人：</span></td>
+                    <td>
+					<input type="text" name="recordman"/></td>
+					</td>
+                </tr>
+                <tr>
+                  <td style="text-align:right;"><span style="position:relative; top:-5px;">UPS温度℃：</span></td><br>
+                    <td><input type="text" name="number1"/></td>
+                </tr>
+                <tr>
+                  <td style="text-align:right;"><span style="position:relative; top:-5px;">主空调温度℃：</span></td>
+                    <td><input type="text" name="number2"/></td>
+                </tr>
+                <tr>
+                  <td style="text-align:right;"><span style="position:relative; top:-5px;">副空调温度℃：</span></td>
+                    <td><input type="text" name="number3"/></td>
+                </tr>
+                <tr>
+                  <td style="text-align:right;"><span style="position:relative; top:-5px;">主空调指示灯：</span></td>
+				  <td>
+				  <input type="radio" name="main_condition" value="常绿"><font style="color:green;">常绿（正常并制冷）</font>
+				  <input type="radio" name="main_condition" value="绿闪" >绿闪（正常恒温不制冷）
+				  <input type="radio" name="main_condition" value="红灯"><font style="color:red;">红灯（异常）</font>
+				  </td>
+                </tr>
+                <tr>
+                  <td style="text-align:right;"><span style="position:relative; top:-5px;">副空调指示灯：</span></td>
+				  <td>
+				  <input type="radio" name="deputy_condition" value="常绿"><font style="color:green;">常绿（正常并制冷）</font>
+				  <input type="radio" name="deputy_condition" value="绿闪" >绿闪（正常恒温不制冷）
+				  <input type="radio" name="deputy_condition" value="红灯"><font style="color:red;">红灯（异常）</font>
+				  </td>
+                </tr>
+				<tr>
+					<td style="text-align:right;"><span style="position:relative; top:-5px;">发电机：</span></td>
+					<td>
+					<input name="a" type="radio" value="正常" checked="checked" >正常
+				    <input name="a" type="radio" value="异常"><font style="color:red;">异常</font>
+					</td>
+				</tr>
+				<tr>
+					<td style="text-align:right;"><span style="position:relative; top:-5px;">呼叫中心：</span></td>
+					<td>
+					<input name="b" type="radio" value="正常" checked="checked" >正常
+				    <input name="b" type="radio" value="异常"><font style="color:red;">异常</font>
+					</td>
+				</tr>
+				<tr>
+					<td style="text-align:right;"><span style="position:relative; top:-5px;">web主站访问：</span></td>
+					<td>
+					<input name="c" type="radio" value="可以访问" checked="checked" >可以访问
+				    <input name="c" type="radio" value="异常"><font style="color:red;">异常</font>
+					</td>
+				</tr>
+				<tr>
+					<td style="text-align:right;"><span style="position:relative; top:-5px;">会议室是否正常：</span></td>
+					<td>
+					<input name="meeting_room" type="radio" value="是" checked="checked" >是
+				    <input name="meeting_room" type="radio" value="否"><font style="color:red;">否</font>
+					</td>
+				</tr>
+				<tr>
+					<td style="text-align:right;"><span style="position:relative; top:-5px;">公司大门是否关好：</span></td>
+					<td>
+					<input name="company_door" type="radio" value="是" checked="checked" >是
+				    <input name="company_door" type="radio" value="否"><font style="color:red;">否</font>
+					</td>
+				</tr>
+				<tr>
+					<td style="text-align:right;"><span style="position:relative; top:-5px;">饮水机是否正常：</span></td>
+					<td>
+					<input name="water_dispenser" type="radio" value="是" checked="checked" >是
+				    <input name="water_dispenser" type="radio" value="否"><font style="color:red;">否</font>
+					</td>
+				</tr>
+				<tr>
+					<td style="text-align:right;"><span style="position:relative; top:-5px;">打印设备是否已关：</span></td>
+					<td>
+					<input name="printer" type="radio" value="是" checked="checked" >是
+				    <input name="printer" type="radio" value="否"><font style="color:red;">否</font>
+					</td>
+				</tr>
+				<tr>
+					<td style="text-align:right;"><span style="position:relative; top:-5px;">灯管是否已关：</span></td>
+					<td>
+					<input name="tube" type="radio" value="是" checked="checked" >是
+				    <input name="tube" type="radio" value="否"><font style="color:red;">否</font>	
+					</td>
+				</tr>
+				<tr>
+					<td style="text-align:right;"><span style="position:relative; top:-5px;">灭火设备是否正常：</span></td>			
+					<td>
+					<input name="miehuoqi" type="radio" value="是" checked="checked" >是
+				    <input name="miehuoqi" type="radio" value="否"><font style="color:red;">否</font>
+					</td>
+				</tr>
+				<tr>
+					<td style="text-align:right;"><span style="position:relative; top:-5px;">是否漏水积水：</span></td>
+					<td>
+					<input name="leaking" type="radio" value="是">是
+				    <input name="leaking" type="radio" value="否" checked="checked"><font style="color:red;">否</font>	
+					</td>
+				</tr>
+				<tr>
+					<td style="text-align:right;"><span style="position:relative; top:-5px;">有无可疑人进出：</span></td>					 
+					<td>
+					<input name="in_out_1" type="radio" value="有">有
+				    <input name="in_out_1" type="radio" value="无" checked="checked"><font style="color:red;">无</font>						 
+					</td>
+				</tr>
+				<tr>
+					<td style="text-align:right;"><span style="position:relative; top:-5px;">办公电脑是否关闭：</span></td>
+					<td>
+					<input name="computer" type="radio" value="是" checked="checked">是
+				    <input name="computer" type="radio" value="否"><font style="color:red;">否</font>
+					</td>
+				</tr>
+				<tr>
+					<td style="text-align:right;"><span style="position:relative; top:-5px;">六楼异常情况(明确到座位号)：</span></td>
+					<td><input type="text" name="other_1" value="无"/></td>
+				</tr>	
+				<tr>
+					<td style="text-align:right;"><span style="position:relative; top:-5px;">机房门是否关好(七楼)：</span></td>
+					<td>
+					<input name="computer_room_door" type="radio" value="是" checked="checked" >是
+				    <input name="computer_room_door" type="radio" value="否"><font style="color:red;">否</font>
+					</td>
+				</tr>
+				<tr>
+					<td style="text-align:right;"><span style="position:relative; top:-5px;">有无可疑人进出(七楼)：</span></td>
+					<td>
+					<input name="in_out_2" type="radio" value="有">有
+                    <input name="in_out_2" type="radio" value="无" checked="checked"><font style="color:red;">无</font>
+					</td>
+				</tr>
+				<tr>
+					<td style="text-align:right;"><span style="position:relative; top:-5px;">七楼异常情况(明确到座位号):</span></td>
+					<td><input type="text" name="other_2" value="无"/></td>
+				</tr>
+            </table>
+         </center>
+   </div>
+
+
+
+   </div>
+   </div>
+   </div>
+
+{% endblock %}

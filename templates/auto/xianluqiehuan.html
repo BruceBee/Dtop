@@ -1,0 +1,207 @@
+{% extends "V.html" %}
+
+{% block head %}
+<style>
+.bk{
+	background: #EEE;
+	border: 0px;
+}
+span[name='checkValue']{
+	position:relative;
+	top:4px;
+}
+</style>
+<script type="text/javascript">
+	function xlqh(obj){
+    	$('#btn').hide();
+    	$('#btn_pg').fadeIn('slow');
+		var chk_value =[];
+		$('input[name="checkbox"]:checked').each(function(){
+			chk_value.push($(this).val());
+		});
+        var fuwuqi = $('input[name="fuwuqi"]:checked').val()
+        var xianlu = $('input[name="xianlu"]:checked').val()
+    	$.ajax({
+        	url:'/sch_data/sch_xianlu',
+        	data:{checkbox:chk_value,fuwuqi:fuwuqi,xianlu:xianlu,flag:obj.value},
+        	type:'post',
+        	cache:false,  
+        	dataType:'text',  
+        	success:function(val){
+            	$('#btn_pg').hide();
+            	$('#btn').show();
+				$('#result').html(val);
+        	},error:function(){
+            	$('#btn_pg').hide();
+            	$('#btn').show();
+            	alert("未知异常！");
+        	}
+    	});
+	}
+
+    function selectCheckBoxes(domId,value) { 
+    
+        var inputs = document.getElementById(domId).getElementsByTagName("input"); 
+        
+        for(var i = 0; i < inputs.length; i++) { 
+            if (inputs[i].type == 'checkbox') { 
+                inputs[i].checked=value; 
+            } 
+        } 
+    } 
+
+	$(document).ready(function(){
+		$(".shiyong").click(function(){
+			$(".shiyongxuzhi").fadeToggle('fast');
+		});
+	});
+	$(document).ready(function(){
+		$(".flip20").click(function(){
+			$(".panel20").fadeToggle('fast');
+		});
+	});
+	$(document).ready(function(){
+		$(".flip21").click(function(){
+			$(".panel21").fadeToggle('fast');
+		});
+	});
+	$(document).ready(function(){
+		$(".flip22").click(function(){
+			$(".panel22").fadeToggle('fast');
+		});
+	});
+</script>
+{% endblock %}
+
+{% block content %}
+<!-- 承上连接V.html：content+content-header -->
+<div class="" style="padding:0 0 0 30px">
+   <div class="">
+		<p style="font-size:18px;color:purple;">三大系统部署图：&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="/img/20.png" target="_blank">点击20</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="/img/21.png" target="_blank">点击21</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="/img/22.png" target="_blank">点击22</a></p>
+		<p><input type="button" value="使用须知" class="shiyong btn btn-primary" /><div class="shiyongxuzhi" style="display:none;"><p style="font-size:18px;color:red;">
+		使用须知：该板块提供两个功能，切换线路脚本启动/停止和手动切换线路，支持同时操作多个拨号器。<br />
+        （1）若是需要用到脚本启动和停止功能，则只需要勾选拨号器，切记不要勾选线路、服务端。<br />
+        （2）若是需要用到切换线路功能，则需要同时勾选拨号器、服务端和线路。<br />
+        （3）若是人工切换线路，则需先停止脚本，否则依然会自动切换线路。
+		</p></div></p>
+        <form name="form" method="" action=""> 
+            <font style="font-size:18px;color:purple;"><p>请勾选拨号器：</font>
+            <div id="div20"><font style="font-size:18px;color:blue;font-family:隶书;"><p><input type="button" value="20系统" class="flip20 btn btn-primary" />&nbsp;&nbsp;
+			<input type="checkbox" onclick="selectCheckBoxes('div20',this.checked)" />全选</p></font>
+            <font style="font-size:18px;"><div class="panel20" style="display:none;"><p><b>
+			<input name="checkbox" type="checkbox" value="1001" /><span name="checkValue">000001001</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="1002" /><span name="checkValue">000001002</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="1004" /><span name="checkValue">000001004</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="1009" /><span name="checkValue">000001009</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="1014" /><span name="checkValue">000001014</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="1016" /><span name="checkValue">000001016</span><br />
+            <input name="checkbox" type="checkbox" value="1017" /><span name="checkValue">000001017</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="1019" /><span name="checkValue">000001019</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="1025" /><span name="checkValue">000001025</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="1028" /><span name="checkValue">000001028</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="1029" /><span name="checkValue">000001029</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="22001001" /><span name="checkValue">022001001</span><br />
+            <input name="checkbox" type="checkbox" value="28001005" /><span name="checkValue">028001005</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="663001001" /><span name="checkValue">663001001</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="663001002" /><span name="checkValue">663001002</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="663001008" /><span name="checkValue">663001008</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="663001009" /><span name="checkValue">663001009</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="663001010" /><span name="checkValue">663001010</span><br />
+            <input name="checkbox" type="checkbox" value="663001011" /><span name="checkValue">663001011</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="663001012" /><span name="checkValue">663001012</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="754001001" /><span name="checkValue">754001001</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="754001002" /><span name="checkValue">754001002</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="754001009" /><span name="checkValue">754001009</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="754001014" /><span name="checkValue">754001014</span><br />
+            <input name="checkbox" type="checkbox" value="754001018" /><span name="checkValue">754001018</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="754001021" /><span name="checkValue">754001021</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="754001022" /><span name="checkValue">754001022</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="754001023" /><span name="checkValue">754001023</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="754001024" /><span name="checkValue">754001024</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="754001025" /><span name="checkValue">754001025</span><br />
+            <input name="checkbox" type="checkbox" value="755001001" /><span name="checkValue">755001001</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="755001003" /><span name="checkValue">755001003</span>&nbsp;&nbsp;
+			<input name="checkbox" type="checkbox" value="755001004" /><span name="checkValue">755001004</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="755001005" /><span name="checkValue">755001005</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="755001006" /><span name="checkValue">755001006</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="898001001" /><span name="checkValue">898001001</span>&nbsp;&nbsp;
+            <!-- <input name="checkbox" type="checkbox" value="898001001" /><span name="checkValue">898001001</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="898001002" /><span name="checkValue">898001002</span> --></div></b></p></div>
+            <div id="div21"><font style="font-size:18px;color:blue;font-family:隶书;"><p><input type="button" value="21系统" class="flip21 btn btn-primary" />&nbsp;&nbsp;
+			<input type="checkbox" onclick="selectCheckBoxes('div21', this.checked)" />全选</p></font>
+			<div class="panel21" style="display:none;"><p><b>
+			<input name="checkbox" type="checkbox" value="1003" /><span name="checkValue">000001003</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="1008" /><span name="checkValue">000001008</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="1010" /><span name="checkValue">000001010</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="1013" /><span name="checkValue">000001013</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="1020" /><span name="checkValue">000001020</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="1021" /><span name="checkValue">000001021</span><br />
+            <input name="checkbox" type="checkbox" value="1022" /><span name="checkValue">000001022</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="1033" /><span name="checkValue">000001033</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="22001002" /><span name="checkValue">022001002</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="25001001" /><span name="checkValue">025001001</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="28001004" /><span name="checkValue">028001004</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="663001006" /><span name="checkValue">663001006</span><br />
+            <input name="checkbox" type="checkbox" value="663001007" /><span name="checkValue">663001007</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="754001004" /><span name="checkValue">754001004</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="754001006" /><span name="checkValue">754001006</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="754001007" /><span name="checkValue">754001007</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="754001016" /><span name="checkValue">754001016</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="754001017" /><span name="checkValue">754001017</span><br />
+            <input name="checkbox" type="checkbox" value="754001026" /><span name="checkValue">754001026</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="755001007" /><span name="checkValue">755001007</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="755001008" /><span name="checkValue">755001008</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="898001003" /><span name="checkValue">898001003</span>&nbsp;&nbsp;
+            <!-- <input name="checkbox" type="checkbox" value="898001003" /><span name="checkValue">898001003</span> --> </div></b></p></div>
+            <div id="div22"><font style="font-size:18px;color:blue;font-family:隶书;"><p><input type="button" value="22系统" class="flip22 btn btn-primary" />&nbsp;&nbsp;
+			<input type="checkbox" onclick="selectCheckBoxes('div22', this.checked)" />全选</p></font>
+            <div class="panel22" style="display:none;"><p><b>
+			<input name="checkbox" type="checkbox" value="1007" /><span name="checkValue">000001007</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="1012" /><span name="checkValue">000001012</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="1018" /><span name="checkValue">000001018</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="1023" /><span name="checkValue">000001023</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="1024" /><span name="checkValue">000001024</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="1026" /><span name="checkValue">000001026</span><br />
+            <input name="checkbox" type="checkbox" value="1027" /><span name="checkValue">000001027</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="28001001" /><span name="checkValue">028001001</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="28001003" /><span name="checkValue">028001003</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="663001003" /><span name="checkValue">663001003</span>&nbsp;&nbsp;
+			<input name="checkbox" type="checkbox" value="663001004" /><span name="checkValue">663001004</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="663001005" /><span name="checkValue">663001005</span><br />
+            <input name="checkbox" type="checkbox" value="754001003" /><span name="checkValue">754001003</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="754001005" /><span name="checkValue">754001005</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="754001008" /><span name="checkValue">754001008</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="754001013" /><span name="checkValue">754001013</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="754001015" /><span name="checkValue">754001015</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="754001030" /><span name="checkValue">754001030</span><br />
+            <input name="checkbox" type="checkbox" value="754001031" /><span name="checkValue">754001031</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="754001032" /><span name="checkValue">754001032</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="755001002" /><span name="checkValue">755001002</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="755001009" /><span name="checkValue">755001009</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="755001010" /><span name="checkValue">755001010</span>&nbsp;&nbsp;
+            <input name="checkbox" type="checkbox" value="898001002" /><span name="checkValue">898001002</span><br />
+            <input name="checkbox" type="checkbox" value="898001004" /><span name="checkValue">898001004</span>&nbsp;&nbsp;
+            <!-- <input name="checkbox" type="checkbox" value="898001004" /><span name="checkValue">898001004</span> --></div></b></p></div>
+            <font style="font-size:18px;color:purple;"><p>请勾选服务端：</p></font>
+            <p><b><input name="fuwuqi" type="radio" value="11" /><span name="checkValue">MASTER</span>&nbsp;&nbsp;
+            <input name="fuwuqi" type="radio" value="22" /><span name="checkValue">MON</span></b></p>
+            <font style="font-size:18px;color:purple;"><p>请勾选线路：</p></font>
+            <p><b><input name="xianlu" type="radio" value="0" /><span name="checkValue">直连</span>&nbsp;&nbsp;
+            <input name="xianlu" type="radio" value="1" /><span name="checkValue">维用</span>&nbsp;&nbsp;
+            <input name="xianlu" type="radio" value="2" /><span name="checkValue">互盟</span>&nbsp;&nbsp;
+            <input name="xianlu" type="radio" value="3" /><span name="checkValue">深信服</span></b></p>
+            <p><font style="color:blue;font-size:18px;"><div id='btn'>
+            <input id="start_btn" name="start_btn" type="button" value="启动脚本" class="btn btn-primary" onclick='javascript:xlqh(this);'/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input id="stop_btn" name="stop_btn" type="button" value="停止脚本" class="btn btn-success" onclick='javascript:xlqh(this);'/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input id="qh_btn" name="qh_btn" type="button" value="确定切换" class="btn btn-info" onclick='javascript:xlqh(this);'/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input name="reset" type="reset" value="全部重置" class="btn btn-warning" /></div></font>
+			<img style="display:none;" id="btn_pg" class="btn-large" src="/images/loading.gif" />
+			</p>
+		</form>
+		<div style="border-left:2px solid #F00;"><p style="font-size:18px;color:purple;">结果返回区</p></div>
+		<div style="border-left:2px solid #F00;" id="result"></div>
+	</div>
+</div>
+{% endblock %}
+
+

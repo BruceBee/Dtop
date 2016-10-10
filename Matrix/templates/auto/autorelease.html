@@ -1,0 +1,400 @@
+{% extends "V.html" %}
+
+{% block head %}
+<style>
+
+input[type="checkbox"] {
+	margin: 0 !important;
+}
+.widget-content {
+    border-bottom: 0px !important;
+}
+</style>
+
+<link rel="stylesheet" href="/static/matrix/js/select2/dist/css/select2.min.css" ></link>
+<script type="text/javascript" src="/static/matrix/js/layer/layer.js"></script>
+<script type="text/javascript" src="/static/matrix/js/ajaxfileupload.js"></script>
+<script type="text/javascript" src="/static/matrix/js/select2/dist/js/select2.min.js"></script>
+
+<script type="text/javascript">
+$(function(){
+	//initschid();
+
+	$("#schid").change(schid_change);
+});
+
+/*
+function getInfo(){
+	$('#info_btn').hide();
+	$('#info_pg').show();
+	var info=$("#info").val();
+	$.ajax({
+		url:'/sch_data/search_info',
+		data:{info:info},
+		type:'post',
+		cache:false,
+		dataType:'text',
+		success:function(val){
+			$('#info_pg').hide();
+			$('#info_btn').show();
+			if(val=='0'){
+				alert("请输入正确的设备ID号！");
+			}else{
+				$("#info_result").html(val);
+			}
+		},error:function(){
+			$('#info_pg').hide();
+			$('#info_btn').show();
+			alert("未知异常！");
+		}
+	});
+}
+
+
+
+function upWav(){
+	var upwav=$("#upwav").val();
+	if(upwav!=""&&upwav!=null){
+
+		$('#upwav_btn').hide();
+		$('#upwav_pg').show();
+
+		$("#upwav_result").empty();
+		$("#upwav_result").append($("<p></p>").html("正在上传录音，稍候(请勿刷新或关闭页面)↓"));
+		$("#upwav_result").append($("<hr/>"));
+
+		arr_upwav=upwav.split(/[\r\n]/g);
+		var flag_sc="";
+		for(var i=0;i<arr_upwav.length;i++){
+			if(arr_upwav[i]!=""&&arr_upwav[i]!=null){
+				$.ajax({
+					url:'/sch_data/sch_upwav',
+					data:{upwav:$.trim(arr_upwav[i])},
+					type:'post',
+					cache:false,
+					dataType:'text',
+					async: false,
+					success:function(val){
+						if(val=='0'){
+							flag_sc="请输入正确的录音名！";
+						}else{
+							var result=$("<p></p>").html(val);
+							$("#upwav_result").append(result);
+						}
+					},error:function(){
+						flag_sc="上传异常";
+					}
+				});
+			}
+		}
+
+		if(flag_sc==""){
+			$("#upwav_result").append($("<hr/>"));
+			$("#upwav_result").append($("<p></p>").html("上传录音完毕↑"));
+		}else{
+			alert(flag_sc);
+		}
+		$('#upwav_pg').hide();
+		$('#upwav_btn').show();
+	}else{
+		alert("请输入录音名！");
+	}
+}
+
+function downWav(){
+	var downwav=$("#downwav").val();
+	if(downwav!=""&&downwav!=null){
+		$('#downwav_btn').hide();
+		$('#downwav_pg').show();
+
+		$("#downwav_result").empty();
+		$("#downwav_result").append($("<p></p>").html("正在寻找录音，稍候(请勿刷新或关闭页面)↓"));
+		$("#downwav_result").append($("<hr/>"));
+		var arr_downwav=downwav.split(/[\r\n]/g);
+
+		var flag_xz="";
+		for(var i=0;i<arr_downwav.length;i++){
+			if(arr_downwav[i]!=""&&arr_downwav[i]!=null){
+				$.ajax({
+					url:'/sch_data/sch_downwav',
+					data:{downwav:$.trim(arr_downwav[i])},
+					type:'post',
+					cache:false,
+					dataType:'text',
+					async: false,
+					success:function(val){
+						if(val=='0'){
+							flag_xz="请输入正确的录音名！";
+						}else{
+							var result=$("<p></p>").html(val);
+							$("#downwav_result").append(result);
+						}
+					},error:function(){
+						flag_xz="下载异常";
+					}
+				});
+			}
+		}
+		if(flag_xz==""){
+			$("#downwav_result").append($("<hr/>"));
+			$("#downwav_result").append($("<p></p>").html("导出录音完毕↑"));
+			window.open('/download/wav_zip');
+		}else{
+			alert(flag_xz);
+		}
+
+
+		$('#downwav_pg').hide();
+		$('#downwav_btn').show();
+	}else{
+		alert("请输入录音名！");
+	}
+}
+
+var arr_schid_zc;
+var	arr_schid_dc
+function initschid(){
+	$.ajax({
+		url:'/sch_data/sch_schid',
+		data:{},
+		type:'post',
+		cache:false,
+		dataType:'json',
+		success:function(data){
+			arr_schid_zc=data.schzc;
+			arr_schid_dc=data.schdc;
+
+			var schid=$("#schid");
+			for(var i=0;i<arr_schid_dc.length;i++){
+				var option=$("<option></option>").attr("value",arr_schid_dc[i]).html(arr_schid_dc[i]+"(代充)");
+				schid.append(option);
+			}
+			for(var i=0;i<arr_schid_zc.length;i++){
+				var option=$("<option></option>").attr("value",arr_schid_zc[i]).html(arr_schid_zc[i]+"(自充)");
+				schid.append(option);
+			}
+			$("#schid").select2({
+				placeholder: "可单选或多选"
+			});
+		},error:function(){
+			alert("异常！");
+		}
+	});
+}
+*/
+
+
+
+function ajaxFileUpload(){
+	$('#schid_tj').hide();
+	$("#schid_pg").show();
+
+	var schid="";
+	var schid_zc="";
+	var schid_dc="";
+
+	schid=$("#schid").val();
+
+	$("input[name='schid_zc']:checkbox").each(function(){
+		if($(this).attr("checked")){
+			schid_zc += $(this).val()+","
+		}
+	});
+	$("input[name='schid_dc']:checkbox").each(function(){
+		if($(this).attr("checked")){
+			schid_dc += $(this).val()+","
+		}
+	});
+
+
+	if(schid_zc!=""){
+		schid_zc=schid_zc.substr(0,schid_zc.length-1);
+	}
+	if(schid_dc!=""){
+		schid_dc=schid_dc.substr(0,schid_dc.length-1);
+	}
+
+	var arr_schid;
+
+	if((schid==""||schid==null)&&(schid_zc==""||schid_zc==null)&&(schid_dc==""||schid_dc==null)){
+		$('#schid_pg').hide();
+		$('#schid_tj').show();
+		layer.alert("请选择启动方式！");
+	}else{
+		/*if(schid!=""&&schid!=null){
+			arr_schid=schid;
+		}else if(schid_zc!=""&&schid_zc!=null){
+			arr_schid=arr_schid_zc;
+		}else if(schid_dc!=""&&schid_dc!=null){
+			arr_schid=arr_schid_dc;
+		}*/
+		if(filename==""){
+			$('#schid_pg').hide();
+			layer.alert("请选择文件！");
+		}else{
+			var flag_sc="";
+			$("#putstb_result").empty();
+			//$("#putstb_result").append($("<p></p>").html("正在操作 <font color=green>"+arr_schid.length+"</font> 台拨号器，请稍候(勿刷新或关闭页面)↓"));
+			$("#putstb_result").append($("<hr/>"));
+
+				$.ajaxFileUpload({
+					url: '/auto_data/autorelease_putdata', //用于文件上传的服务器端请求地址
+					type: 'post',
+					secureuri: false, //是否需要安全协议，一般设置为false
+					fileElementId: 'schid_file', //文件上传域的ID
+					dataType: 'text', //返回值类型 一般设置为json
+					data:{"csrfmiddlewaretoken":csrftoken},
+					success: function (data, status){
+						if(data==0){
+							var result=$("<p><span style=\"color:red;\">文件包有误，请查证后再试！</span></p>");
+							$('#schid_pg').hide();
+							$("#putstb_result").append(result);
+						}else if(data==1){
+							var result=$("<p><span style=\"color:red;\">此时此刻有其他小伙伴正在上传文件（"+filename+"），请检查任务是否相同或联系运维人员！</span></p>");
+							$('#schid_pg').hide();
+							$("#putstb_result").append(result);
+						}else{
+							$("#putstb_result").append($("<p>上传文件成功！</p>").html(data));
+							$('#schid_pg').hide();
+							/*var flag_sc="";
+							//服务器成功响应处理函数
+							for(var i=0,aa=0;i<arr_schid.length;i++){
+								if(arr_schid[i]!=""&&arr_schid[i]!=null){
+									$.ajax({
+										url:'/sch_data/sch_putstb',
+										data:{schid:$.trim(arr_schid[i]),filename:filename},
+										type:'post',
+										cache:false,
+										dataType:'text',
+										async: true,
+										success:function(data2){
+											aa++;
+											var result=$("<p></p>").html(data2);
+											$("#putstb_result").append(result);
+											if(arr_schid.length==aa){
+												$("#putstb_result").append($("<hr/>"));
+												$("#putstb_result").append($("<p></p>").html("上传模板完毕↑"));
+												$('#schid_pg').hide();
+											}
+										},error:function(){
+											aa++;
+											flag_sc="服务器异常";
+											$("#putstb_result").append($("<p></p>").html(flag_sc));
+											$('#schid_pg').hide();
+										}
+									});
+								}
+							}*/
+						}
+					},
+					error: function (data, status, e){//服务器响应失败处理函数
+						$('#schid_pg').hide();
+						layer.alert("上传文件异常！");
+					}
+				});
+		}
+	}
+}
+
+var filename=""
+function fileexist(){
+	var path=$("#schid_file").val();
+	var pos1 = path.lastIndexOf('/');
+	var pos2 = path.lastIndexOf('\\');
+	var pos  = Math.max(pos1, pos2)
+	if( pos<0 ){
+		filename=path;
+	}else{
+		filename=path.substring(pos+1);
+	}
+	$("#schid_tj").show();
+}
+
+	function rb_change(){
+		var schid_zc="";
+		$("input[name='schid_zc']:checkbox").each(function(){
+			if($(this).attr("checked")){
+				schid_zc += $(this).val()+","
+			}
+		});
+		if(schid_zc!=""){
+
+			$("#schid").prop("disabled", true);
+
+
+			$("#schid_dc").attr("disabled",true);
+		}else{
+
+			$("#schid").prop("disabled", false);
+
+
+			$("#schid_dc").attr("disabled",false);
+		}
+
+	}
+
+	function rl_change(){
+		var schid_dc="";
+		$("input[name='schid_dc']:checkbox").each(function(){
+			if($(this).attr("checked")){
+				schid_dc += $(this).val()+","
+			}
+		});
+
+		if(schid_dc!=""){
+
+			$("#schid").prop("disabled", true);
+
+
+			$("#schid_zc").attr("disabled",true);
+		}else{
+
+			$("#schid").prop("disabled", false);
+
+
+			$("#schid_zc").attr("disabled",false);
+		}
+
+	}
+
+	function schid_change(){
+		if($("#schid").val()==""||$("#schid").val()==null){
+			$("#schid_zc").attr("disabled",false);
+			$("#schid_dc").attr("disabled",false);
+		}else{
+			$("#schid_zc").attr("disabled",true);
+			$("#schid_dc").attr("disabled",true);
+		}
+	}
+
+</script>
+
+{% endblock %}
+
+{% block content %}
+<!-- 承上连接V.html：content+content-header -->
+
+  <div class="container-fluid" align=center>
+
+	<div class="alert alert-error alert-block">
+	<a class="close" data-dismiss="alert" href="#">×</a>
+	<div class="widget-content">
+	<ul class="bs-docs-tooltip-examples">
+		<li>
+			<li><input style="min-height: 32px;" class="span3 btn btn-primary" type="file" id="schid_file" name="schid_file"  onchange="fileexist();"/> </li>
+			<!--select multiple="multiple" id="schid"></select-->
+			<li><a title="" data-content="Vivamus sagittis lacus vel augue laoreet rutrum faucibus." data-placement="left" data-toggle="popover" class="btn btn-info btn-large" href="#" data-original-title="更新发布包">更新发布包 <input type="checkbox" id="schid_dc" name="schid_dc" value="1" onclick="rl_change();"/></a> </li>
+			<li><a title="" data-content="Vivamus sagittis lacus vel augue laoreet rutrum faucibus." data-placement="bottom" data-toggle="popover" class="btn btn-inverse btn-large" href="#" data-original-title="回滚历史包">回滚历史包 <input type="checkbox" id="schid_zc" name="schid_zc" value="1" onclick="rb_change();"/></a> </li>
+			<li><input id="schid_tj" class="btn btn-danger btn-large" type="button" value="一键启动" style="display:none;" onclick="ajaxFileUpload();" /><img style="display:none;" id="schid_pg" class="btn-large" src="/static/matrix/images/loading.gif" /> </li>
+		</li>
+	</ul>
+
+	</div>
+	<div id="putstb_result"></div>
+	</div>
+
+  </div>
+
+{% endblock %}
+
+

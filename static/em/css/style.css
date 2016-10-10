@@ -1,0 +1,50 @@
+@charset "utf-8";/* CSS Document */
+*{font-family:"微软雅黑";padding:0px;margin:0px;}
+.clear{clear:both;}
+.detail_zone{width:94%;margin:30px auto;padding:10px;top: 0px;}
+.detail_content{width:80%;margin-left:5px;}
+/*.detail_line{width:40%;padding: 0 20px 0;margin: 20px 0;line-height: 1px;border-right: 10px solid gray;border-left: 10px solid gray;text-align: center;}*/
+.detail_line{width:80%;margin: 30px 0 0 5px;height: 1px;background:gray;}
+.span1{font-size: 14px;text-align:center;}
+.span2{font-size: 14px;text-align:right;}
+.span4,.span10{font-size: 14px;text-align:left;}
+.span11{font-size: 14px;text-align:right;}
+
+.paimai_list{width:1180px;margin:30px auto;padding-left:30px;border:1px;}
+.paimai_content{border-left:2px solid #c5c5c5;}
+.list_content{width:800px;height:180px;background:#eeeeee;margin-left:30px;margin-bottom:15px;border:1px solid #dddcdc;}
+.list_content a{display:block;float:left;}
+.list_content dl{float:left;margin-top:20px;margin-left:20px;}
+.list_content dl dt h2{font-size:28px;color:#666666;line-height:34px;}
+.list_content dl .pm_organ{margin-top:10px;font-size:14px;line-height:16px;color:#666666;}
+.list_content dl .pm_time{margin-top:65px;}
+.list_content dl .pm_time em{font-size:28px;font-style:normal;color:#d10311;line-height:34px;}
+.list_content .pm_date{float:right;width:80px;height:119px;margin-right:15px;margin-top:25px;text-align:center;color:gray;}
+.list_content .pm_date h2{font-size:52px;line-height:34px;margin-top:15px;}
+.list_content .pm_date h3{font-size:18px;line-height:34px;}
+.list_content .circle_title{float:left;width:50px; height:50px;background:#00BBFF;margin:10px;-moz-border-radius: 15px;-webkit-border-radius: 15px;border-radius:50px;text-align :center;}
+.list_content .title_time{margin-top:20px;color:gray;}
+.list_content .circle_title{margin:10px;color:white;font-size:40px;font-family: SimHei,Arial;font-weight:bold;line-height: 50px}
+.list_head {margin-left:-20px;}
+.list_head .time_box{float:left;}
+.list_head .time_content{float:left;height:42px;background-color:#fff;width:188px;background: rgba(255,255,255,0.8);}
+.list_head .time_content em{display:inline-block;width:18px;height:18px;background:url(../img/time_clock_icon1.jpg) no-repeat;position:relative;top:12px;margin-left:15px;margin-right:10px;}
+.list_head .time_content  span{display:inline-block;font-size:20px;line-height:16px;color:#d10311;position:relative;top:12px;}
+
+.list_head1 {margin-left:-20px;}
+.list_head1 .time_box{float:left;width:36px;height:36px;background-color:#008060;padding:3px 3px 3px 3px;}
+.list_head1 .time_box p{color:#FFF;font-size: 13px;font-weight: bold;text-align: center;}
+.list_head1 .time_content{float:left;height:42px;background-color:#fff;width:188px;background: rgba(255,255,255,0.8);}
+.list_head1 .time_content em{display:inline-block;width:18px;height:18px;background:url(../img/time_clock_icon2.jpg) no-repeat;position:relative;top:12px;margin-left:15px;margin-right:10px;}
+.list_head1 .time_content span{display:inline-block;font-size:20px;line-height:16px;color:#008060;position:relative;top:12px;}
+
+.list_head2 {margin-left:-20px;}
+.list_head2 .time_box{float:left;width:36px;height:36px;background-color:#7b7b7b;padding:3px 3px 3px 3px;}
+.list_head2 .time_box p{color:#FFF;font-size: 13px;font-weight: bold;text-align: center;}
+.list_head2 .time_content{float:left;height:42px;background-color:#fff;width:188px;background: rgba(255,255,255,0.8);}
+.list_head2 .time_content em{display:inline-block;width:18px;height:18px;background:url(../img/time_clock_icon2.jpg) no-repeat;position:relative;top:12px;margin-left:15px;margin-right:10px;}
+.list_head2 .time_content span{display:inline-block;font-size:20px;line-height:16px;color:#000000;position:relative;top:12px;}
+
+.time_box{width:36px;height:36px;background-color:#d10311;padding:3px 3px 3px 3px;}
+.time_box p{color:#FFF;font-size: 13px;font-weight: bold;text-align: center;}
+.list-header-fixed{position:fixed;top:10px;}

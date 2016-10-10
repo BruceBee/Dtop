@@ -1,0 +1,306 @@
+{% extends "V.html" %}
+
+{% block head %}
+
+<script type="text/javascript" src="/js/layer/layer.js"></script>
+<script type="text/javascript" src="/js/dataBase.js"></script>
+<script language="javascript" type="text/javascript" src="/js/preview/WdatePicker.js"></script>
+<script type="text/javascript">
+	$(document).ready(function(){
+		//getlinker();
+		loadTable(1);
+
+		$('#chaxun').click(function(){
+			loadTable(1);
+			getlinker();
+
+		});
+	});
+
+	function getlinker(){
+		var selectDate=$("#startt").val();
+			
+		if(selectDate!=null&&selectDate!=""){
+			selectDate=selectDate.substr(0,10); 
+		}
+		$("#iframe_linker").attr("src","http://10.1.100.125:8082/jobPlanFreeTimeAction_viewSelectedWeek.action?selectDate="+selectDate);
+
+	}
+	
+  function addDialog(idValue,stValue,etValue,rmValue,brmValue,hmValue,urmValue,rcValue){
+  	$("#xxxeee").fadeIn('fast');
+  	$("#dataTab").fadeOut('fast');
+    var addTableHtml=$("#addTable").clone();
+    var inputId=addTableHtml.find("input[name='id']");
+      inputId.attr("id","id");
+      if(idValue){
+        inputId.attr("value",idValue);
+      }
+    var inputSt=addTableHtml.find("input[name='stime']");
+      inputSt.attr("id","stime");
+      if(stValue){
+        inputSt.attr("value",stValue);
+      }
+    var inputEt=addTableHtml.find("input[name='etime']");
+      inputEt.attr("id","etime");
+      if(etValue){
+        inputEt.attr("value",etValue);
+      }
+    var inputRm=addTableHtml.find("input[name='recordman']");
+      inputRm.attr("id","recordman");
+      if(rmValue){
+        inputRm.attr("value",rmValue);
+      }
+    var inputBrm=addTableHtml.find("input[name='basicreportman']");
+      inputBrm.attr("id","basicreportman");
+      if(brmValue){
+        inputBrm.attr("value",brmValue);
+      }
+    var inputHm=addTableHtml.find("input[name='handleman']");
+      inputHm.attr("id","handleman");
+      if(hmValue){
+        inputHm.attr("value",hmValue);
+      }
+    var inputUrm=addTableHtml.find("input[name='unreportman']");
+      inputUrm.attr("id","unreportman");
+      if(urmValue){
+        inputUrm.attr("value",urmValue);
+      }
+    var inputRc=addTableHtml.find("input[name='recordcontent']");
+      inputRc.attr("id","recordcontent");
+      if(rcValue){
+        inputRc.attr("value",rcValue);
+      }
+
+    var buttonValue="添加";
+    if(idValue){
+      buttonValue="更新";
+    }
+    
+    layer.open({
+          title:'添加信息',
+          type: 1,
+          shift:2,
+          skin: 'layui-layer-rim', //加上边框
+          area: ['30%', '36%'], //宽高
+          content:addTableHtml.html(),
+          btn:[buttonValue,'取消'],
+          yes:function(index){
+            var id=$("#id").val();
+            var stime=$("#stime").val();
+            var etime=$("#etime").val();
+            var recordman=$("#recordman").val();
+            var basicreportman=$("#basicreportman").val();
+            var handleman=$("#handleman").val();
+            var unreportman=$("#unreportman").val();
+            var recordcontent=$("#recordcontent").val();
+            $.ajax({
+              type:'POST',
+              url:'/preview_data/report_editFun',
+              data:'id='+id+'&starttime='+stime+'&endtime='+etime+'&recordman='+recordman+'&basicreportman='+basicreportman+'&handleman='+handleman+'&unreportman='+unreportman+'&recordcontent='+recordcontent,
+              dataType:'text',
+              success:function(val){
+                layer.close(index);
+                if(val=='1'){
+                  loadTable(1);
+                }else{
+                  layer.alert("操作失败");
+                }
+                $("#xxxeee").fadeOut('fast');
+                $("#dataTab").fadeIn('fast');
+              },error:function(){
+                layer.close(index);
+                laery.alert("操作失败");
+              }
+            });
+            
+          },cancel:function(val){
+                $("#xxxeee").fadeOut('fast');
+                $("#dataTab").fadeIn('fast');
+          }
+      });
+  }
+
+	function loadTable(val){
+			$("#dataFrom").find("input[name='page']").val(val);
+			$("#dataTab").dataTable({
+				title:'非工作时间排障记录表(双击修改)',
+				columns:[
+                {key:'id',check:true,checkAll:true,width:'1%',align:'center',valign:'middle'},
+				{key:'stime',name:'开始时间',width:'10%',align:'center',valign:'middle'},
+				{key:'etime',name:'结束时间',width:'10%',align:'center',valign:'middle'},
+				{key:'recordman',name:'记录人',width:'10%',align:'center',valign:'middle'},
+				{key:'basicreportman',name:'基础组响应人',width:'10%',align:'center',valign:'middle'},
+				{key:'handleman',name:'实际处理人',width:'10%',align:'center',valign:'middle'},
+				{key:'unreportman',name:'无效响应人',width:'10%',align:'center',valign:'middle'},
+				{key:'recordcontent',name:'响应记录详情',width:'auto',align:'left',valign:'middle'}],
+				formid:'dataFrom',
+                loadAfter:tab_trOnclick,
+			});
+	}
+
+	 
+  
+  /**
+  行添加双击事件
+  **/
+  function tab_trOnclick(){
+    var trs=$("#dataFrom_table tbody tr");
+    for(var i=0;i<trs.length;i++){
+      $(trs[i]).on("dblclick",function(){
+        var tr=$(this);
+        var tds=tr.find("td");
+        var id=$(tds[0]).find("input").val();
+        addDialog(id,$(tds[1]).text(),$(tds[2]).text(),$(tds[3]).text(),$(tds[4]).text(),$(tds[5]).text(),$(tds[6]).text(),$(tds[7]).text());
+      });
+    }
+  }
+  
+  /**
+  删除功能
+  **/
+  function delData(){
+     var inputChecks=$("input:checkbox[name='dataFrom_check']:checked");
+     if(inputChecks.length==0){
+      layer.alert('请选中删除项！');
+      return;
+    }
+    layer.confirm('确认删除?', {icon: 2, title:'提示'},function(index){
+      var orders='';
+      for(var i=0;i<inputChecks.length;i++){
+        orders+=inputChecks[i].value;
+        if(i!=inputChecks.length-1){
+          orders+=',';
+        }
+      }
+      $.ajax({
+        type:'POST',
+        url:'/preview_data/report_deleteFun',
+        dataType:'text',
+        data:'id='+orders,
+        success:function(text){
+               layer.close(index);
+               if(text=='1'){
+                loadTable(1);
+               }else{
+                layer.alert('操作失败');
+               }
+        },error:function(){
+          layer.close(index);
+          layer.alert('操作失败');
+        }
+      });
+    });
+      
+  }
+</script>
+<style type="text/css">
+	input{
+		margin-bottom: 0 !important;
+	}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- 承上连接V.html：content+content-header -->
+
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="span12">
+
+	<div id="xxxeee" style="display:none">
+
+		<iframe id="iframe_linker" src="http://10.1.100.125:8082/jobPlanFreeTimeAction_viewSelectedWeek.action" style="width:100%;border:0" scrolling="no"></iframe>
+		
+	</div>
+   <!--aaa-->
+    <form action="/preview_data/report_pagedataList" id="dataFrom" onsubmit="return false">
+
+		<input type="hidden" id="page" name="page" value="1"/>
+        <input type="hidden" id="num" name="num" value="10"/>
+        <div style="text-align:right;">
+
+            <input class="btn btn-primary" type="button" name="addButton" value="添加" onclick="addDialog();" style="float:left;"/>
+            {% if perms.Matrix.delete_report %}
+            <input class="btn btn-danger" type="button" name="deleteButton" value="删除" onclick="delData();" style="float:left;"/>
+            {% endif %}
+
+
+    <select id="select_num" style="width:65px;height:26px;position:relative;top:4px;">
+      <option value="10" selected="selected">10</option>
+      <option value="20">20</option>
+      <option value="50">50</option>
+      <option value="100">100</option>
+      <option value="500">500</option>
+    </select>(每页显示数量)
+
+
+            <input id="startt" name="startt" type='text' onClick="WdatePicker({skin:'blueFresh',orderdate_end:'%Y-%m-%d %H:%M:%S',dateFmt:'yyyy-MM-dd HH:mm:ss',alwaysUseStartDate:true})" readonly="readonly" placeholder="开始日期"/>
+            <input name="endt" type='text' onClick="WdatePicker({skin:'blueFresh',orderdate_end:'%Y-%m-%d %H:%M:%S',dateFmt:'yyyy-MM-dd HH:mm:ss',alwaysUseStartDate:true})" readonly="readonly" placeholder="结束日期"/>
+            <button class="btn btn-success" type="button" id="chaxun">查询</button>
+
+		</div>
+		
+
+    </form>
+	
+	
+
+
+	<div id="dataTab"></div>
+
+
+
+    <!-- end aa-->
+    
+
+
+    
+    
+    
+  <div id="addTable" style="display:none;">
+      <center>
+           <table border="0" style="color:#000;">
+               <tr style="display:none;">
+                  <td style="text-align:right;"><span style="position:relative; top:-5px;"></span></td>
+                    <td><input type="text" name="id"/></td>
+                </tr>
+                <tr>
+                  <td style="text-align:right;"><span style="position:relative; top:-5px;">开始时间：</span></td>
+                    <td><input name="stime" type='text' onClick="WdatePicker({skin:'blueFresh',orderdate_end:'%Y-%m-%d %H:%M:%S',dateFmt:'yyyy-MM-dd HH:mm:ss',alwaysUseStartDate:true})" readonly="readonly"/></td>
+                </tr>
+                <tr>
+                  <td style="text-align:right;"><span style="position:relative; top:-5px;">结束时间：</span></td>
+                    <td><input name="etime" type='text' onClick="WdatePicker({skin:'blueFresh',orderdate_end:'%Y-%m-%d %H:%M:%S',dateFmt:'yyyy-MM-dd HH:mm:ss',alwaysUseStartDate:true})" readonly="readonly"/></td>
+                </tr>
+                <tr>
+                  <td style="text-align:right;"><span style="position:relative; top:-5px;">记录人：</span></td>
+                    <td><input type="text" name="recordman"/></td>
+                </tr>
+                <tr>
+                  <td style="text-align:right;"><span style="position:relative; top:-5px;">基础组响应人：</span></td>
+                    <td><input type="text" name="basicreportman"/></td>
+                </tr>
+                <tr>
+                  <td style="text-align:right;"><span style="position:relative; top:-5px;">实际处理人：</span></td>
+                    <td><input type="text" name="handleman"/></td>
+                </tr>
+                <tr>
+                  <td style="text-align:right;"><span style="position:relative; top:-5px;">无效响应人：</span></td>
+                    <td><input type="text" name="unreportman"/></td>
+                </tr>
+                <tr>
+                  <td style="text-align:right;"><span style="position:relative; top:-5px;">响应记录详情：</span></td>
+                    <td><input type="text" name="recordcontent"/></td>
+                </tr>
+            </table>
+         </center>
+   </div>
+
+
+
+   </div>
+   </div>
+   </div>
+
+{% endblock %}

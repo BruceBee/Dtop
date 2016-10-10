@@ -1,0 +1,21 @@
+{% extends "V.html" %}
+
+{% block content %}
+<!-- 承上连接V.html：content+content-header -->
+	<!--div id="search" style="float:right;position:relative;">
+	<form action="/wooyun/search.php?kind=bugs" target="_blank" method="GET" name="dir">
+	<input type="hidden" name="kind" value="bugs" id="iden">
+	<select style="float:left;width:auto;border:none;" id="pid" onchange="gradeChange()">
+        <option value="bugs">漏洞库/40293</option>
+        <option value="drops">知识库/1269</option>
+	</select>
+    <input name="keywords" placeholder="乌云一下" type="text" style="float:left;background-color:white;color:black;"></input>
+    <button class="tip-bottom" type="submit" title="WooYun Search" style="margin-top:0px;"><i class="icon-search icon-white"></i></button>
+    </form>
+    </div-->
+  <div class="container-fluid">
+    <iframe src="/wooyun" width="100%" id="iframe_{{ appname }}" scrolling="no" frameborder="no" border="0" marginwidth="0" marginheight="0">
+</iframe>
+  </div>
+
+{% endblock %}

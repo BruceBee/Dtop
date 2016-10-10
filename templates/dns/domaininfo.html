@@ -1,0 +1,249 @@
+{% extends "V.html" %}
+
+{% block head %}
+
+<script type="text/javascript" src="/static/matrix/js/layer/layer.js"></script>
+<script type="text/javascript" src="/static/matrix/js/dataBase.js"></script>
+<script type="text/javascript" src="/static/matrix/js/preview/WdatePicker.js"></script>
+<script type="text/javascript" src="/static/matrix/js/download.js"></script>
+<script type="text/javascript">
+  $(document).ready(function(){
+    {% if perms.Matrix.domaininfo_pagedataList %}
+      loadTable(1);
+    {% else %}
+      $('#dataFrom').html('对不起,您没有查看权限,请联系系统管理员').css('text-align','center');
+    {% endif%}
+  });
+
+  function addDialog(){
+    var addTableHtml=$("#addTable").clone();
+    var parameters=['id','domain_id','domain_status','domain_name','domain_records','domain_grade','domain_remark'];
+
+    var inputStatus=addTableHtml.find("select[name='domain_status']");
+      inputStatus.attr("id","domain_status");
+      if(arguments[2]){
+        inputStatus.find("option[name='"+arguments[2]+"']").attr("selected",true);
+      }
+
+    if(arguments[0]){
+      var buttonValue="更新";
+      $.each(arguments,function(num,val){
+        var inputName=addTableHtml.find("input[name='"+parameters[num]+"']");
+        if(parameters[num]=='domain_id'|| parameters[num]=='domain_name' || parameters[num]=='domain_records' || parameters[num]=='domain_grade'){
+          inputName.attr("readonly","readonly");
+        }
+          inputName.attr("id",parameters[num]);
+          inputName.attr("value",val);
+      });
+    }else{
+      var buttonValue="添加";
+      $.each(parameters,function(){
+        var inputName=addTableHtml.find("input[name='"+this+"']");
+          inputName.attr("id",this);
+      });
+    }
+
+    layer.open({
+          title:'编辑信息',
+          type: 1,
+          shift:2,
+          skin: 'layui-layer-rim', //加上边框
+          area: ['30%', '41%'], //宽高
+          content:addTableHtml.html(),
+          btn:[buttonValue,'取消'],
+          yes:function(index){
+            var ret='';
+            $.each(parameters,function(){
+              ret+=this+'='+$("#"+this).val()+'&';
+            });
+            ret+="hostop={{ true_name }}"
+            console.log(ret)
+            $.ajax({
+              type:'POST',
+              url:'/dns_data/domaininfo_editFun',
+              data:ret,
+              dataType:'text',
+              success:function(val){
+                layer.close(index);
+                if(val=='1'){
+                  console.log('获取到了返回值')
+                  loadTable(1);
+                }else{
+                  layer.alert("操作失败01");
+                  layer.alert(val);
+                }
+              },error:function(){
+                layer.close(index);
+                layer.alert("操作失败02");
+              }
+            });
+
+          }
+      });
+  }
+
+  function keyEnter(event){
+     var e = event || window.event || arguments.callee.caller.arguments[0];
+     if(e && e.keyCode==13){ // enter 键
+             loadTable(1);
+      return false;
+          }
+
+  }
+
+  function loadTable(val){
+     $("#dataFrom").find("input[name='page']").val(val);
+     $("#dataTab").dataTable({
+        title:'域名信息详情',
+        columns:[
+        {key:'id',check:true,checkAll:true,width:'1%',align:'center'},
+        // {key:'id',name:'ID',width:'5%',align:'center'},
+        {key:'domain_id',name:'域名ID',width:'10%',align:'center'},
+        {key:'domain_status',name:'域名状态',width:'8%',align:'center'},
+        {key:'domain_name',name:'根域名',width:'10%',align:'center'},
+        {key:'domain_records',name:'子域名记录',width:'5%',align:'center'},
+        {key:'domain_grade',name:'域名套餐等级',width:'10%',align:'center'},
+        {key:'domain_remark',name:'备注',width:'20%',align:'center'}],
+        // {key:'dns_detail',name:'DNS详情',width:'5%',align:'center'}],
+        formid:'dataFrom',
+        loadAfter:tab_trOnclick,
+    });
+  }
+
+  /**
+  行添加双击事件
+  **/
+  {% if perms.Matrix.domaininfo_editFun %}
+  function tab_trOnclick(){
+    var trs=$("#dataFrom_table tbody tr");
+    for(var i=0;i<trs.length;i++){
+      $(trs[i]).on("dblclick",function(){
+        var tr=$(this);
+        var tds=tr.find("td");
+        var id=$(tds[0]).find("input").val();
+        addDialog(id,$(tds[1]).text(),$(tds[2]).text(),$(tds[3]).text(),$(tds[4]).text(),$(tds[5]).text(),$(tds[6]).text());
+        // console.log($(tds[3]).text())
+      });
+    }
+  }
+  {% else %}
+    function tab_trOnclick(){
+      
+    }
+
+  {% endif%}
+  /**
+  删除功能
+  **/
+  // function delData(){
+  //   var inputChecks=$("input:checkbox[name='dataFrom_check']:checked");
+  //   if(inputChecks.length==0){
+  //     layer.alert('请选中删除项！');
+  //     return;
+  //   }
+  //   layer.confirm('该域名下全部DNS记录会被删除，确认删除?', {icon: 2, title:'提示'},function(index){
+  //     var orders='';
+  //     for(var i=0;i<inputChecks.length;i++){
+  //       orders+=inputChecks[i].value;
+  //       if(i!=inputChecks.length-1){
+  //         orders+=',';
+  //       }
+  //     }
+  //     console.log(orders)
+  //     $.ajax({
+  //       type:'POST',
+  //       url:'/dns_data/domaininfo_deleteFun',
+  //       dataType:'text',
+  //       data:'id='+orders,
+  //       success:function(text){
+  //              layer.close(index);
+  //              if(text=='1'){
+  //               loadTable(1);
+  //              }else{
+  //               layer.alert('删除失败01');
+  //              }
+  //       },error:function(){
+  //         layer.close(index);
+  //         layer.alert('删除失败02');
+  //       }
+  //     });
+  //   });
+
+  // }
+</script>
+{% endblock %}
+
+{% block content %}
+<!-- 承上连接V.html：content+content-header -->
+
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="span12">
+   <!--aaa-->
+    <form action="/dns_data/domaininfo_pagedataList" id="dataFrom" onSubmit="return false">
+      <input type="hidden" id="page" name="page" value="1"/>
+        <input type="hidden" id="num" name="num" value="15"/>
+        <div>
+          {% if perms.Matrix.domaininfo_pagedataList %}
+            <input type="text" name="tj" placeholder="请输入关键字,回车查询" id="tj" style="background-color: white; float:right" onKeydown="keyEnter();"/>
+          {% endif %}
+
+          <!-- {% if perms.Matrix.domaininfo_editFun %} -->
+            <!-- <input class="btn btn-primary" type="button" name="addButton" value="添加" onclick="addDialog();" style="float:left;"/> -->
+          <!-- {% endif %} -->
+          <!-- {% if perms.Matrix.domaininfo_deleteFun %} -->
+            <!-- <input class="btn btn-danger" type="button" name="deleteButton" value="删除" onclick="delData();" style="float:left;"/> -->
+          <!-- {% endif %} -->
+
+
+    </div>
+    </form>
+    <input id="downData" class="btn btn-info" type="button" value="导出" name="DomainInfo" onclick="downData();">
+  <div id="dataTab"></div>
+    <!-- end aa-->
+
+  <div id="addTable" style="display:none;">
+      <center>
+           <table border="0" style="color:#000;">
+              <tr style="display:none;">
+                  <td style="text-align:right;"><span style="position:relative; top:-5px;"></span></td>
+                    <td><input type="text" name="id"/></td>
+                </tr>
+                <tr>
+                  <td style="text-align:right;"><span style="position:relative; top:-5px;">域名ID：</span></td>
+                    <td><input type="number" name="domain_id"/></td>
+                </tr>
+                <tr>
+                  <td style="text-align:right;"><span style="position:relative; top:-5px;">域名状态：</span></td>
+                    <td>
+                    <select name="domain_status"/>
+                      <option value="enable" name="enable">启用</option>
+                      <option value="disable" name="disable">停用</option>
+                    </select>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="text-align:right;"><span style="position:relative; top:-5px;">根域名：</span></td>
+                    <td><input type="text" name="domain_name"/></td>
+                </tr>
+                <tr>
+                  <td style="text-align:right;"><span style="position:relative; top:-5px;">子域名记录：</span></td>
+                    <td><input type="number" name="domain_records"/></td>
+                </tr>
+                <tr>
+                  <td style="text-align:right;"><span style="position:relative; top:-5px;">域名套餐等级：</span></td>
+                    <td><input type="text" name="domain_grade"/></td>
+                </tr>
+                <tr>
+                  <td style="text-align:right;"><span style="position:relative; top:-5px;">备注：</span></td>
+                    <td><input type="text" name="domain_remark"/></td>
+                </tr>
+            </table>
+         </center>
+   </div>
+
+   </div>
+   </div>
+   </div>
+
+{% endblock %}

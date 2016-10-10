@@ -1,0 +1,125 @@
+{% extends "V.html" %}
+
+{% block head %}
+<link rel="stylesheet" href="/css/tab.css"/>
+<script language="javascript" type="text/javascript" src="/js/preview/WdatePicker.js"></script>
+<script type="text/javascript">
+	$(document).ready(function(){
+		getData();
+	});
+
+function formatDate(date) { 
+	var myyear = date.getFullYear(); 
+	var mymonth = date.getMonth()+1; 
+	var myweekday = date.getDate(); 
+
+	if(mymonth < 10){ 
+	mymonth = "0" + mymonth; 
+	} 
+	if(myweekday < 10){ 
+	myweekday = "0" + myweekday; 
+	} 
+	return (myyear+"-"+mymonth + "-" + myweekday); 
+} 
+
+function getData(){
+	$("#tab_tbody").empty();
+	var findDate= $("#findDate").val();
+	if(findDate==null||findDate==""){
+		findDate=formatDate(new Date());
+	}
+	$.ajax({
+		url:'/preview_data/schmonsrv_dataList',
+		data:{sdate:findDate},
+		type:'post',
+		cache:false,  
+		dataType:'json',  
+		success:function(data){
+
+
+			var tab_tbody= $("#tab_tbody");
+			var tr_title=$("<tr><td>时间</td><td>程序</td><td>系统</td><td>状态</td><td>重启时间</td></tr>");
+			tab_tbody.append(tr_title);
+			
+			var rows=data.rows;
+			for(var i=0;i<rows.length;i++){
+				var tr=$("<tr></tr>");
+				
+				var td_date=$("<td></td>").html(rows[i].date);
+				tr.append(td_date);
+				var td_srvname=$("<td></td>").html(rows[i].srvname);
+				tr.append(td_srvname);
+				var td_sys=$("<td></td>").html(rows[i].sys);
+				tr.append(td_sys);
+				var td_reboot_status=$("<td></td>").html(rows[i].reboot_status);
+				tr.append(td_reboot_status);
+				var td_last_reboot_time=$("<td></td>").html(rows[i].last_reboot_time);
+				tr.append(td_last_reboot_time);
+
+				tab_tbody.append(tr);
+			}
+			hebingRows(1);
+			hebingRows(0);
+			
+		},
+		error:function(){
+			alert("异常！");  		
+		}
+	});	
+}
+
+
+
+
+function hebingRows(col){
+    var trs = $("#schmonsrv_id tbody tr");
+	
+    var rows = 1;
+    for(var i=trs.length;i>0;i--){
+        var cur = $($(trs[i]).find("td")[col]).text();
+        var next = $($(trs[i-1]).find("td")[col]).text();
+        if(cur==next){
+            rows++;
+            $($(trs[i]).find("td")[col]).remove();
+        } else {
+            $($(trs[i]).find("td")[col]).attr("rowspan",rows);
+            rows=1;
+        }
+    }
+}
+
+
+
+
+</script>
+<style type="text/css">
+	#schmonsrv_id tr td{
+		text-align:center;
+		}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- 承上连接V.html：content+content-header -->
+
+  <div class="container-fluid">
+    <div align=center>
+		<input id="findDate" name="findDate" type="datetime" onClick="WdatePicker({skin:'blueFresh',orderdate_end:'%Y-%m-%d',dateFmt:'yyyy-MM-dd',alwaysUseStartDate:true})" placeholder="选择日期" />
+		
+		<input type="button" value="凌晨客户端程序重启记录" style="position:relative; top:-5px; height:30px;" onclick="getData();"/>
+    </div>
+    <div style="width:100%;">
+    	<center>
+            <table id="schmonsrv_id" name="tab" class="table table-bordered table-striped" style="width:80%;">
+				<tbody id="tab_tbody">
+					
+				</tbody>
+            </table>
+        </center>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+
+

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<head>
+<title>MaTriX-110-{{ appname }}</title>
+
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0" />
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache">
+<META HTTP-EQUIV="Expires" CONTENT="0">
+<link rel="stylesheet" href="/css/bootstrap.min.css" />
+<link rel="stylesheet" href="/css/bootstrap-responsive.min.css" />
+
+<link rel="stylesheet" href="/css/matrix-style.css" />
+<link rel="stylesheet" href="/css/matrix-media.css" />
+<link href="/font-awesome/css/font-awesome.css" rel="stylesheet" />
+
+<script src="/js/jquery.min.js"></script> 
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/matrix.js"></script>
+<script type="text/javascript">
+  function selectBackColor(liId,color){
+    $("#"+liId).css("background-color",color).css("color","#000000");
+  }
+
+  $(document).ready(function(){
+    selectBackColor("{{ appname }}","#EEE");
+    var aa=$("#header").outerHeight();
+    var bodyHeight=document.documentElement.clientHeight;
+    //获取导航标签名
+    $("#appgroup").text(document.getElementsByName('active_group')[0].innerHTML);
+	var ahref=$("#{{appname}}");
+		ahref.find("span").empty();
+		ahref.find("span").remove();
+    $("#appname").text(ahref.html());
+    $("#iframe_{{ appname }}").attr("height",bodyHeight-aa);
+  });
+</script>
+{% block head %}{% endblock %}
+
+</head>
+<body>
+
+<!--Header-part-->
+<div id="header">
+  <h1><a href="/home/dashboard.html">Matrix Admin</a></h1>
+</div>
+<!--close-Header-part-->
+
+<!--top-Header-menu-->
+<div id="user-nav" class="navbar navbar-inverse">
+  <ul class="nav">
+    <li  class="dropdown" id="profile-messages" ><a title="" href="#" data-toggle="dropdown" data-target="#profile-messages" class="dropdown-toggle"><i class="icon icon-user"></i>  <span class="text"> 个人中心</span><b class="caret"></b></a>
+      <ul class="dropdown-menu">
+        <li><a href="#"><i class="icon-user"></i> 我的资料</a></li>
+        <li class="divider"></li>
+        <li><a href="#"><i class="icon-check"></i> 我的任务</a></li>
+        <li class="divider"></li>
+        <li><a href="/logout.html"><i class="icon-key"></i> 注销</a></li>
+      </ul>
+    </li>
+    <li class="dropdown" id="menu-messages"><a href="#" data-toggle="dropdown" data-target="#menu-messages" class="dropdown-toggle"><i class="icon icon-envelope"></i> <span class="text">消息中心</span> <span class="label label-important">6</span> <b class="caret"></b></a>
+      <ul class="dropdown-menu">
+        <li><a class="sAdd" title="" href="#"><i class="icon-plus"></i> 新消息</a></li>
+        <li class="divider"></li>
+        <li><a class="sInbox" title="" href="#"><i class="icon-envelope"></i> 收件箱</a></li>
+        <li class="divider"></li>
+        <li><a class="sOutbox" title="" href="#"><i class="icon-arrow-up"></i> 发件箱</a></li>
+        <li class="divider"></li>
+        <li><a class="sTrash" title="" href="#"><i class="icon-trash"></i> 垃圾箱</a></li>
+      </ul>
+    </li>
+    <li class=""><a title="" href="#"><i class="icon icon-cog"></i> <span class="text">设置</span></a></li>
+    <li class=""><a title="" href="/logout.html"><i class="icon icon-share-alt"></i> <span class="text">注销</span></a></li>
+  </ul>
+</div>
+<!--close-top-Header-menu-->
+<!--start-top-serch-->
+<!--div id="search">
+  <input type="text" placeholder="Search here..."/>
+  <button type="submit" class="tip-bottom" title="Search"><i class="icon-search icon-white"></i></button>
+</div-->
+<!--close-top-serch-->
+<div id="sidebar"><a href="#" class="visible-phone"><i class="icon icon-cogs"></i> 监控中心</a>
+  <ul>
+    <li class="{% if appgroup == 'home' %}{{ 'active' }}{% else %}{{ '' }}{% endif %}"><a href="/home/{{ apps.0 }}.html"><i class="icon icon-home"></i> <span name="{% if appgroup == 'home' %}{{ 'active_group' }}{% else %}{{ 'inactive_group' }}{% endif %}">仪表盘</span> <span id="{{ apps.0 }}" class="label label-info">V</span></a> </li>
+
+    <li class="submenu {% if appgroup == 'sch' %}{{ 'active open' }}{% else %}{{ '' }}{% endif %}"> <a href="#"><i class="icon icon-cogs"></i> <span name="{% if appgroup == 'sch' %}{{ 'active_group' }}{% else %}{{ 'inactive_group' }}{% endif %}">拨号器</span> <span class="label label-important">测试ing...</span></a>
+      <ul>
+        <li><a href="/sch/{{ apps.1 }}.html" id="{{ apps.1 }}">日常操作</a></li>
+        <li><a href="/sch/{{ apps.14 }}.html" id="{{ apps.14 }}">线路切换</a></li>
+        <li><a href="/sch/{{ apps.15 }}.html" id="{{ apps.15 }}">上传模版</a></li>
+      </ul>
+    </li>
+
+    <li class="submenu {% if appgroup == 'preview' %}{{ 'active open' }}{% else %}{{ '' }}{% endif %}"> <a href="#"><i class="icon icon-cogs"></i> <span name="{% if appgroup == 'preview' %}{{ 'active_group' }}{% else %}{{ 'inactive_group' }}{% endif %}">数据图表</span> <span class="label label-success">已完成</span></a>
+      <ul>
+        <li><a href="/preview/{{ apps.2 }}.html" id="{{ apps.2 }}">排班表</a></li>
+        <li><a href="/preview/{{ apps.3 }}.html" id="{{ apps.3 }}">响应记录</a></li>
+        <li><a href="/preview/{{ apps.4 }}.html" id="{{ apps.4 }}">SchMonSrv</a></li>
+      </ul>
+    </li>
+
+    <li class="submenu {% if appgroup == 'link' %}{{ 'active open' }}{% else %}{{ '' }}{% endif %}"> <a href="#"><i class="icon icon-cogs"></i> <span name="{% if appgroup == 'link' %}{{ 'active_group' }}{% else %}{{ 'inactive_group' }}{% endif %}">外部链接</span> <span class="label label-success">已完成</span></a>
+      <ul>
+        <li><a href="/link/{{ apps.5 }}.html" id="{{ apps.5 }}">OA导航</a></li>
+      </ul>
+    </li>
+
+    <li class="submenu {% if appgroup == 'alarm' %}{{ 'active open' }}{% else %}{{ '' }}{% endif %}"> <a href="#"><i class="icon icon-cogs"></i> <span name="{% if appgroup == 'alarm' %}{{ 'active_group' }}{% else %}{{ 'inactive_group' }}{% endif %}">报警系统</span> <span class="label label-success">已完成</span></a>
+      <ul>
+        <li><a href="/alarm/{{ apps.6 }}.html" id="{{ apps.6 }}">接单概略</a></li>
+        <li><a href="/alarm/{{ apps.7 }}.html" id="{{ apps.7 }}">报警规则</a></li>
+        <li><a href="/alarm/{{ apps.8 }}.html" id="{{ apps.8 }}">SLA管理</a></li>
+        <li><a href="/alarm/alarmTransaction.html" id="alarmTransaction">报警事务</a></li>
+        <li><a href="/alarm/bussiAlarm.html" id="bussiAlarm">业务报警</a></li>
+        <li><a href="/alarm/bankInCharge.html" id="bankInCharge">银行负责人</a></li>
+        <li><a href="/alarm/bankOperation.html" id="bankOperation">银行运营工作</a></li>
+      </ul>
+    </li>
+
+    <li class="submenu {% if appgroup == 'admin' %}{{ 'active open' }}{% else %}{{ '' }}{% endif %}"> <a href="#"><i class="icon icon-cogs"></i> <span name="{% if appgroup == 'admin' %}{{ 'active_group' }}{% else %}{{ 'inactive_group' }}{% endif %}">管理系统</span> <span class="label label-success">已完成</span></a>
+      <ul>
+        <li><a href="/admin/searchInfor.html" id="searchInfor">查询订单</a></li>
+        <li><a href="/admin/backstageManager.html" id="backstageManager">007卡后台</a></li>
+        <li><a href="/admin/schmonid.html" id="schmonid">SCHMonID</a></li>
+      </ul>
+    </li>
+    <!--li class="content"> <span>Monthly Bandwidth Transfer</span>
+      <div class="progress progress-mini progress-danger active progress-striped">
+        <div style="width: 77%;" class="bar"></div>
+      </div>
+      <span class="percent">77%</span>
+      <div class="stat">21419.94 / 14000 MB</div>
+    </li-->
+    <li class="content"> <span>磁盘空间用量</span>
+      <div class="progress progress-mini active progress-striped">
+        <div style="width: {{ Percent }}%;" class="bar"></div>
+      </div>
+      <span class="percent">{{ Percent }}%</span>
+      <div class="stat">{{ Used }} G / {{ Size }} G</div>
+    </li>
+  </ul>
+</div>
+
+<div id="content">
+  <div id="content-header">
+    <div id="breadcrumb"> <a href="#" class="tip-bottom"><i class="icon-home"></i> {{ true_name }}</a> <a href="#" id="appgroup"></a> <a href="{{ appname }}.html" class="current" id="appname"></a> </div>
+  </div>
+<!-- 启下连接各apps -->
+{% block content %}{% endblock %}
+</div>
+
+</body>
+</html>

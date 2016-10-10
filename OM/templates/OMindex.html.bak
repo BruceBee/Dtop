@@ -1,0 +1,183 @@
+{% extends "V.html" %}
+
+{% block head %}
+<!--script src="/static/matrix/js/matrix.chat.js"></script-->
+<script type="text/javascript" src="/static/matrix/js/toastr.js"></script>
+<script type="text/javascript" src="/static/matrix/js/echarts.min.js"></script>
+
+<!-- <script type="text/javascript" src="/static/matrix/js/matrix.interface.js"></script> -->
+<script type="text/javascript">
+
+
+</script>
+{% endblock %}
+
+{% block content %}
+<!-- 承上连接V.html：content+content-header -->
+
+<!--Action boxes-->
+  <div class="container-fluid">
+    <div class="row-fluid ">
+      <div class="span3">
+
+        <div class="widget-box">
+
+          <div class="widget-title"> <span class="icon"><i class="icon-cloud"></i></span>
+            <span class="label label-success pull-right "><a href="/"><font color=#EEEEEE><i class="icon icon-plus"></i></font></a> <a href="/"><font color=#EEEEEE><i class="icon icon-minus"></i></font></a></span>
+            
+            <h5>服务组选择</h5>
+          </div>
+          <div class="widget-content">
+              <select multiple  class="form-control" size=5>
+                <option>web服务器组</option>
+                <option>阿里云平台组</option>
+                <option>腾讯云平台组</option>
+                <option>数据库服务器组</option>
+                <option>前置机服务器组</option>
+                <option>*</option>
+                <option>类型A</option>
+                <option>类型B</option>
+                <option>类型C</option>
+                <option>类型D</option>
+              </select>
+          </div>
+        </div>
+
+        <div class="widget-box">
+
+          <div class="widget-title"> <span class="icon"><i class="icon-cloud"></i></span>
+            <span class="label label-success pull-right "><a href="/"><font color=#EEEEEE><i class="icon icon-plus"></i></font></a> <a href="/"><font color=#EEEEEE><i class="icon icon-minus"></i></font></a></span>
+            
+            <h5>服务器列表选择</h5>
+          </div>
+          <div class="widget-content">
+              <select multiple  class="form-control" size=20>
+                <option>192.168.0.1</option>
+                <option>192.168.0.1</option>
+                <option>192.168.0.1</option>
+                <option>192.168.0.1</option>
+                <option>192.168.0.1</option>
+                <option>192.168.0.1</option>
+                <option>192.168.0.1</option>
+                <option>192.168.0.1</option>
+                <option>192.168.0.1</option>
+                <option>192.168.0.1</option>
+                <option>192.168.0.1</option>
+                <option>192.168.0.1</option>
+                <option>192.168.0.1</option>
+                <option>192.168.0.1</option>
+                <option>192.168.0.1</option>
+                <option>192.168.0.1</option>
+                <option>192.168.0.1</option>
+                <option>192.168.0.1</option>
+                <option>192.168.0.1</option>
+                <option>192.168.0.1</option>
+                <option>192.168.0.1</option>
+                <option>192.168.0.1</option>
+                <option>192.168.0.1</option>
+                <option>192.168.0.1</option>
+                <option>192.168.0.1</option>
+                <option>192.168.0.1</option>
+                <option>192.168.0.1</option>
+                <option>192.168.0.1</option>
+                <option>192.168.0.1</option>
+                <option>192.168.0.1</option>
+              </select>
+          </div>
+        </div>
+
+<!--         <div class="widget-box">
+
+          <div class="widget-title"> <span class="icon"><i class="icon-cloud"></i></span>
+            <span class="label label-success pull-right "><a href="/"><font color=#EEEEEE><i class="icon icon-plus"></i></font></a> <a href="/"><font color=#EEEEEE><i class="icon icon-minus"></i></font></a></span>
+            
+            <h5>服务类型选择</h5>
+          </div>
+          <div class="widget-content">
+              <select class="form-control" size=5>
+                <option>类型选项一</option>
+                <option>类型选项一</option>
+                <option>类型选项一</option>
+                <option>类型选项一</option>
+                <option>类型选项一</option>
+                <option>类型选项一</option>
+                <option>类型选项一</option>
+                <option>类型选项一</option>
+                <option>类型选项一</option>
+                <option>类型选项一</option>
+              </select>
+          </div>
+        </div>
+
+        <div class="widget-box">
+
+          <div class="widget-title"> <span class="icon"><i class="icon-cloud"></i></span>
+            <span class="label label-success pull-right "><a href="/"><font color=#EEEEEE><i class="icon icon-plus"></i></font></a> <a href="/"><font color=#EEEEEE><i class="icon icon-minus"></i></font></a></span>
+            
+            <h5>服务类型选择</h5>
+          </div>
+          <div class="widget-content">
+              <select class="form-control" size=5>
+                <option>类型选项一</option>
+                <option>类型选项一</option>
+                <option>类型选项一</option>
+                <option>类型选项一</option>
+                <option>类型选项一</option>
+                <option>类型选项一</option>
+                <option>类型选项一</option>
+                <option>类型选项一</option>
+                <option>类型选项一</option>
+                <option>类型选项一</option>
+              </select>
+          </div>
+        </div> -->
+
+      </div>
+      <div class="span9">
+        <div class="widget-box">
+          <div class="widget-title"> <span class="icon"><i class="icon-briefcase"></i></span>
+            <!-- <span class="label label-success pull-right "><a href="/asset/assetinfo.html"><font color=#EEEEEE>点击详情</font></a></span> -->
+            <h5>操作命令</h5>
+          </div>
+          <div class="widget-content">
+            <form class="form-inline">
+              <select class="form-control">
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+              </select>
+              <select class="form-control">
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+              </select>
+              <input class="btn btn-primary" type="button" value="运行"></input>
+              <div class="form-inline pull-right">
+                <input class="btn btn-info " type="button" value="上传文件"></input>
+                <input class="btn btn-success " type="button" value="下载文件"></input>
+            </div> 
+            </form>
+
+
+          </div>
+        </div>
+        <div class="widget-box">
+          <div class="widget-title"> <span class="icon"><i class="icon-bar-chart"></i></span>
+            <!-- <span class="label label-success pull-right "><a href="/alarm/alarmcharts.html"><font color=#EEEEEE>点击详情</font></a></span> -->
+            <h5>结果展示</h5>
+          </div>
+          <div class="widget-content" style="height:600px">
+            <div id="mainbox" style="width: 100%;height:80%;background:#000; opacity: 0.8;"></div><br>
+            <div id="inputbox" style="width: 100%;height:20%;background:#000; opacity: 0.8;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+{% endblock %}

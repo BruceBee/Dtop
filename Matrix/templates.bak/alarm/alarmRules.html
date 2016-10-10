@@ -1,0 +1,263 @@
+{% extends "V.html" %}
+
+{% block head %}
+<script type="text/javascript" src="/js/layer/layer.js"></script>
+<script type="text/javascript" src="/js/dataBase.js"></script>
+<script language="javascript" type="text/javascript" src="/js/preview/WdatePicker.js"></script>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$(function(){
+			loadTable(1);
+		});
+	});
+
+	function addDialog(idValue,rulenumberValue,nameValue,responpeopleValue,departmentValue,handlepeopleValue,describValue,resonValue){
+		var addTableHtml=$("#addTable").clone();
+		var inputId=addTableHtml.find("input[name='id']");
+		  inputId.attr("id","id");
+		  if(idValue){
+			inputId.attr("value",idValue);
+		  }
+		var input_Rule_number=addTableHtml.find("input[name='rule_number']");
+		  input_Rule_number.attr("id","rule_number");
+		  if(rulenumberValue){
+			input_Rule_number.attr("value",rulenumberValue);
+		  }
+		var inputName=addTableHtml.find("input[name='name']");
+		  inputName.attr("id","name");
+		  if(nameValue){
+			inputName.attr("value",nameValue);
+		  }
+		var input_respon_people=addTableHtml.find("input[name='respon_people']");
+		  input_respon_people.attr("id","respon_people");
+		  if(responpeopleValue){
+			input_respon_people.attr("value",responpeopleValue);
+		  }
+		var input_department=addTableHtml.find("input[name='department']");
+		  input_department.attr("id","department");
+		  if(departmentValue){
+			input_department.attr("value",departmentValue);
+		  }
+		var input_handle_people=addTableHtml.find("input[name='handle_people']");
+		  input_handle_people.attr("id","handle_people");
+		  if(handlepeopleValue){
+			input_handle_people.attr("value",handlepeopleValue);
+		  }
+		var input_describ=addTableHtml.find("input[name='describ']");
+		  input_describ.attr("id","describ");
+		  if(describValue){
+			input_describ.attr("value",describValue);
+		  }
+		var input_reson=addTableHtml.find("input[name='reson']");
+		  input_reson.attr("id","reson");
+		  if(resonValue){
+			input_reson.attr("value",resonValue);
+		  }
+
+		var buttonValue="添加";
+		if(idValue){
+		  buttonValue="更新";
+		}
+
+		layer.open({
+					title:'添加信息',
+					type: 1,
+					shift:2,
+					skin: 'layui-layer-rim', //加上边框
+					area: ['500px', '410px'], //宽高
+					content:addTableHtml.html(),
+					btn:['确定','取消'],
+					yes:function(index){
+						var id=$("#id").val();
+						var rule_number=$("#rule_number").val();
+						var name=$("#name").val();
+						var respon_people=$("#respon_people").val();
+						var department=$("#department").val();
+						var handle_people=$("#handle_people").val();
+						var describ=$("#describ").val();
+						var reson=$("#reson").val();
+						//alert("id="+id+"rule_number="+rule_number+"name="+name+"respon_people="+respon_people+"department="+department+"handle_people="+handle_people+"describ="+describ+"reson="+reson);
+						$.ajax({
+						  type:'POST',
+						  url:'/alarm_data/alarm_editFun',
+						  data:{id:id,rule_number:rule_number,name:name,respon_people:respon_people,department:department,handle_people:handle_people,describ:describ,reson:reson},
+						  dataType:'text',
+						  success:function(val){
+							layer.close(index);
+							if(val=='1'){
+							  loadTable(1);
+							}else{
+							  layer.alert("操作失败");
+							}
+						  },error:function(){
+							layer.close(index);
+							laery.alert("操作失败");
+						  }
+						});
+
+
+						
+					}
+		});
+	}
+
+ /**
+  删除功能
+  **/
+  function delData(){
+    
+      var inputChecks=$("input:checkbox[name='dataFrom_check']:checked");
+      if(inputChecks.length==0){
+			layer.alert('请选中删除项！');
+			return;
+		}
+     layer.confirm('确认删除?', {icon: 2, title:'提示'},function(index){
+      var orders='';
+      for(var i=0;i<inputChecks.length;i++){
+        orders+=inputChecks[i].value;
+        if(i!=inputChecks.length-1){
+          orders+=',';
+        }
+      }
+	  alert(orders);
+      $.ajax({
+        type:'POST',
+        url:'/alarm_data/alarm_deleteFun',
+        dataType:'text',
+        data:'id='+orders,
+        success:function(text){
+               layer.close(index);
+               if(text=='1'){
+                loadTable(1);
+               }else{
+                layer.alert('操作失败');
+               }
+        },error:function(){
+          layer.close(index);
+          layer.alert('操作失败');
+        }
+      });
+    });
+      
+  }
+
+
+/**
+  行添加双击事件
+  **/
+  function tab_trOnclick(){
+    var trs=$("#dataFrom_table tbody tr");
+    for(var i=0;i<trs.length;i++){
+      $(trs[i]).on("dblclick",function(){
+        var tr=$(this);
+        var tds=tr.find("td");
+        var id=$(tds[0]).find("input").val();
+        addDialog(id,$(tds[1]).text(),$(tds[2]).text(),$(tds[3]).text(),$(tds[4]).text(),$(tds[5]).text(),$(tds[6]).text(),$(tds[7]).text());
+      });
+    }
+  }
+
+
+
+
+
+
+	function keyEnter(event){
+	 var e = event || window.event || arguments.callee.caller.arguments[0];
+	 if(e && e.keyCode==13){ // enter 键
+		 loadTable(1);
+		return false;
+	  }
+	   
+	}
+
+	function loadTable(val){
+		$("#dataFrom").find("input[name='page']").val(val);
+		
+		$("#dataTab").dataTable({
+			title:'业务报警规则说明(双击修改)',
+			columns:[
+				{key:'id',check:true,checkAll:true,width:'3%',align:'center'},
+				{key:'rule_number',name:'编号',width:'5%',align:'center'},
+				{key:'name',name:'报警名称',width:'10%',align:'center'},
+				{key:'respon_people',name:'业务负责人',width:'5%',align:'center'},
+				{key:'department',name:'业务部门',width:'5%',align:'center'},
+				{key:'handle_people',name:'报警处理人',width:'10%',align:'center'},
+				{key:'describ',name:'报警功能描述',width:'32%',align:'center'},
+				{key:'reson',name:'原因或对策',width:'30%',align:'center'}
+			],
+			formid:'dataFrom',
+			loadAfter:tab_trOnclick
+		});
+	}
+
+</script>
+
+{% endblock %}
+
+{% block content %}
+<!-- 承上连接V.html：content+content-header -->
+
+
+  <div class="container-fluid">
+
+	<div class="row-fluid">
+		<div class="span12">
+			<form action="/alarm_data/alarm_pagedataList" id="dataFrom" onSubmit="return false">
+				<input class="btn btn-primary" type="button" name="addButton" value="添加" onclick="addDialog();" style="float:left;"/>
+				{% if perms.Matrix.delete_report %}
+				<input class="btn btn-danger" type="button" name="deleteButton" value="删除" onclick="delData();" style="float:left;"/>
+				{% endif %}
+				<input type="hidden" id="page" name="page" value="1"/>
+				<input type="hidden" id="num" name="num" value="6"/>
+				<div style="text-align:right;">
+					<input type="text" name="tj" placeholder="请输入姓名,回车查询" id="tj" style="background-color: white;" onKeydown="keyEnter();"/>
+				</div>
+			</form>
+			<div id="dataTab"></div>
+
+			
+			<div id="addTable" style="display:none;">
+				<center>
+					 <table border="0" style="color:#000;">
+						<tr style="display:none;">
+						  <td style="text-align:right;"><span style="position:relative; top:-5px;"></span></td>
+							<td><input type="text" name="id"/></td>
+						</tr>
+						<tr>
+							<td style="text-align:right;">编号：</td>
+							<td><input type="text" name="rule_number"/></td>
+						</tr>
+						<tr>
+							<td style="text-align:right;">报警名称：</td>
+							<td><input type="text" name="name"/></td>
+						</tr>
+						<tr>
+							<td style="text-align:right;">业务负责人：</td>
+							<td><input type="text" name="respon_people"/></td>
+						</tr>
+						<tr>
+							<td style="text-align:right;">业务部门：</td>
+							<td><input type="text" name="department"/></td>
+						</tr>
+						<tr>
+							<td style="text-align:right;">报警处理人：</td>
+							<td><input type="text" name="handle_people"/></td>
+						</tr>
+						<tr>
+							<td style="text-align:right;">报警功能描述：</td>
+							<td><input type="text" name="describ"/></td>
+						</tr>
+						<tr>
+							<td style="text-align:right;">原因或对策：</td>
+							<td><input type="text" name="reson"/></td>
+						</tr>
+					</table>
+				 </center>
+		   </div>
+		   
+		</div>
+	</div>
+  </div>
+
+{% endblock %}
