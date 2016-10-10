@@ -53,6 +53,17 @@ web完成用户与用户组的新建，赋权；细化每个模块的具体操�
 ![aaa](/IMG/DNS.png)
 
 ***
+
+#####使用说明
+可能需要额外安装的软件包：rpyc，xlwt等
+
+将该源码包下载到linux环境下，配置好相应的数据库，将saltMaster文件夹的reloadSalt.sh与saltrpyc.py两个文件存放至salt主服务器上，赋予两个文件可执行权限，并设置定时任务防止saltrpyc脚本挂死。
+
+每天凌晨重启saltrpyc客户端
+`* 0 * * * sh /home/saltMaster/reloadSalt.sh >/dev/null 2>&1`
+
+
+***
 #####说明：该运维平台仍旧在开发当中，很多功能不稳定甚至暂未实现，本人也会不定期的更新该项目。
 
 欢迎关注[我的博客园](http://www.cnblogs.com/mzpy1119/)
