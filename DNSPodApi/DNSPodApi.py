@@ -20,7 +20,8 @@ from Matrix import models
 
 def getmessage():
 
-	LOGIN_TOKEN='16080,94a8f63fc836d76ceb76ab4cdb36ee78'
+	LOGIN_TOKEN='1111111111111'
+	#这里根据实际情况修改LOGIN_TOKEN
 	# domain_id = '28639253'
 	# domain_remark = '备注内容01'
 	
