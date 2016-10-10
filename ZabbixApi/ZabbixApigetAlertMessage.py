@@ -25,7 +25,7 @@ def ApiAuth(url):
 	    "method": "user.login",
 	    "params": {
 	    "user": "Admin",
-	    "password": "Dt3c4ec405"
+	    "password": "xxxxxx"
 	},
 	"id": 1,
 	})
@@ -97,7 +97,8 @@ def redis_add(eventid,subject,alerttime,status):
 
 if __name__ == '__main__':
 
-	url = "http://106.75.141.65:8080/zabbix/api_jsonrpc.php"
+	url = "http://1.1.1.1:8080/zabbix/api_jsonrpc.php"
+	#这里的url地址写自己的zabbix api地址
 	header = {"Content-Type": "application/json"}
 	currtime = time.time()
 	halfhourago= ((datetime.datetime.now()-datetime.timedelta(minutes=30)).strftime("%Y-%m-%d %H:%M:%S"))
