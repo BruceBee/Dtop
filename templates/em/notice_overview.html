@@ -140,10 +140,7 @@
 				// total = val.page_total
 				var keywords = $("input[name='keywords']").val()
 				console.log(keywords)
-				// PageTurn(val.page_total,keywords)
-				// $("#bottom").html("")
-				// $("#button").html("<div id='kkpager'></div>")
-				// kkpage(1,val.total);
+
 
 				// $(function(){
 				kkpager.generPageHtml({
@@ -154,18 +151,9 @@
 					totalRecords : val.items_total,
 					mode : 'click',//默认值是link，可选link或者click
 					click : function(n){
-						// var keywords = $("input[name='keywords']").val()
-						// console.log(keywords)
-						// LoadData(n,keywords);
-						// LoadDataPageTurn(n,keywords);
-						// LoadData(n,keywords)
+
 						console.log('内部执行一次')
-						// console.log(n)
-						// do something
-						//手动选中按钮
-						// if(keywords!=""){
-						// 	this.selectPage(1);
-						// }
+
 						this.selectPage(n);
 						LoadDataPageTurn(n,keywords);
 						return false;
@@ -460,18 +448,9 @@
 					totalRecords : val.items_total,
 					mode : 'click',//默认值是link，可选link或者click
 					click : function(n){
-						// var keywords = $("input[name='keywords']").val()
-						// console.log(keywords)
-						// LoadData(n,keywords);
-						// LoadDataPageTurn(n,keywords);
-						// LoadData(n,keywords)
+
 						console.log('内部执行一次')
-						// console.log(n)
-						// do something
-						//手动选中按钮
-						// if(keywords!=""){
-						// 	this.selectPage(1);
-						// }
+
 						this.selectPage(n);
 						console.log(n)
 						LoadDataPageTurn(n,keywords);
@@ -484,27 +463,7 @@
 	}
 
 
-	// function Item_modify (ths){
-	// 	var tr_id = $(ths).parent().parent().attr('id')
-	// 	// var id = tr_id.split('_')[1]
-	// 	var mod_status = $("#items_status_"+tr_id.split('_')[1]+"").text()
-	// 	var mod_title = $("#items_title_"+tr_id.split('_')[1]+"").text()
-	// 	var mod_starter = $("#items_starter_"+tr_id.split('_')[1]+"").text()
-	// 	var mod_owner = $("#items_owner_"+tr_id.split('_')[1]+"").text()
-	// 	var mod_relater = $("#items_relater_"+tr_id.split('_')[1]+"").text()
-	// 	var start_time = $("#start_time_"+tr_id.split('_')[1]+"").text()
-	// 	var end_time = $("#end_time_"+tr_id.split('_')[1]+"").text()
 
-	// 	console.log(mod_title)
-	// 	if($("#mod_"+tr_id+"").length == 0){
-	// 		$("#"+tr_id+"").after("<tr id='mod_"+tr_id+"'><td><div></div></td></tr>")
-	// 		$("#mod_"+tr_id+" td div").append($("#inputbox").html())
-	// 	}
-	// 	else{
-	// 		$("#mod_"+tr_id+"").remove()
-	// 	}
- // 		// $("#"+tr_id+"").after("<tr id='mod_"+tr_id+"'><td>事项状态</td><td>事项标题</td><td>发起人</td></tr>")
-	// }
 
 	function Item_modify(ths){
 		//获取当前点击编辑所在的列
@@ -625,15 +584,7 @@
                 <!-- <td><input type="text" name="items_owner" placeholder="主办人"/></td> -->
                 <td>
                     <select name="items_owner"/>
-<!--                 		<option value="在线" name="outline">用户A</option>
-                      	<option value="停用" name="outline">用户B</option>
-                      	<option value="测试" name="testline">用户C</option>
-                      	<option value="备用" name="backup">用户D</option>
-                      	<option value="其他" name="others">用户E</option>
-                      	<option value="其他" name="others">用户F</option>
-                      	<option value="其他" name="others">用户G</option>
-                      	<option value="其他" name="others">用户H</option>
-                      	<option value="其他" name="others">用户I</option> -->
+
                 	</select>
                 </td>
                 <td style="text-align:left;"><span style="position:relative; top:-5px;">事项开始时间：</span></td>
@@ -648,15 +599,7 @@
                 <td style="text-align:left;"><span style="position:relative; top:-5px;">知会人：</span></td>
                 <td>
                 	<select name="itmes_relater" multiple="multiple" size="6"/>
-<!--                 		<option value="在线" name="outline">用户A</option>
-                      	<option value="停用" name="outline">用户B</option>
-                      	<option value="测试" name="testline">用户C</option>
-                      	<option value="备用" name="backup">用户D</option>
-                      	<option value="其他" name="others">用户E</option>
-                      	<option value="其他" name="others">用户F</option>
-                      	<option value="其他" name="others">用户G</option>
-                      	<option value="其他" name="others">用户H</option>
-                      	<option value="其他" name="others">用户I</option> -->
+
                 	</select>
                 </td>
 

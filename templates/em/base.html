@@ -101,29 +101,11 @@
   <ul class="nav">
     {% if perms.delete_contenttype %}
     <li class=""><a title="" href="/V/"><i class="icon icon-user"></i> <span class="text">个人中心</span></a></li>
-    <!--li class="dropdown" id="menu-messages"><a href="#" data-toggle="dropdown" data-target="#menu-messages" class="dropdown-toggle"><i class="icon icon-envelope"></i> <span class="text">消息中心</span> <span class="label label-important">6</span> <b class="caret"></b></a>
-      <ul class="dropdown-menu">
-        <li><a class="sAdd" title="" href="#"><i class="icon-plus"></i> 新消息</a></li>
-        <li class="divider"></li>
-        <li><a class="sInbox" title="" href="#"><i class="icon-envelope"></i> 收件箱</a></li>
-        <li class="divider"></li>
-        <li><a class="sOutbox" title="" href="#"><i class="icon-arrow-up"></i> 发件箱</a></li>
-        <li class="divider"></li>
-        <li><a class="sTrash" title="" href="#"><i class="icon-trash"></i> 垃圾箱</a></li>
-      </ul>
-    </li-->
     <li class=""><a title="" href="/V/password_change/"><i class="icon icon-cog"></i> <span class="text">修改密码</span></a></li>
     {% endif %}
     <li class=""><a title="" href="/logout.html"><i class="icon icon-share-alt"></i> <span class="text">注销</span></a></li>
   </ul>
 </div>
-<!--close-top-Header-menu-->
-<!--start-top-serch-->
-<!--div id="search">
-  <input type="text" placeholder="Search here..."/>
-  <button type="submit" class="tip-bottom" title="Search"><i class="icon-search icon-white"></i></button>
-</div-->
-<!--close-top-serch-->
 <div id="sidebar"><a href="#" class="visible-phone"><i class="icon icon-cogs"></i> 运维中心</a>
   <ul>
     <li class="{% if appgroup == 'home' %}{{ 'active' }}{% else %}{{ '' }}{% endif %}"><a href="{{ apps.dashboard.url }}"><i class="icon icon-home"></i> <span name="{% if appgroup == 'home' %}{{ 'active_group' }}{% else %}{{ 'inactive_group' }}{% endif %}">{{ apps.dashboard.name }}</span> <span id="dashboard" class="label label-info">V</span></a> </li>

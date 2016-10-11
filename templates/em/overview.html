@@ -351,118 +351,7 @@
 	function search(){
 		var keywords = $("input[name='keywords']").val()
 		$(".table tbody tr").remove();
-		// $("#bottom").html("");
-		// $("#bottom").append('<div id="kkpager"></div>')
 
-		// $.ajax({
-		// 	type:'POST',
-		// 	url:'/em/overview/',
-		// 	data:{'page':1,'keywords':keywords},
-		// 	dataType:'json',
-		// 	success:function(val){
-		// 		console.log('点击查找')
-		// 		console.log(val)
-
-		// 		$(".table tbody tr").remove();
-		// 		$("#items_total").html('<span style="color:red">'+val.items_total+'</span>')
-		// 		var detail = val.rows
-		// 		for(var i=0;i<detail.length;i++){
-		// 			// console.log(detail[i]['items_title'])
-		// 			// console.log(detail[i]['items_rate'])
-		// 			var items_status = 'items_status_'+detail[i]['id']
-		// 			var items_title = 'items_title_'+detail[i]['id']
-		// 			var items_starter = 'items_starter_'+detail[i]['id']
-		// 			var items_owner = 'items_owner_'+detail[i]['id']
-		// 			var items_relater = 'items_relater_'+detail[i]['id']
-		// 			var start_time = 'start_time_'+detail[i]['id']
-		// 			var end_time = 'end_time_'+detail[i]['id']
-		// 			var items_rate = 'items_rate_'+detail[i]['id']
-
-		// 			// console.log(items_status)
-		// 			//生成表格
-		// 			$(".table tbody ").append("<tr id='tr_"+(detail[i]['id'])+"'><td id='"+(items_status)+"'></td>\
-		// 				<td id='"+(items_title)+"'></td>\
-		// 				<td id='"+(items_starter)+"'></td>\
-		// 				<td id='"+(items_owner)+"'></td>\
-		// 				<td id='"+(items_relater)+"'></td>\
-		// 				<td id='"+(start_time)+"'></td>\
-		// 				<td id='"+(end_time)+"'></td>\
-		// 				<td id='"+(items_rate)+"'></td>\
-		// 				<td><a class='tip' href='/em/detail/"+(detail[i]['id'])+"' title='查看'><i class='icon-folder-open'></i></a>&nbsp;&nbsp;&nbsp;&nbsp;<a class='tip' onclick='Item_modify(this);' title='修改'><i class='icon-pencil'></i></a>&nbsp;&nbsp;&nbsp;&nbsp;<a id='"+(detail[i]['id'])+"' class='tip' onclick='DelItems(this);' title='删除'><i class='icon-remove'></i></a></td></tr>")
-		// 			// $(".table").append('<div class="collapse" id="collapseGOne"><tr><td>append</td><td>b</td></tr></div>')
-
-		// 			//加载表格数据
-		// 			$("#"+(items_status)+"").html('<span class="badge">'+detail[i]['items_status']+'</span>')
-		// 			$("#"+(items_title)+"").html('<a href="/em/detail/'+(detail[i]["id"])+'">'+detail[i]['items_title']+'</a><br><span>创建于:'+(detail[i]["create_time"])+'</span>')
-		// 			$("#"+(items_starter)+"").html(detail[i]['items_starter'])
-		// 			$("#"+(items_owner)+"").html(detail[i]['items_owner'])
-		// 			$("#"+(items_relater)+"").html(detail[i]['items_relater'])
-		// 			$("#"+(start_time)+"").html(detail[i]['start_time'])
-		// 			$("#"+(end_time)+"").html(detail[i]['end_time'])
-		// 			$("#"+(items_rate)+"").html('<div class="progress progress-mini progress-striped active"><div style="width: '+(detail[i]["items_rate"])+'%;" class="bar"></div></div>')
-
-		// 			//判断状态，以不同的颜色进行标示
-		// 			if(detail[i]['items_status']=='进行中'){
-		// 				$("#"+(items_status)+" span").addClass("badge-success")
-		// 			}else if(detail[i]['items_status']=='已结束'){
-		// 				$("#"+(items_status)+" span").addClass("badge-warning")
-		// 			}else if(detail[i]['items_status']=='逾期'){
-		// 				$("#"+(items_status)+" span").addClass("badge-important")
-		// 			}else{
-		// 				$("#"+(items_status)+" span").addClass("badge-info")
-		// 			}
-
-		// 			//判断百分百，以不同的颜色进行标示
-
-
-		// 			if(detail[i]['items_rate']== -1){
-		// 				$("#"+(items_rate)+"").html('<div class="progress progress-mini progress-striped active"><div style="width: 100%;" class="bar"></div></div>')
-		// 				$("#"+(items_rate)+" div").addClass("progress-danger")
-		// 			}else if(detail[i]['items_rate']<25){
-		// 				$("#"+(items_rate)+" div").addClass("progress-danger")
-		// 			}else if(detail[i]['items_rate']<50){
-		// 				$("#"+(items_rate)+" div").addClass("progress-warning")
-		// 			}else if(detail[i]['items_rate']<75){
-		// 				$("#"+(items_rate)+" div").addClass("progress-striped")
-		// 			}else{
-		// 				$("#"+(items_rate)+" div").addClass("progress-warning")
-		// 			}
-		// 		}
-
-
-
-		// 		// var keywords = $("input[name='keywords']").val()
-		// 		// console.log(total)
-		// 		// LoadData(1,keywords)
-			
-		// 	kkpager.generPageHtml({
-		// 			pno : 1,
-		// 			//总页码
-		// 			total : val.page_total,
-		// 			//总数据条数
-		// 			totalRecords : val.items_total,
-		// 			mode : 'click',//默认值是link，可选link或者click
-		// 			click : function(n){
-		// 				// var keywords = $("input[name='keywords']").val()
-		// 				// console.log(keywords)
-		// 				// LoadData(n,keywords);
-		// 				// LoadDataPageTurn(n,keywords);
-		// 				// LoadData(n,keywords)
-		// 				console.log('内部执行一次')
-		// 				// console.log(n)
-		// 				// do something
-		// 				//手动选中按钮
-		// 				// if(keywords!=""){
-		// 				// 	this.selectPage(1);
-		// 				// }
-		// 				this.selectPage(n);
-		// 				console.log(n)
-		// 				LoadDataPageTurn(n,keywords);
-		// 				return false;
-		// 			}
-		// 		},true);
-		// 	}
-		// })
 		LoadData(1,keywords)
 	}
 
@@ -588,15 +477,7 @@
                 <!-- <td><input type="text" name="items_owner" placeholder="主办人"/></td> -->
                 <td>
                     <select name="items_owner"/>
-<!--                 		<option value="在线" name="outline">用户A</option>
-                      	<option value="停用" name="outline">用户B</option>
-                      	<option value="测试" name="testline">用户C</option>
-                      	<option value="备用" name="backup">用户D</option>
-                      	<option value="其他" name="others">用户E</option>
-                      	<option value="其他" name="others">用户F</option>
-                      	<option value="其他" name="others">用户G</option>
-                      	<option value="其他" name="others">用户H</option>
-                      	<option value="其他" name="others">用户I</option> -->
+
                 	</select>
                 </td>
                 <td style="text-align:left;"><span style="position:relative; top:-5px;">事项开始时间：</span></td>
@@ -611,15 +492,7 @@
                 <td style="text-align:left;"><span style="position:relative; top:-5px;">知会人：</span></td>
                 <td>
                 	<select name="items_relater" multiple="multiple" size="6"/>
-<!--                 		<option value="在线" name="outline">用户A</option>
-                      	<option value="停用" name="outline">用户B</option>
-                      	<option value="测试" name="testline">用户C</option>
-                      	<option value="备用" name="backup">用户D</option>
-                      	<option value="其他" name="others">用户E</option>
-                      	<option value="其他" name="others">用户F</option>
-                      	<option value="其他" name="others">用户G</option>
-                      	<option value="其他" name="others">用户H</option>
-                      	<option value="其他" name="others">用户I</option> -->
+
                 	</select>
                 </td>
 
