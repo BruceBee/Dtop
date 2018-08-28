@@ -2,7 +2,7 @@
 import json
 import urllib2
 # based url and required header
-url = "http://106.75.141.65:8080/zabbix/api_jsonrpc.php"
+url = "http://xxxxxx:8080/zabbix/api_jsonrpc.php"
 header = {"Content-Type": "application/json"}
 # auth user and password
 data = json.dumps(
@@ -10,8 +10,8 @@ data = json.dumps(
     "jsonrpc": "2.0",
     "method": "user.login",
     "params": {
-    "user": "Admin",
-    "password": "Dt3c4ec405"
+    "user": "xxxxx",
+    "password": "xxxxx"
 },
 "id": 1,
 })
